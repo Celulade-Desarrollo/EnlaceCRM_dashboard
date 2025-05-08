@@ -54,29 +54,30 @@ onMounted(() => {
       <form id="myForm" class="myForm">
         <div class="form-group">
           <p class="subtitulo mt-4">Ingresa tu correo electrónico registrado y te enviaremos instrucciones para restablecer tu contraseña.</p>
-          <p class="subtitulo mt-4">Ingresa tu correo</p>
-          <label for="email" id="label-email">
+          
+          <label for="email" class="input-label">
             <input
-              class="form-control text-center"
+              class="form-control"
               aria-required="true"
               aria-invalid="false"
               aria-labelledby="label-email"
               name="email"
               v-model="email"
               type="email"
-              placeholder="Correo electrónico"
+              placeholder=""
               autocomplete="off"
               id="email"
               required
               aria-describedby="error-email"
             />
+             <span class="floating-label">Ingresa tu correo</span>
           </label>
         </div>
         <div class="button-container mt-4">
-            <button type="submit" class="btn btn-primary">
+            <button type="submit" class="button mt-4">
               Enviar Instrucciones
             </button>
-            <button type="submit" class="btn btn-primary">
+            <button type="submit" class="button mt-4">
               Volver a la pagina principal
             </button> 
           </div>
@@ -103,55 +104,36 @@ body {
     font-size: 1.875rem;
 }
 
-span {
-    color: #dd3590;
-}
-
 .login-container {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    width: 90%;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 16px; /* añade espacio interno en pantallas pequeñas */
 }
 
 .login-card {
-    background-color: #fff;
-    padding: 24px;
-    border-radius: 16px;
-    margin-top: 20px;
-    width: 100%;
-    max-width: 380px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    text-align: center;
+  background-color: #fff;
+  padding: 24px;
+  border-radius: 16px;
+  margin-top: 20px;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  box-sizing: border-box; /* importante para el ancho real */
 }
 
+/* Opcional: mejor ajuste en pantallas MUY pequeñas */
+@media (max-width: 360px) {
+  .login-card {
+    padding: 16px;
+    border-radius: 12px;
+    margin-top: 16px;
+  }
+}
 .myForm {
     text-align: center;
-}
-
-.form-group input {
-    background-color: transparent;
-    border-width: 0 0 1px;
-    border-bottom: solid 1px rgba(17, 17, 17, 0.2);
-    color: rgb(17, 17, 17);
-    padding: 8px 0;
-    width: 100%;
-    outline: none;
-}
-
-button {
-    padding-left: 1.25rem;
-    padding-right: 1.25rem;
-    border-radius: 6.25rem;
-    background: #dd3590;
-    color: #fff;
-    height: 3rem;
-    width: 100%;
-    margin-top: 20px;
-    cursor: pointer;
-    border: none;
-    align-items: center;
 }
 
 .subtitulo {

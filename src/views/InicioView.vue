@@ -176,7 +176,6 @@ onMounted(() => {
 }
 
 
-
 body {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
   background-color: #251886;
@@ -191,8 +190,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 50px;
-  margin-bottom: 20px;
+  margin-bottom: 7px;
 }
 
 .logo .img-fluid {
