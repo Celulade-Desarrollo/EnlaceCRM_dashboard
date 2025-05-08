@@ -89,10 +89,10 @@ onMounted(() => {
     <div class="login-card">
       <form id="myForm" class="myForm" @submit.prevent="validar">
         <div class="form-group">
-          <p class="subtitulo mt-4">Ingresa tu teléfono</p>
+          <p class="subtitulo mt-3">Ingresa tu teléfono</p>
           <label for="telefono" id="label-telefono">
             <input
-              class="form-control text-center mb-4"
+              class="form-control text-center mb-3"
               v-model="telefono"
               type="tel"
               placeholder="Número Telefónico"
@@ -151,6 +151,7 @@ body {
   margin-bottom: 30px;
   max-width: 300px;
   height: auto;
+
 }
 
 .titulo-login {
@@ -209,7 +210,7 @@ button {
   padding-right: 1.25rem;
   border-radius: 6.25rem;
   background: #dd3590;
-  color: #fff;
+  color: #000000;
   height: 3rem;
   width: 100%;
   margin-top: 20px;

@@ -38,6 +38,12 @@ onMounted(() => {
 </script>
 
 <template>
+      <section class="logo-container">
+    <picture class="logo">
+      <img src="/public/Enlace-Logo_Azul.jpg" alt="logo" class="img-fluid" loading="lazy" title="logo" />
+    </picture>
+  </section>
+
    <header class="header">
     <div class="header-icons">
       <!-- Ícono de ayuda a la izquierda -->
@@ -133,7 +139,7 @@ body {
 
 .container button {
     padding: 0.5rem 1rem;
-    border-radius: 6.25rem;
+    border-radius: 5.25rem;
     background: #dd3590;
     color: #fff;
     display: flex;
@@ -145,6 +151,12 @@ body {
     font-size: 1rem;
     justify-content: center;
     width: auto;
+}
+.logo-container {
+    width: 300px;
+    height: auto;
+    float: left;
+    margin: 10px;
 }
 
 .container button svg {
@@ -201,6 +213,9 @@ body {
 .button-banner button {
     background-color: #dd3590;
     color: white;
+    width: 300%;
+    height: auto;
+    margin: 5px;
 }
 
 .deuda-total {
@@ -209,6 +224,7 @@ body {
 
 .fecha-pago {
     font-weight: bold;
+    
 }
 
 .cupo-disponible-dinero {
@@ -217,7 +233,7 @@ body {
 
 .separator {
     width: 100%;
-    background-color: #b3b0b0;
+    background-color: #b0b0b3;
     height: 1px;
     margin: 0 auto;
 }
@@ -245,6 +261,16 @@ body {
 
 .proveedores{
     font-weight: bold;
+    background-color: #251886;;
+    border: 2px solid #ccc;
+    padding: 10px 20px;
+    border-radius: 10px;
+    display: inline-block;
+    color: #fff;
+    width: 100%;
+    margin: 0%;
+    text-align: center;
+
 }
 @media (max-width: 767px) {
     .img-fluid {
@@ -261,8 +287,44 @@ body {
     .info-banner {
         flex-direction: column;
         align-items: flex-start;
+        padding: 10px;
+        border-radius: 15px;
+        margin: 14px;
+        border: 2px solid #251886;
     }
 
+    .header{
+        width: 100%;
+        height: 120px;
+        padding: 10px 20px;
+        background-color: #251886;
+        display: flex;
+        flex-direction: column;
+        align-items: start;
+        box-shadow: none;
+        border-radius: 15px;
+    }
+
+    .header-icons {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.contenedor-targetas{
+    display: flex;
+    flex-wrap: 0;
+    padding: 0;
+    margin: 0;
+    gap: 16px;
+}
+.targeta{
+    flex: 1 1 100%;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+}
     .text-section {
         margin-left: 0;
         margin-top: 10px;
