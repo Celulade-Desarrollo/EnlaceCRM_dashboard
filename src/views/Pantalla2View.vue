@@ -13,8 +13,7 @@ let dataInfoapp = $.parseJSON(localStorage.getItem('data'))
 
 // Función para manejar el clic en el botón "Pagar"
 const handlePago1Click = () => {
-  const valorPago = pagar.value; // Asegúrate de que sea un número
-
+  const valorPago = pagar.value; // Asegúrate de que sea un númerogit branch -a
   if (!valorPago || isNaN(valorPago) || valorPago <=0) {
     alert('Por favor, ingresar un valor válido para el pago.')
     return
