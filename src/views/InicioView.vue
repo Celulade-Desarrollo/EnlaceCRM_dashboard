@@ -1,13 +1,15 @@
 <script setup>
-import { ref, onMounted, reactive } from "vue";
+import { ref, reactive } from "vue";
 import axios from "axios";
-import Alerta from "../components/UI/Alerta.vue";
 import { useRouter } from "vue-router";
 const router = useRouter();
 
 // Referencias para los campos del formulario
 const telefono = ref("");
 const password = ref("");
+const errorMessage = ref("");
+const telefonoRegex = /^[0-9]{10}$/;
+
 // Función para obtener datos
 const fetchData = async () => {
   try {
@@ -15,11 +17,9 @@ const fetchData = async () => {
       `https://enlacecrm.com/api/get_data.php?tipo=login&&usuario=${telefono.value}&&pass=${password.value}`
     );
     if (response.data == "NO") {
-      alerta.mensaje = "Usuario y clave incorrecto";
-      alerta.tipo = "error";
+      errorMessage.value = "Usuario y clave incorrecto";
       setTimeout(() => {
-        alerta.mensaje = "";
-        alerta.tipo = "";
+        errorMessage.value = "";
       }, 3000);
       return;
     } else {
@@ -46,46 +46,40 @@ const goToPantalla9 = () => {
   window.open("/Pantalla9View", "_parent");
 };
 
+const soloNumeros = (e) => {
+  telefono.value = e.target.value.replace(/\D/g, ""); // Reemplaza todo lo que no sea dígito
+};
+
 const handleSubmit = async (event) => {
   event.preventDefault(); // Evita el envío del formulario por defecto
   await fetchData(); // Llama a la función fetchData para obtener datos
 };
 
-const alerta = reactive({
-  tipo: "",
-  mensaje: "",
-});
 
-const validar = () => {
+const validar = async () => {
   if (!telefono.value || !password.value) {
-    // alerta.mensaje = 'Todos los campos son obligatorios';
-    alerta.tipo = "error";
+    errorMessage.value = 'Todos los campos son obligatorios';
     setTimeout(() => {
       alerta.mensaje = "";
       alerta.tipo = "";
     }, 3000);
   } else if(!telefonoRegex.test(telefono.value)){
-
-  }
-
-  if (!telefono.value || !password.value) {
-    // alerta.mensaje = 'Todos los campos son obligatorios';
-    alerta.tipo = "error";
-    setTimeout(() => {
-      alerta.mensaje = "";
-      alerta.tipo = "";
+    errorMessage.value = "Ingrese un número de teléfono válido";
+        setTimeout(() => {
+      errorMessage.value = "";
     }, 3000);
-    return false;
+  } else if(!password.value){
+    errorMessage.value = "La contraseña no puede estar vacía";
+    setTimeout(() => {
+      errorMessage.value = "";
+    }, 3000);
+  } else {
+    errorMessage.value = "";
+    await fetchData();
+    return;
   }
-  return true;
 };
 
-onMounted(() => {
-  const form = document.getElementById("myForm");
-  if (form) {
-    form.addEventListener("submit", handleSubmit);
-  }
-});
 </script>
 
 <template>
@@ -111,10 +105,10 @@ onMounted(() => {
             <input
               class="form-control"
               v-model="telefono"
-              placeholder=""
               type="tel"
               placeholder="Número Telefónico"
-              pattern="[0-9]{10}"
+              @input="soloNumeros"
+              maxlength="10"
             />
              <span class="floating-label">Ingresa tu teléfono</span>
           </label>
@@ -131,6 +125,7 @@ onMounted(() => {
           </label>
         </div>
         <button type="submit" class="button mt-4">Ingresar</button>
+        <p v-if="errorMessage.value" class="text-danger mt-2">{{ errorMessage.value }}</p>
       </form>
       <p class="subtitulo mt-4">
         ¿No estás registrado?<br />
