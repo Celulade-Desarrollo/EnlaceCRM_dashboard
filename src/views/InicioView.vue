@@ -1,39 +1,43 @@
 <script setup>
-import { ref, onMounted, reactive } from 'vue';
-import axios from 'axios';
-import Alerta from '../components/UI/Alerta.vue';
+import { ref, onMounted, reactive } from "vue";
+import axios from "axios";
+import Alerta from "../components/UI/Alerta.vue";
+import { useRouter } from "vue-router";
+const router = useRouter();
 
 // Referencias para los campos del formulario
-const telefono = ref('');
-const password = ref('');
-
+const telefono = ref("");
+const password = ref("");
 // Función para obtener datos
 const fetchData = async () => {
   try {
-    const response = await axios.get(`https://enlacecrm.com/api/get_data.php?tipo=login&&usuario=${telefono.value}&&pass=${password.value}`);
+    const response = await axios.get(
+      `https://enlacecrm.com/api/get_data.php?tipo=login&&usuario=${telefono.value}&&pass=${password.value}`
+    );
     if (response.data == "NO") {
-      alerta.mensaje = 'Usuario y clave incorrecto';
-      alerta.tipo = 'error';
+      alerta.mensaje = "Usuario y clave incorrecto";
+      alerta.tipo = "error";
       setTimeout(() => {
-        alerta.mensaje = '';
-        alerta.tipo = '';
+        alerta.mensaje = "";
+        alerta.tipo = "";
       }, 3000);
       return;
     } else {
       let data = response.data;
       data = JSON.stringify(data);
       console.log(data);
-      localStorage.setItem('data', data);
+      localStorage.setItem("data", data);
 
-      let respuesta = JSON.parse(localStorage.getItem('data'));
-      window.open("/Pantalla1View", "_parent");
+      let respuesta = JSON.parse(localStorage.getItem("data"));
+      localStorage.setItem("isAuthenticated", "true");
+      router.push("/Pantalla1View");
     }
   } catch (error) {
-    alerta.mensaje = 'Error al conectarse al servidor';
-    alerta.tipo = 'error';
+    alerta.mensaje = "Error al conectarse al servidor";
+    alerta.tipo = "error";
     setTimeout(() => {
-      alerta.mensaje = '';
-      alerta.tipo = '';
+      alerta.mensaje = "";
+      alerta.tipo = "";
     }, 3000);
   }
 };
@@ -48,17 +52,17 @@ const handleSubmit = async (event) => {
 };
 
 const alerta = reactive({
-  tipo: '',
-  mensaje: ''
+  tipo: "",
+  mensaje: "",
 });
 
 const validar = () => {
   if (!telefono.value || !password.value) {
     // alerta.mensaje = 'Todos los campos son obligatorios';
-    alerta.tipo = 'error';
+    alerta.tipo = "error";
     setTimeout(() => {
-      alerta.mensaje = '';
-      alerta.tipo = '';
+      alerta.mensaje = "";
+      alerta.tipo = "";
     }, 3000);
     return false;
   }
@@ -66,9 +70,9 @@ const validar = () => {
 };
 
 onMounted(() => {
-  const form = document.getElementById('myForm');
+  const form = document.getElementById("myForm");
   if (form) {
-    form.addEventListener('submit', handleSubmit);
+    form.addEventListener("submit", handleSubmit);
   }
 });
 </script>
@@ -76,7 +80,13 @@ onMounted(() => {
 <template>
   <section class="logo-container">
     <picture class="logo">
-      <img src="/public/enlaceFiado.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
+      <img
+        src="/public/enlaceFiado.png"
+        alt="logo"
+        class="img-fluid"
+        loading="lazy"
+        title="logo"
+      />
     </picture>
   </section>
 
@@ -96,7 +106,6 @@ onMounted(() => {
               v-model="telefono"
               type="tel"
               placeholder="Número Telefónico"
-
               pattern="[0-9]{10}"
             />
           </label>
@@ -109,7 +118,6 @@ onMounted(() => {
               v-model="password"
               type="password"
               placeholder="Contraseña"
-              
             />
           </label>
         </div>
@@ -127,7 +135,7 @@ onMounted(() => {
   </section>
 </template>
 
-<style >
+<style>
 body {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
   background-color: #251886;
