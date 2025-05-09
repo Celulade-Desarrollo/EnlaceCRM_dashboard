@@ -1,27 +1,52 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import Heading from '../components/UI/Heading.vue';
+import { ref, onMounted, watch } from 'vue';
+import { useRouter } from 'vue-router'; // Importa useRouter para navegar entre vistas
+import RouterLink from "../components/UI/Routerlink.vue"; 
+import Heading from "../components/UI/Heading.vue";
 
 // Variables reactivas
-const pagar = ref('');
+const celular = ref('');
+const data = ref(null);
+const error = ref('');
+
+const deudaTotal = ref(0);
+const cupoTotal = ref(0);
+
+// Instancia de router
 const router = useRouter();
 
-let dataInfoapp = $.parseJSON(localStorage.getItem('data'))
-let pagarValor = localStorage.getItem('pagarValor');
+let dataInfoapp = JSON.parse(localStorage.getItem('data'));
 
-// Función para manejar el clic en el botón "codigoPedido1"
-const handlePago1Click = () => {
-  window.open("/Pantalla1View", "_parent");
+deudaTotal.value = parseFloat(dataInfoapp[0].saldorestante.replace(/[$,]/g, ''));
+cupoTotal.value = parseFloat(dataInfoapp[0].saldoabonado.replace(/[$,]/g, ''));
+
+const handlePantalla6Click = () => {
+    window.open("/Pantalla6View", "_parent");
 };
 
-// Montar el event listener para el envío del formulario y clic en el botón
+// Función para calcular y ajustar la barra de progreso
+const updateProgressBar = () => {
+    const total = deudaTotal.value + cupoTotal.value;
+    const deudaPercentage = (deudaTotal.value / total) * 100;
+    const cupoPercentage = (cupoTotal.value / total) * 100;
+
+    document.getElementById('deuda-bar').style.width = `${deudaPercentage}%`;
+    document.getElementById('cupo-bar').style.width = `${cupoPercentage}%`;
+};
+
+// Montar el event listener para el envío del formulario
 onMounted(() => {
-  const pago1Button = document.getElementById('codigoPedido1');
-  if (pago1Button) {
-    pago1Button.addEventListener('click', handlePago1Click);
-  }
+    const Pantalla5Button = document.getElementById('Pantalla6');
+    if (Pantalla5Button) {
+        Pantalla5Button.addEventListener('click', handlePantalla6Click); // Agrega el event listener al botón
+    }
+    
+    // Actualizar la barra de progreso al montar el componente
+    updateProgressBar();
 });
+
+// Observar cambios en los valores para actualizar la barra de progreso
+watch([deudaTotal, cupoTotal], updateProgressBar);
 </script>
 
 <template>
