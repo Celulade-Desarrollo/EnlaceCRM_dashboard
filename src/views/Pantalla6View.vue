@@ -73,7 +73,9 @@ onMounted(() => {
 </template>
 
 <style scoped>
-
+.cupo-disponible-dinero{
+  color: #f15bab;
+}
 .proveedores {
   text-align: center;
   font-size: 25px;
