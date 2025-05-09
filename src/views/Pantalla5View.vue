@@ -43,17 +43,17 @@ watch([deudaTotal, cupoTotal], updateProgressBar);
 <template>
     <Heading :mensaje="'Hola, ' + dataInfoapp[0].nombre" />
 
-    <section class="container-fluid banners">
-        <div class="row justify-content-center">
+    <section class="container banners py-4">
+        <div class="d-flex flex-column align-items-center">
             <!-- Banner 1 -->
-            <div class="col-12 col-md-10 col-lg-8 banner1 mb-4">
+            <div class="banner1 mb-4">
                 <div class="info-banner">
-                    <div class="d-flex justify-content-between flex-wrap">
-                        <div class="d-flex flex-column">
+                    <div class="d-flex justify-content-between w-100">
+                        <div class="text-start">
                             <h2 class="deuda-total">Deuda total</h2>
                             <p class="cantidad-total mb-2" id="deuda-total">${{ deudaTotal }}</p>
                         </div>
-                        <div class="d-flex flex-column">
+                        <div class="text-end">
                             <h2 class="cupo-total">Cupo disponible</h2>
                             <p class="cantidad-total mb-2" id="cupo-total">${{ cupoTotal }}</p>
                         </div>
@@ -66,76 +66,66 @@ watch([deudaTotal, cupoTotal], updateProgressBar);
             </div>
 
             <!-- Botón Abonar -->
-            <div class="col-12 col-md-4 mb-4">
-                <div class="button-banner">
-                    <button type="button" class="button" id="Pantalla6">
-                        Abonar
-                    </button>
-                </div>
+            <div class="button-banner mb-4">
+                <button type="button" class="button" id="Pantalla6">
+                    Abonar
+                </button>
             </div>
 
             <!-- Banner 2: Hoy -->
-            <div class="col-12 col-md-4 mb-4 banner2">
+            <div class="banner2 mb-4">
                 <h2 class="proveedores mb-1">Hoy</h2>
                 <div class="info-banner">
-                    <div class="d-flex align-items-center">
-                        <div class="image-section">
-                            <picture class="logo">
-                                <img src="/public/Alpina.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
-                            </picture>
-                        </div>
+                    <div class="pago-item">
+                        <picture class="logo">
+                            <img src="/public/Alpina.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
+                        </picture>
                         <div class="text-section pago-boton">
                             <p class="parrafo-marcas">Alpina</p>
                             <p class="dinero-pagado">pagaste $58.000</p>
                         </div>
                     </div>
-                    <div class="d-flex align-items-center mt-4">
-                        <div class="image-section">
-                            <picture class="logo">
-                                <img src="/public/Alpina.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
-                            </picture>
-                        </div>
+                    <div class="pago-item">
+                        <picture class="logo">
+                            <img src="/public/Alpina.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
+                        </picture>
                         <div class="text-section pago-boton">
                             <p class="parrafo-marcas">Alpina</p>
                             <p class="dinero-pagado">pagaste $58.000</p>
                         </div>
-                    </div>              
+                    </div>
                 </div>
             </div>
 
             <!-- Banner 3: Ayer -->
-            <div class="col-12 col-md-4 mb-4 banner2">
+            <div class="banner2 mb-4">
                 <h2 class="proveedores mb-1">Ayer</h2>
                 <div class="info-banner">
-                    <div class="d-flex align-items-center">
-                        <div class="image-section">
-                            <picture class="logo">
-                                <img src="/public/Alpina.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
-                            </picture>
-                        </div>
+                    <div class="pago-item">
+                        <picture class="logo">
+                            <img src="/public/Alpina.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
+                        </picture>
                         <div class="text-section pago-boton">
                             <p class="parrafo-marcas">Alpina</p>
                             <p class="dinero-pagado">pagaste $58.000</p>
                         </div>
-                    </div>          
+                    </div>
                 </div>
             </div>
 
             <!-- Banner 4: Ago 10 -->
-            <div class="col-12 col-md-4 mb-4 banner2">
+            <div class="banner2 mb-4">
                 <h2 class="proveedores mb-1">Ago 10</h2>
                 <div class="info-banner">
-                    <div class="d-flex align-items-center">
-                        <div class="image-section">
-                            <picture class="logo">
-                                <img src="/public/Alpina.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
-                            </picture>
-                        </div>
+                    <div class="pago-item">
+                        <picture class="logo">
+                            <img src="/public/Alpina.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
+                        </picture>
                         <div class="text-section pago-boton">
                             <p class="parrafo-marcas">Alpina</p>
                             <p class="dinero-pagado">pagaste $58.000</p>
                         </div>
-                    </div>          
+                    </div>
                 </div>
             </div>
         </div>
@@ -146,23 +136,22 @@ watch([deudaTotal, cupoTotal], updateProgressBar);
 body {
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     background-color: #2e008b;
+    margin: 0;
+    padding: 0;
 }
 
-.row {
-    margin-top: 0;
-    margin-bottom: 0;
+.banners {
+    background-color: #2e008b;
+    min-height: 100vh;
 }
 
 .banner1,
 .banner2 {
-    margin-bottom: 20px;
     background-color: #ffffff;
-}
-
-.parrafo-marcas {
-    margin-left: -20px;
-    font-weight: bold;
-    text-align: center;
+    border-radius: 15px;
+    padding: 20px;
+    width: 100%;
+    max-width: 400px;
 }
 
 .img-fluid {
@@ -171,47 +160,39 @@ body {
 }
 
 .text-section {
-    flex-grow: 55px;
-    margin-left: 40px;
+    margin-left: 20px;
 }
 
 .proveedores {
     font-weight: bold;
-    color: rgb(255, 255, 255);
-    width: 20%;
-    letter-spacing: -0.03em;
-    line-height: 1.2;
+    color: #fff;
     background-color: #2e008b;
     padding: 10px;
-    display: flex;
-    align-items: center;
-    border: solid #dd3590;
-    display: block;
-    margin: 20px 0 0 0;
     text-align: center;
+    border-radius: 10px;
 }
 
 .dinero-pagado {
     font-size: small;
-    text-align: right;  /* Siempre alineado a la derecha */
+    text-align: right;
 }
 
 .progress {
     margin-top: 10px;
     height: 25px;
     background-color: #ddd;
+    border-radius: 10px;
+    overflow: hidden;
 }
 
 .progress-bar {
     transition: width 0.5s ease;
     height: 100%;
-    display: inline-block;
 }
 
 .button-banner {
     display: flex;
     justify-content: center;
-    align-items: center;
 }
 
 .button {
@@ -221,10 +202,9 @@ body {
     padding: 14px 32px;
     border-radius: 25px;
     font-weight: bold;
-    margin-top: 1rem;
     cursor: pointer;
-    width: 400px;
-    max-width: 100%;
+    width: 100%;
+    max-width: 500px;
     text-align: center;
     font-size: 1.1rem;
     transition: background-color 0.3s ease;
@@ -245,28 +225,25 @@ body {
 }
 
 .pago-boton {
-    border: 2px solid #dd3590;
-    border-radius: 10px;
-    padding: 12px;
-    text-align: center;
-    background-color: #f9f9f9;
-    cursor: default;
-    transition: none;
-}
-
-@media (max-width: 767px) {
-    .banner1,
-    .banner2 {
-        margin-bottom: 15px;
-        margin-top: 30px;
-        border-radius: 10px;
-        border: 2px solid #dd3590;
-        padding: 0% 35px;
-        height: 100%;
+        margin-left: 10px;
+        margin-top: 10px;
+        background-color: #2e008b;
+        color: #ffffff;
+        padding: 10px 10px;
+        border-radius: 0px;
+        width: 200px;
     }
 
+.pago-item {
+    display: flex;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+@media (max-width: 900px) {
     .img-fluid {
-        margin-top: -90px;
+        margin-top: 90px;
+        width: 50%;
     }
 
     .text-section {
@@ -274,8 +251,13 @@ body {
         margin-top: 10px;
         background-color: #2e008b;
         color: #ffffff;
-        padding: 15px 70px;
+        padding: 10px 10px;
         border-radius: 0px;
+        width: 200px;
+    }
+
+    .dinero-pagado {
+        text-align: left;
     }
 }
 </style>
