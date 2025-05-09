@@ -120,6 +120,11 @@ body {
   padding: 16px; /* añade espacio interno en pantallas pequeñas */
 }
 
+.form-group button{
+  width: 100%;
+  margin-top: 10px;
+}
+
 .login-card {
   background-color: #fff;
   padding: 24px;
