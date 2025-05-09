@@ -32,262 +32,169 @@ onMounted(() => {
 </script>
 
 <template>
-     <header class="header">
-    <div class="header-icons">
-      <!-- Ícono de ayuda a la izquierda -->
-      <span class="icon-left">
-        <i class="fas fa-user"></i>
-      </span>
-      
-      <!-- Ícono de usuario a la derecha -->
-      <span class="icon-right">
-        <i class="fas fa-question-circle"></i>
-      </span>
-    </div>
-    
-    <!-- Mensaje de saludo -->
-    <div class="header-text">
-      <p>Hola, {{dataInfoapp[0].nombre}}</p>
-    </div>
-  </header>
+ <section class="logo-container">
+    <img src="/public/enlaceFiado.png" alt="logo Enlace CRM" class="logo-main" />
+  </section>
 
-  <section class="container banners">
-    <div class="row">
-      <!-- Banner 1 -->
-      <div class="col-md-4 banner1">
-        <h2 class="proveedores">¿Cuánto quieres pagar?</h2>
-        <div class="info-banner-main mb-4">
-          <p class="deuda-total mb-2" id="deuda-total">Fecha limite de pago: {{dataInfoapp[0].fecha}}</p>
-          <p class="fecha-pago ml-5 mb-2" id="fecha-pago">Valor a pagar: {{dataInfoapp[0].pagoMinimo}}</p>
-          <p class="cupo-disponible mb-2" id="cupo-disponible">Referencia de pago:<span class="cupo-disponible-dinero"> xys123</span></p>
-        </div>
-      </div>
-      <!-- Banner 2 -->
-      <div class="col-md-4 banner1">
-        <h2 class="proveedores-pedidos">Pago minimo</h2>
-        <div class="info-banner-pedidos">
-          <p class="precio-pedido mb-2" id="precioPedido1">${{dataInfoapp[0].pagoMinimo}}</p>
-          <div class="button-banner-pedidos">
-            <button type="button" id="Pantalla7">
-              Pagar
-            </button>
+  <Heading :mensaje="'Hola, ' + (dataInfoapp && dataInfoapp.length > 0 ? dataInfoapp[0].nombre : 'Usuario')" />
+
+  <section class="content">
+    <div class="card">
+        <div class="header-container">
+         <strong><h1 class="proveedores">¿Cuánto quieres pagar?</h1></strong><br>
+          <div class="info-banner-main mb-4">
+            <strong><p class="deuda-total mb-2" id="deuda-total"> Fecha limite de pago: {{dataInfoapp[0].fecha}}</p></strong>
+            <strong><p class="fecha-pago ml-5 mb-2" id="fecha-pago">a pagar: {{dataInfoapp[0].pagoMinimo}}</p></strong>
+            <strong><p class="cupo-disponible mb-2" id="cupo-disponible">Referencia de pago:<span class="cupo-disponible-dinero"> xys123</span></p></strong>
           </div>
         </div>
-      </div>
-      <!-- Línea separadora -->
-      <div class="separator"></div>
-
-      <div class="col-md-4 banner1">
-        <h2 class="proveedores-pedidos mt-4">Abonar a la deuda total</h2>
-        <div class="info-banner-pedidos">
-          <p class="precio-pedido mb-2" id="precioPedido1">Abona a tu deuda a tu medida</p>
-          <div class="button-banner-pedidos">
-            <button type="button" id="boton-pago">
-              Pagar
-            </button>
+         <strong><h2 class="proveedores-pedidos">Pago minimo</h2> </strong>
+          <div class="info-banner-pedidos">
+            <strong><p class="precio-pedido mb-2" id="precioPedido1">${{dataInfoapp[0].pagoMinimo}}</p></strong>
+            <div class="button-banner-pedidos">
+              <button type="button" class="button" id="Pantalla7">
+                Pagar
+              </button>
+            </div>
           </div>
+    </div>  
+    <div class="card">
+      <h2 class="abonar">Abonar a la deuda total</h2>
+       <div class="provider-content">
+        <p class="precio-pedido mb-2" id="precioPedido1">Abona tu deuda a tu medida</p>
+        <div class="button-banner-pedidos">
+          <button type="button" class="button" id="boton-pago">
+            Pagar
+          </button>
         </div>
       </div>
     </div>
-    
   </section>
 </template>
 
-<style>
+<style scoped>
 body {
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-    background-color: white;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  background-color: #251886;
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.formkit-wrapper {
-    align-items: center;
-    width: 100%;
+
+.logo-container {
+  text-align: center;
+  margin-top: 1rem;
+}
+.proveedores {
+  text-align: center;
+  font-size: 25px;
+  color: #251886;
+}
+.button:hover {
+  background-color: #f15bab;
+}
+.logo-main {
+  max-width: 200px;
+  height: auto;
 }
 
-.formkit-input {
-    text-align: center;
+.icon-left,
+.icon-right {
+  font-size: 1.2rem;
 }
 
-.formkit-help {
-    margin-left: 50px;
+.icon-circle {
+  background-color: white;
+  color: #2b008b;
+  padding: 0.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.form-group input {
-    background-color: transparent;
-    border-width: 0 0 1px;
-    border-bottom: solid 1px rgba(17, 17, 17, 0.2);
-    color: rgb(17, 17, 17);
-    padding: 8px 0;
-    width: 100%;
-    outline: none;
+.content {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
 }
 
-.container button {
-    padding: 0.5rem 1rem;
-    border-radius: 6.25rem;
-    background: #dd3590;
-    color: #fff;
-    display: flex;
-    margin-bottom: 1rem;
-    cursor: pointer;
-    border: none;
-    align-items: center;
-    position: relative;
-    font-size: 1rem;
-    justify-content: center;
-    width: auto;
+.card {
+  background: #fff;
+  border-radius: 15px;
+  padding: 1.5rem;
+  max-width: 500px;
+  width: 100%;
+  text-align: left;
 }
 
-.container button svg {
-    margin-left: 8px;
+.card-header {
+  background-color: #251886;
+  color: white;
+  padding: 0.75rem;
+  border-radius: 10px;
+  text-align: center;
+  margin-bottom: 1rem;
 }
 
-.parrafo {
-    margin: 20px 0;
-    font-size: medium;
+.bold {
+  font-weight: bold;
 }
 
-.info-banner {
-    width: 100%;
-    letter-spacing: -0.03em;
-    line-height: 1.2;
-    background-color: #fff;
-    color: black;
-    padding: 24px;
-    display: flex;
-    align-items: center;
-    margin-top: 30px;
-    border-radius: 5px;
-}
-.info-banner-main {
-    width: 100%;
-    letter-spacing: -0.03em;
-    line-height: 1.2;
-    background-color: #e9e9e9;
-    color: black;
-    padding: 24px;
-    align-items: center;
-    margin-top: 30px;
-    border-radius: 5px;
-}
-.info-banner-pedidos {
-    width: 100%;
-    letter-spacing: -0.03em;
-    line-height: 1.2;
-    background-color: #fff;
-    color: black;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 30px;
-    border-radius: 5px;
-}
-.info-banner3 {
-    width: 100%;
-    letter-spacing: -0.03em;
-    line-height: 1.2;
-    background-color: #fff;
-    color: black;
-    padding: 24px;
-    display: flex;
-    align-items: center;
-    margin-top: -80px; 
-}
-.titulo-1 {
-    font-weight: bold;
+.pink {
+  color: #dd3590;
 }
 
-.titulo {
-    margin: 0 0 16px;
-    color: black;
-    font-weight: bold;
-    letter-spacing: -0.03em;
-    font-size: 1.875rem;
-    line-height: 1.2;
+.button {
+  background-color: #dd3590;
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 25px;
+  font-weight: bold;
+  margin-top: 1rem;
+  cursor: pointer;
+  width: 200px;
+  margin-left: auto;
+  display: block;
+  text-align: center;
+}
+.abonar{
+  font-weight: bold;
+  text-align: center;
+  font-size: 25px;
+  color: #251886;
 }
 
-.subtitulo {
-    color: black;
+.button:hover {
+  background-color: #f15bab;
 }
 
-.proveedores-pedidos,
-.precio-pedido{
-  color: black;
+.provider-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
-.button-banner button {
-    background-color: #dd3590;
-    color: white;
+.alpina-img {
+  width: 140px;
+  height: auto;
 }
 
-.deuda-total {
-    font-weight: bold;
-}
-.proveedores{
-    font-weight: bold;
-    color: black;
-    width: 100%;
-    letter-spacing: -0.03em;
-    line-height: 1.2;
-    background-color: #fff;
-    padding: 24px;
-    display: flex;
-    align-items: center;
-    margin-bottom: -40px;
-}
-.fecha-pago {
-    font-weight: bold;
+.text-center {
+  text-align: center;
 }
 
-.cupo-disponible-dinero {
-    font-weight: bold;
-}
-
-.separator {
-    width: 100%;
-    background-color: #b3b0b0;
-    height: 1px;
-    margin: 0 auto;
-}
-
-.parrafo-marcas{
-    font-weight: bold;
-    text-align: center;
-}
-
-.img-fluid{
-    height: 80%;
-    width: 80%;
-}
-
-.text-section {
-    flex-grow: 1;
-    margin-left: 20px;
-}
-
-.proveedores{
-    font-weight: bold;
-}
-@media (max-width: 767px) {
-    .img-fluid {
-        margin-top: -90px;
-    }
-
-    .tarjeta {
-        background-color: #fff;
-        padding: 24px;
-        border-radius: 16px;
-        width: 100%;
-    }
-
-    .info-banner {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .text-section {
-        margin-left: 0;
-        margin-top: 10px;
-    }
+@media (max-width: 600px) {
+  .provider-content {
+    flex-direction: column;
+  }
 }
 </style>
