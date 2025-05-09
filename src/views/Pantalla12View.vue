@@ -46,101 +46,116 @@ onMounted(() => {
 </script>
 
 <template>
-  <header class="header">
-    <div class="header-icons">
-      <span class="icon-left"><i class="fas fa-user"></i></span>
-      <span class="icon-right"><i class="fas fa-question-circle"></i></span>
-    </div>
-    <div class="header-text">
-      <p>Hola, {{ dataInfoapp[0].nombre }}</p>
-    </div>
-  </header>
-
-  <section class="container banners">
-    <div class="row">
-      <!-- Banner 1 -->
-      <div class="col-md-4 banner1">
-        <div class="info-banner">
-          <div class="d-flex align-items-center justify-content-between">
-            <h2 class="text-black mt-4">Total de recaudo del día:</h2>
-            <input type="date" class="form-control ml-3" style="max-width: 150px;">
-          </div>
-          <p class="deuda-total mb-2 text-black" id="ruta-total">{{ dataInfoapp[0].saldorestante }}</p>
-          <div class="button-banner">
-            <button class="btn btn-primary mt-2 btn-size" id="Pantalla5">Ver más</button>
-          </div>
+  <Heading :mensaje="'Hola, ' + dataInfoapp[0].nombre" />
+  <section class="banners-container">
+    <!-- Banner 1 -->
+    <div class="banner">
+      <div class="info-banner">
+        <div class="banner-header">
+          <h2>Total de recaudo del día:</h2>
+          <input type="date" class="date-input" />
         </div>
+        <p class="deuda-total" id="ruta-total">{{ dataInfoapp[0].saldorestante }}</p>
+        <button class="boton" id="Pantalla5">Ver más</button>
       </div>
+    </div>
 
-      <div class="separator"></div>
+    <div class="separator"></div>
 
-      <!-- Dropdown banners -->
-      <template v-for="(ruta, index) in 4" :key="index">
-        <div class="col-md-4 mb-4 banner2">
-          <div class="info-banner">
-            <h2 class="proveedores">Rutas:</h2>
-            <div class="dropdown">
-              <h1 @click="toggleDropdown(`ruta${index + 1}`)" class="ruta-header">
-                Ruta {{ index + 1 }} - $100.00
-              </h1>
-              <div v-if="dropdownsVisible[`ruta${index + 1}`]" class="dropdown-content">
-                <div class="dropdown-row">
-                  <div class="column">Número de Factura</div>
-                  <div class="column">Monto de la Factura</div>
-                </div>
-                <div class="dropdown-row">
-                  <div class="column">FE{{ 1000 + index * 1234 }}</div>
-                  <div class="column">$100.00</div>
-                </div>
+    <!-- Banners de rutas -->
+    <template v-for="(ruta, index) in 4" :key="index">
+      <div class="banner">
+        <div class="info-banner">
+          <h2 class="proveedores">Rutas:</h2>
+          <div class="dropdown">
+            <h1 @click="toggleDropdown(`ruta${index + 1}`)" class="ruta-header">
+              Ruta {{ index + 1 }} - $100.00
+            </h1>
+            <div v-if="dropdownsVisible[`ruta${index + 1}`]" class="dropdown-content">
+              <div class="dropdown-row">
+                <div class="column">Número de Factura</div>
+                <div class="column">Monto de la Factura</div>
+              </div>
+              <div class="dropdown-row">
+                <div class="column">FE{{ 1000 + index * 1234 }}</div>
+                <div class="column">$100.00</div>
               </div>
             </div>
           </div>
         </div>
-      </template>
-    </div>
+      </div>
+    </template>
   </section>
 </template>
 
-<style>
+<style scoped>
 body {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
-  background-color: white;
+  background-color: #251886;
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.form-group input {
-  background-color: transparent;
-  border: none;
-  border-bottom: 1px solid rgba(17, 17, 17, 0.2);
-  color: #111;
-  padding: 8px 0;
+.banners-container {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  gap: 1rem;
   width: 100%;
-  outline: none;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
-.form-control {
-  border: 1px solid #ddd;
-  padding: 6px 12px;
+.banner {
+  width: 100%;
+  background-color: #f5f5f5;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.banner-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+@media (min-width: 600px) {
+  .banner-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+.date-input {
+  max-width: 150px;
+  padding: 6px;
+  border: 1px solid #ccc;
   border-radius: 4px;
 }
 
-.container button {
+.button {
   padding: 0.5rem 1rem;
   border-radius: 50px;
   background: #dd3590;
   color: #fff;
-  display: flex;
-  margin-bottom: 1rem;
+  margin-top: 1rem;
   cursor: pointer;
   border: none;
-  align-items: center;
-  justify-content: center;
   font-size: 1rem;
+  width: fit-content;
+}
+.button:hover {
+  background-color: #f15bab;
 }
 
 .ruta-header {
   font-size: 1rem;
   font-weight: bold;
-  margin-bottom: 10px;
+  margin-top: 1rem;
   color: #000;
   cursor: pointer;
 }
@@ -148,7 +163,6 @@ body {
 .dropdown-content {
   background-color: #f9f9f9;
   border: 1px solid #ddd;
-  color: #000;
   padding: 10px;
   margin-top: 10px;
 }
@@ -168,24 +182,11 @@ body {
   width: 100%;
   background-color: #b3b0b0;
   height: 1px;
-  margin: 0 auto;
 }
 
 .deuda-total {
   font-weight: bold;
-}
-
-@media (max-width: 767px) {
-  .tarjeta {
-    background-color: #fff;
-    padding: 24px;
-    border-radius: 16px;
-    width: 100%;
-  }
-
-  .info-banner {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+  color: #000;
+  margin-top: 1rem;
 }
 </style>
