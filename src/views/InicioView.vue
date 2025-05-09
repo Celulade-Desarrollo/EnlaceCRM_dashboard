@@ -1,7 +1,6 @@
 <script setup>
 import { ref, onMounted, reactive } from 'vue';
 import axios from 'axios';
-import Alerta from '../components/UI/Alerta.vue';
 
 // Referencias para los campos del formulario
 const telefono = ref('');
@@ -52,7 +51,21 @@ const alerta = reactive({
   mensaje: ''
 });
 
-const validar = () => {
+const validar = async () => {
+
+  const telefonoRegex = /^[0-9]{10}$/;
+
+  if (!telefono.value) {
+    alerta.mensaje = 'El telefono es obligatorio';
+    alerta.tipo = 'error';
+    setTimeout(() => {
+      alerta.mensaje = '';
+      alerta.tipo = '';
+    }, 3000);
+  } else if(!telefonoRegex.test(telefono.value)){
+
+  }
+
   if (!telefono.value || !password.value) {
     // alerta.mensaje = 'Todos los campos son obligatorios';
     alerta.tipo = 'error';
@@ -65,12 +78,6 @@ const validar = () => {
   return true;
 };
 
-onMounted(() => {
-  const form = document.getElementById('myForm');
-  if (form) {
-    form.addEventListener('submit', handleSubmit);
-  }
-});
 </script>
 
 <template>
@@ -79,9 +86,6 @@ onMounted(() => {
       <img src="/public/enlaceFiado.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
     </picture>
   </section>
-
-  <!-- Mostrar la alerta solo si existe un mensaje -->
-  <Alerta v-if="alerta.mensaje" :alerta="alerta" />
 
   <!-- Contenido de login centrado -->
   <h3 class="titulo-login">Ingresa a tu cuenta</h3>
