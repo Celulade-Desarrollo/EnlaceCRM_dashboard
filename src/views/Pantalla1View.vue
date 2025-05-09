@@ -38,9 +38,9 @@ onMounted(() => {
 </script>
 
 <template>
-    <section class="logo-container">
-    <img src="/public/enlaceFiado.png" alt="logo Enlace CRM" class="logo-main" />
-  </section>
+<section class="logo-container">
+  <img src="/public/enlaceFiado.png" alt="logo Enlace CRM" class="logo-main" />
+</section>
    <!-- Encabezado -->
     <Heading :mensaje="'Hola, ' + dataInfoapp[0].nombre" />
     
@@ -75,8 +75,9 @@ onMounted(() => {
 }
 
 .logo-main {
-  max-width: 200px;
+  width: 200px;
   height: auto;
+  display: inline-block;
 }
 
 .icon-left,
@@ -123,7 +124,6 @@ onMounted(() => {
 .bold {
   font-weight: bold;
 }
-
 .button {
   background-color: #dd3590;
   color: white;
@@ -143,7 +143,10 @@ onMounted(() => {
 .button:hover {
   background-color: #f15bab;
 }
-
+button:focus {
+  outline: none;
+  box-shadow: none;
+}
 .provider-content {
   display: flex;
   align-items: center;

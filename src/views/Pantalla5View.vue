@@ -41,6 +41,9 @@ watch([deudaTotal, cupoTotal], updateProgressBar);
 </script>
 
 <template>
+    <section class="logo-container">
+        <img src="/public/enlaceFiado.png" alt="logo Enlace CRM" class="logo-main" />
+    </section>
     <Heading :mensaje="'Hola, ' + dataInfoapp[0].nombre" />
 
     <section class="container banners py-4">
@@ -133,21 +136,20 @@ watch([deudaTotal, cupoTotal], updateProgressBar);
 </template>
 
 <style scoped>
-body {
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
-  background-color: #251886;
-  margin: 0;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
 .banners {
     background-color: #2e008b;
     min-height: 100vh;
 }
+.logo-container {
+  text-align: center;
+  margin-top: 1rem;
+}
 
+.logo-main {
+  width: 200px;
+  height: auto;
+  display: inline-block;
+}
 .banner1,
 .banner2 {
     background-color: #ffffff;
@@ -215,6 +217,10 @@ body {
 
 .button:hover {
     background-color: #c02680 !important;
+}
+button:focus {
+  outline: none;
+  box-shadow: none;
 }
 
 .deuda-bar {
