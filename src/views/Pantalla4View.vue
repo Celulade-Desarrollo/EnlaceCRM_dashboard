@@ -25,123 +25,171 @@ onMounted(() => {
 </script>
 
 <template>
-     <header class="header">
-    <div class="header-icons">
-      <!-- Ícono de ayuda a la izquierda -->
-      <span class="icon-left">
-        <i class="fas fa-user"></i>
-      </span>
-      
-      <!-- Ícono de usuario a la derecha -->
-      <span class="icon-right">
-        <i class="fas fa-question-circle"></i>
-      </span>
-    </div>
-    
-    <!-- Mensaje de saludo -->
-    <div class="header-text">
-      <p>Hola, {{dataInfoapp[0].nombre}}</p>
-    </div>
-  </header>
-
-  <section class="container banners">
-    <div class="info-banner">
-    
-      <h2 class="proveedores mb-4" id="pagado">Su pago por <span>${{ pagarValor }}</span> para Alpina <br>ha sido recibido</h2>
-      <picture class="logo">
-        <img src="/public/Alpina.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
-      </picture>
-      <h1 class="proveedores mb-4" id="cantidad-pagar">¡Muchas gracias!</h1>
-    </div>
-    
+  <section class="logo-container">
+    <img src="/public/enlaceFiado.png" alt="logo Enlace CRM" class="logo-main" />
   </section>
-  <div class="button-inicio" @click="handlePago1Click">
-      <button>Inicio</button>
+
+  <Heading :mensaje="'Hola, ' + (dataInfoapp && dataInfoapp.length > 0 ? dataInfoapp[0].nombre : 'Usuario')" /> 
+
+  <section class="content">
+    <div class="card">
+        <div class="header-container">
+            <picture class="logo">
+              <img src="/public/Alpina.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
+            </picture>
+          <h2 class="proveedores mb-4" id="pagado">Su pago por <span>${{ pagarValor }}</span> para Alpina <br>ha sido recibido</h2>
+          <h1 class="proveedores mb-4" id="cantidad-pagar"><strong>¡Muchas gracias!</strong></h1>
+      </div>
+       <div class="button-inicio" @click="handlePago1Click">
+        <button type="button"  class="button">Inicio</button>
+      </div>
     </div>
+  </section>
 </template>
 
-<style>
+<style scoped>
 body {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
-  background-color: white;
-}
-.button-inicio{
-  padding-right: 20px;
-  padding-left: 20px;
-  margin-top: -200px;
-  margin-bottom: 50px;
-}
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: start;
-  padding: 16px;
   background-color: #251886;
-  min-height: 80px;
-  width: 100%;
-}
-
-.header-icons {
+  margin: 0;
+  height: 100vh;
   display: flex;
-  width: 100%;
-}
-
-.icon-left,
-.icon-right {
-  font-size: 24px;
-  display: flex;
+  flex-direction: column;
   align-items: center;
 }
 
-.header-text {
-  flex-grow: 1;
-  text-align: start;
-  font-size: 18px;
-  color: #fff;
+.logo-container {
+  text-align: center;
+  margin-top: 1rem;
 }
 
-.container {
+.logo-main {
+  max-width: 200px;
+  height: auto;
+}
+
+/* Contenido */
+.content {
+  padding: 1rem;
   display: flex;
-  justify-content: center; /* Centra el contenedor en la página */
-  align-items: center; /* Centra el contenedor verticalmente */
-  height: 100vh; /* Asegura que el contenedor ocupe toda la altura de la pantalla */
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
 }
 
-.info-banner {
+.card {
+  background: #fff;
+  border-radius: 15px;
+  padding: 1.5rem;
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+  font-size: 17px;
+}
+
+.header-container {
   display: flex;
-  flex-direction: column; /* Alinea los elementos verticalmente */
-  align-items: center; /* Centra los elementos horizontalmente */
-  text-align: center; /* Centra el texto */
-  padding: 24px;
-  margin-top: -55px;
+  flex-direction: column; /* Apilar elementos verticalmente */
+  align-items: center;
+  margin-bottom: 1rem;
+  justify-content: center;
 }
 
-.logo{
-  margin-top: -30px;
+.logo {
+  margin-bottom: 1rem; /* Espacio debajo del logo */
+  margin-top: 0px;
 }
 
-.img-fluid {
-  height: 60%;
-  width: 60%;
-  margin: 0 auto; /* Centra la imagen horizontalmente */
-  display: block; /* Asegura que la imagen se comporte como un bloque */
+.card-header-text {
+  background-color: #251886;
+  color: white;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  margin: 0;
 }
 
-.proveedores {
+.alpina-logo-outside {
+  width: 80px;
+  height: auto;
+  margin-left: rem;
+}
+
+.bold {
   font-weight: bold;
-  color: black;
-  margin-top: 20px; /* Espacio entre la imagen y el texto */
 }
-
-.button-banner-pedidos button {
+.button {
   background-color: #dd3590;
   color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 25px;
+  font-weight: bold;
+  margin-top: 1rem;
+  cursor: pointer;
+  width: 200px;
+  margin-left: auto;
+
+}
+
+
+.button:hover {
+  background-color: #f15bab;
+}
+
+/* Proveedor */
+.provider-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.alpina-img {
+  width: 140px;
+  height: auto;
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* Formulario de pago */
+.form-group {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.form-group h2.proveedores {
+  margin: 0;
+  white-space: nowrap;
   width: auto;
 }
 
-@media (max-width: 767px) {
-  .img-fluid {
-    margin-top: -90px;
+/* Responsive */
+@media (max-width: 600px) {
+  .header-container {
+    flex-direction: column; /* Asegurar que siga siendo columna en responsive */
+    align-items: center;
+    text-align: center;
+  }
+
+  .alpina-logo-outside {
+    margin-left: 0;
+    margin-top: 0.5rem;
+  }
+
+  .provider-content {
+    flex-direction: column;
+  }
+
+  .form-group {
+    flex-direction: column;
+    align-items: stretch;
   }
 }
 </style>
+
