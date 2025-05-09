@@ -124,10 +124,6 @@ onMounted(() => {
   font-weight: bold;
 }
 
-.pink {
-  color: #dd3590;
-}
-
 .button {
   background-color: #dd3590;
   color: white;
