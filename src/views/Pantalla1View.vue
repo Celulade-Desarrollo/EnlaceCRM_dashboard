@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-
+import Heading from '../components/UI/Heading.vue';
 const router = useRouter();
 const dataInfoapp = ref([{ nombre: 'Juan', saldorestante: '$0', saldoabonado: '$0' }]);
 
@@ -35,17 +35,7 @@ const goToPantalla5 = () => {
   </section>
 
   <!-- Encabezado -->
-  <header class="header">
-    <span class="icon-left icon-circle"><i class="fas fa-user"></i></span>
-    <p>Hola, {{ dataInfoapp[0]?.nombre }}</p>
-    <span class="icon-right icon-circle"><i class="fas fa-question-circle"></i></span>
-    <!-- Agrega esto en el <head> de tu index.html -->
-<link
-  rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-/>
-
-  </header>
+    <Heading :mensaje="'Hola, ' + dataInfoapp[0].nombre" />
 
   <section class="content">
     <!-- Tarjeta de deuda -->
@@ -89,35 +79,6 @@ body {
   height: auto;
 }
 
-.header {
-  background-color: #021066;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem 1.5rem;
-  border-radius: 16px;
-  margin: 1rem auto;
-  width: 90%;
-  font-size: 1.1rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.icon-left,
-.icon-right {
-  font-size: 1.2rem;
-}
-
-.icon-circle {
-  background-color: white;
-  color: #2b008b;
-  padding: 0.5rem;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .content {
   padding: 1rem;
   display: flex;
@@ -156,6 +117,16 @@ body {
 .button {
   background-color: #dd3590;
   color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 25px;
+  font-weight: bold;
+  margin-top: 1rem;
+  cursor: pointer;
+}
+
+.btn2{
+ color: white;
   border: none;
   padding: 10px 24px;
   border-radius: 25px;
