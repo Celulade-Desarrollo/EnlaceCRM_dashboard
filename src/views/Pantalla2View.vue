@@ -31,71 +31,58 @@ onMounted(() => {
   }
 });
 </script>
+
 <template>
-  <!-- Logo principal -->
   <section class="logo-container">
     <img src="/public/enlaceFiado.png" alt="logo Enlace CRM" class="logo-main" />
   </section>
 
-  <!-- Encabezado -->
-    <Heading :mensaje="'Hola, ' + dataInfoapp[0].nombre" />
+  <Heading :mensaje="'Hola, ' + (dataInfoapp && dataInfoapp.length > 0 ? dataInfoapp[0].nombre : 'Usuario')" />
 
   <section class="content">
-    <!-- Tarjeta de deuda -->
-   <div class="row">
-      <!-- Banner 1 -->
-      <div class="col-md-4 mb-4 banner2">
-        <div class="info-banner">
-          <h2 class="proveedores">Pago a proveedor.</h2>
-          <div class="d-flex align-items-center">
-            <div class="text-section ml-3">
-              <p class="parrafo-marcas">Alpina</p>
-            </div>
-            <div class="image-section">
-              <picture class="logo">
-                <img src="/public/Alpina.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
-              </picture>
-            </div>
-          </div>          
+    <div class="card">
+      <div class="header-container">
+        <h3 class="card-header-text">Pago a proveedor Alpina</h3>
+        <img src="/Alpina.png" alt="Alpina" class="alpina-logo-outside" />
+      </div>
+      <div class="provider-content">
+        <div class="text-center">
         </div>
       </div>
-
-      <!-- Línea separadora -->
-      <div class="separator"></div>
-
-      <!-- Banner 3 -->
-      <div class="col-md-4 mb-4 banner2">
-        <div class="info-banner">
-          <h2 class="proveedores mb-5">Valor a pagar.</h2>
-          <label for="pagar" id="label-pagar" class="input-pagar">
-            <input
-              class="form-control text-center mb-4"
-              aria-required="true"
-              aria-invalid="false"
-              aria-labelledby="label-pagar"
-              name="pagar"
-              v-model.number= pagar
-              type="number"
-              placeholder="Ingresa el valor a pagar"
-              autocomplete="off"
-              id="pagar-valor"
-              required
-              aria-describedby="error-pagar"
-            />
-          </label>
-          <div class="button-banner">
-            <button type="button" id="boton-pago">
-              Pagar
-            </button>
-          </div>
-        </div>
-      </div> 
+      <div class="form-group">
+         <label for="valor" class="input-label">
+          <input
+            class="form-control text-center"
+            aria-required="true"
+            aria-invalid="false"
+            aria-labelledby="label-pagar"
+            name="pagar"
+            v-model.number= pagar
+            type="number"
+            placeholder=""
+            autocomplete="off"
+            id="pagar-valor"
+            required
+            aria-describedby="error-pagar"
+          />
+          <span class="floating-label">Ingresa el valor a pagar</span>
+        </label>
+      </div>
+      <div class="button-banner">
+        <button type="button" id="boton-pago">
+          Pagar
+        </button>
+      </div>
     </div>
   </section>
 </template>
 
 <style scoped>
-/* Estructura general */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
 body {
   font-family: 'Verdana', sans-serif;
   background-color: white;
@@ -131,43 +118,32 @@ body {
   text-align: left;
 }
 
-.card-header {
+.header-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.card-header-text {
   background-color: #251886;
   color: white;
-  padding: 0.75rem;
+  padding: 0.75rem 1rem;
   border-radius: 10px;
-  text-align: center;
-  margin-bottom: 1rem;
+  margin: 0; 
+}
+
+.alpina-logo-outside {
+  width: 80px;
+  height: auto;
+  margin-left: 1rem;
 }
 
 .bold {
   font-weight: bold;
 }
+#boton-pago:hover {
+  background-color: #f15bab;
 
-.pink {
-  color: #dd3590;
-}
-
-.btn {
-  background-color: #dd3590;
-  color: white;
-  border: none;
-  padding: 10px 24px;
-  border-radius: 25px;
-  font-weight: bold;
-  margin-top: 1rem;
-  cursor: pointer;
-}
-
-.btn2{
- color: white;
-  border: none;
-  padding: 10px 24px;
-  border-radius: 25px;
-  font-weight: bold;
-  margin-top: 1rem;
-  cursor: pointer;
-  width: 200px;
 }
 /* Proveedor */
 .provider-content {
@@ -176,6 +152,7 @@ body {
   gap: 1rem;
   justify-content: center;
   flex-wrap: wrap;
+  margin-bottom: 1rem;
 }
 
 .alpina-img {
@@ -187,10 +164,59 @@ body {
   text-align: center;
 }
 
+/* Formulario de pago */
+.form-group {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.form-group h2.proveedores {
+  margin: 0;
+  white-space: nowrap;
+  width: auto;
+}
+
+.form-group label.input-pagar {
+  flex-grow: 1;
+  display: block;
+}
+
+.form-group label.input-pagar input {
+  width: 100%;
+  text-align: right;
+}
+
 /* Responsive */
 @media (max-width: 600px) {
+  .header-container {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .alpina-logo-outside {
+    margin-left: 0;
+    margin-top: 0.5rem;
+  }
+
   .provider-content {
     flex-direction: column;
+  }
+
+  .form-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .form-group h2.proveedores {
+    margin-bottom: 0.5rem;
+    text-align: center;
+  }
+
+  .form-group label.input-pagar input {
+    text-align: center;
   }
 }
 </style>

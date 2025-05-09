@@ -61,7 +61,7 @@ const goToPantalla5 = () => {
   </section>
 </template>
 
-<style>
+<style scoped>
 body {
   font-family: 'Verdana', sans-serif;
   background-color: #2e008b; /* Fondo morado */
