@@ -126,7 +126,7 @@ onMounted(() => {
   </section>
 </template>
 
-<style >
+<style scoped>
 .input-label {
   position: relative;
   display: block;

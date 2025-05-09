@@ -146,11 +146,6 @@ body {
 }
 
 .button {
-  background-color: #dd3590;
-  color: white;
-  border: none;
-  padding: 10px 24px;
-  border-radius: 25px;
   font-weight: bold;
   margin-top: 1rem;
   cursor: pointer;
