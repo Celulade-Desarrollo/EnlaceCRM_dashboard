@@ -101,7 +101,7 @@ onMounted(() => {
   </section>
 </template>
 
-<style>
+<style scoped>
 body {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
   background-color: white;

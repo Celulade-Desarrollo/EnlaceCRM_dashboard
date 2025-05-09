@@ -1,90 +1,96 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import axios from 'axios';
-import RouterLink from "../components/UI/Routerlink.vue";
-import Heading from "../components/UI/Heading.vue";
+import { ref, watch } from 'vue';
 
-// Datos de email y contraseña
 const email = ref('');
-const password = ref('');
+const emailErrorMessage = ref('');
+const mensajeError = ref('');
 
-// Función para obtener datos
-const fetchData = async () => {
-    const response = await axios.get(`https://enlacecrm.com/api/get_data.php?tipo=login&&usuario=${email.value}&&pass=${password.value}`);
-    if (response.data === "NO") {
-        alert("Usuario y clave incorrectos");
-        return;
-    } else {
-        let data = response.data;
-        data = JSON.stringify(data);
-        console.log(data);
-        localStorage.setItem('data', data);
+// Regex para validar formato de email
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-        let respuesta = JSON.parse(localStorage.getItem('data'));
-        window.open("/Pantalla1View", "_parent");
-    }
-};
-
-// Redirigir a la pantalla de recuperación de contraseña
-const goToPantalla9 = () => {
-    window.open("/Pantalla9View", "_parent");
-};
-
-// Manejar el envío del formulario
-const handleSubmit = async (event) => {
-    event.preventDefault();
-    await fetchData();
-};
-
-// Asignar el evento al montar el componente
-onMounted(() => {
-    const form = document.getElementById('myForm');
-    if (form) {
-        form.addEventListener('submit', handleSubmit);
-    }
+// Validación del formato del email (tiempo real)
+watch(email, (newEmail) => {
+  if (!newEmail) {
+    emailErrorMessage.value = "";
+  } else if (!emailRegex.test(newEmail)) {
+    emailErrorMessage.value = "Por favor, ingresa un correo electrónico válido.";
+  } else {
+    emailErrorMessage.value = "";
+  }
 });
+
+// Validación al enviar formulario
+const handleSubmit = (event) => {
+  event.preventDefault();
+
+  // Validación si está vacío
+  if (email.value.trim() === '') {
+    mensajeError.value = "Por favor, ingresa tu correo electrónico";
+    return;
+  }
+
+  // Validación de formato
+  if (!emailRegex.test(email.value)) {
+    mensajeError.value = "Formato de correo electrónico inválido";
+    return;
+  }
+
+  mensajeError.value = ""; // Todo bien, limpiar error
+  window.open("/", "_parent");
+};
 </script>
 
+
 <template>
-  <!-- Contenido de login centrado -->
-   <img src="/public/enlaceFiado.png" alt="" class="img-logo">
-   <h4 class="titulo-login">¿Olvidaste tu contraseña?</h4>
+  <img src="/public/enlaceFiado.png" alt="" class="img-logo">
+  <h4 class="titulo-login">¿Olvidaste tu contraseña?</h4>
+
   <section class="login-container">
     <div class="login-card">
-      <form id="myForm" class="myForm">
+      <form @submit="handleSubmit" class="myForm">
         <div class="form-group">
-          <p class="subtitulo mt-4">Ingresa tu correo electrónico registrado y te enviaremos instrucciones para restablecer tu contraseña.</p>
-          
+          <p class="subtitulo mt-4">
+            Ingresa tu correo electrónico registrado y te enviaremos instrucciones para restablecer tu contraseña.
+          </p>
+
           <label for="email" class="input-label">
             <input
+              id="email"
               class="form-control"
-              aria-required="true"
-              aria-invalid="false"
-              aria-labelledby="label-email"
               name="email"
               v-model="email"
               type="email"
               placeholder=""
               autocomplete="off"
-              id="email"
-              required
               aria-describedby="error-email"
             />
-             <span class="floating-label">Ingresa tu correo</span>
+            <p
+              v-if="emailErrorMessage"
+              id="error-email"
+              class="text-danger mt-1"
+            >
+              {{ emailErrorMessage }}
+            </p>
+            <span class="floating-label">Ingresa tu correo</span>
           </label>
         </div>
+
         <div class="button-container mt-4">
-            <button type="submit" class="button mt-4">
-              Enviar Instrucciones
-            </button>
-            <button type="submit" class="button mt-4">
-              Volver a la pagina principal
-            </button> 
-          </div>
+          <button type="submit" class="button mt-4">Enviar Instrucciones</button>
+
+          <button type="button" @click="window.open('/', '_parent')" class="button mt-4">
+            Volver a la página principal
+          </button>
+
+          <p v-if="mensajeError" class="text-danger mt-1">
+            {{ mensajeError }}
+          </p>
+        </div>
       </form>
     </div>
   </section>
 </template>
+
 
 <style>
 body {
@@ -96,7 +102,9 @@ body {
     flex-direction: column;
     align-items: center;
 }
-
+.text-danger {
+    color: red;
+}
 .titulo-login {
     text-align: center;
     color: #fff;
