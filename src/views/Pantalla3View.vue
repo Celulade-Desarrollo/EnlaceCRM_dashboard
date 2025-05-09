@@ -28,121 +28,173 @@ onMounted(() => {;
 </script>
 
 <template>
-     <header class="header">
-    <div class="header-icons">
-      <!-- Ícono de ayuda a la izquierda -->
-      <span class="icon-left">
-        <i class="fas fa-user"></i>
-      </span>
-      
-      <!-- Ícono de usuario a la derecha -->
-      <span class="icon-right">
-        <i class="fas fa-question-circle"></i>
-      </span>
-    </div>
-    
-    <!-- Mensaje de saludo -->
-    <div class="header-text">
-      <p>Hola, {{dataInfoapp[0].nombre}}</p>
-    </div>
-  </header>
+  <section class="logo-container">
+    <img src="/public/enlaceFiado.png" alt="logo Enlace CRM" class="logo-main" />
+  </section>
 
-  <section class="container banners">
-    <div class="info-banner">
-      <picture class="logo">
-        <img src="/public/Alpina.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
-      </picture>
+  <Heading :mensaje="'Hola, ' + (dataInfoapp && dataInfoapp.length > 0 ? dataInfoapp[0].nombre : 'Usuario')" />
+
+   <section class="content">
+    <div class="card">
+      <div class="header-container">
+        <img src="/Alpina.png" alt="Alpina" class="alpina-logo-outside" />
+      </div>
       <h2 class="proveedores">¿Está seguro que desea pagar?</h2>
       <h1 class="proveedores mb-4" id="cantidad-pagar"><span>${{ pagarValor }}</span> a Alpina</h1>
-      <h1 class="proveedores mb-4">Ingresa el número de teléfono del transportista</h1>
-      <label for="pagar" id="label-pagar" class="input-pagar">
-            <input
-              class="form-control text-center mb-4"
-              aria-required="true"
-              aria-invalid="false"
-              aria-labelledby="label-pagar"
-              name="numeroTransportista"
-              v-model="numeroTransportista"
-              type="number"
-              placeholder=""
-              autocomplete="off"
-              id="numeroTransportista"
-              required
-              aria-describedby="error-pagar"
-            />
-          </label>
+
+       <div class="form-group">
+        <label for="pagar" id="label-pagar" class="input-label">
+          <input
+            class="form-control text-center mb-4"
+            aria-required="true"
+            aria-invalid="false"
+            aria-labelledby="label-pagar"
+            name="numeroTransportista"
+            v-model="numeroTransportista"
+            type="number"
+            placeholder=""
+            autocomplete="off"
+            id="numeroTransportista"
+            required
+            aria-describedby="error-pagar"
+          />
+          <span class="floating-label">Ingresa el teléfono del transportista</span>
+        </label>
+    </div>
       <div class="button-banner-pedidos">
-        <button type="button" id="boton-pago">
+        <button type="button" id="boton-pago" class="boton">
           Pagar
         </button>
-        <button type="button" id="atras">
+        <button type="button" id="atras" class="boton">
           Atrás
         </button>
       </div>
     </div>
   </section>
 </template>
+<style scoped>
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
 
-<style>
 body {
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
-  background-color: white;
+  font-family: 'Verdana', sans-serif;
+  background-color: #251886;
+  margin: 0;
+  padding: 0;
 }
 
-.container {
+.logo-container {
+  text-align: center;
+  margin-top: 1rem;
+}
+.logo-main {
+  max-width: 200px;
+  height: auto;
+}
+
+/* Contenido */
+.content {
+  padding: 1rem;
   display: flex;
-  justify-content: center; /* Centra el contenedor en la página */
-  align-items: center; /* Centra el contenedor verticalmente */
-  height: 100vh; /* Asegura que el contenedor ocupe toda la altura de la pantalla */
-}
-.input-pagar input {
-    background-color: transparent;
-    border-width: 0 0 1px;
-    border-bottom: solid 1px rgba(17, 17, 17, .2);
-    color: #111;
-    padding: 8px 0;
-    width: auto;
-    outline: none;
-}
-.info-banner {
-  display: flex;
-  flex-direction: column; /* Alinea los elementos verticalmente */
-  align-items: center; /* Centra los elementos horizontalmente */
-  text-align: center; /* Centra el texto */
-  padding: 24px;
-
-}
-
-.img-fluid {
-  height: 30%;
-  width: 30%;
-  margin: 0 auto; /* Centra la imagen horizontalmente */
-  display: block; /* Asegura que la imagen se comporte como un bloque */
-}
-
-.proveedores {
-  font-weight: bold;
-  color: black;
-  margin-top: 20px; /* Espacio entre la imagen y el texto */
+  flex-direction: column;
+  gap: 1.5rem;
   align-items: center;
 }
 
-.button-banner-pedidos {
+.card {
+  background: #fff;
+  border-radius: 15px;
+  padding: 1.5rem;
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+  font-size: 20px;
+}
+
+.header-container {
   display: flex;
-  justify-content: center; /* Centra los botones */
-  gap: 20px; /* Espacio entre los botones */
-  margin-top: 20px; /* Espacio entre el texto y los botones */
+  align-items: center;
+  margin-bottom: 1rem;
+  justify-content: center;
 }
 
-.button-banner-pedidos button {
-  background-color: #dd3590;
+.card-header-text {
+  background-color: #251886;
   color: white;
-  width: 100px;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  margin: 0; 
 }
 
-@media (max-width: 767px) {
-  .img-fluid {
-    margin-top: -90px;
+.alpina-logo-outside {
+  width: 80px;
+  height: auto;
+  margin-left: 1rem;
+}
+
+.bold {
+  font-weight: bold;
+}
+.boton:hover {
+  background-color: #f15bab;
+
+}
+/* Proveedor */
+.provider-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.alpina-img {
+  width: 140px;
+  height: auto;
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* Formulario de pago */
+.form-group {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.form-group h2.proveedores {
+  margin: 0;
+  white-space: nowrap;
+  width: auto;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .header-container {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .alpina-logo-outside {
+    margin-left: 0;
+    margin-top: 0.5rem;
+  }
+
+  .provider-content {
+    flex-direction: column;
+  }
+
+  .form-group {
+    flex-direction: column;
+    align-items: stretch;
   }
 }
 </style>

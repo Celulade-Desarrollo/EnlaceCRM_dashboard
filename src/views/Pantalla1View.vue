@@ -30,6 +30,9 @@ const goToPantalla5 = () => {
 
 
 <template>
+    <section class="logo-container">
+    <img src="/public/enlaceFiado.png" alt="logo Enlace CRM" class="logo-main" />
+  </section>
    <!-- Encabezado -->
     <Heading :mensaje="'Hola, ' + dataInfoapp[0].nombre" />
   <section class="content">
@@ -44,7 +47,7 @@ const goToPantalla5 = () => {
 
     <!-- Tarjeta de proveedor -->
     <div class="card">
-      <h3 class="card-header">Proveedores disponibles para recibir pago.</h3>
+      <h3 class="card-header">Proveedores disponibles para recibir pago</h3>
       <div class="provider-content">
         <img src="/Alpina.png" alt="Alpina" class="alpina-img" />
         <div class="text-center">
@@ -99,7 +102,6 @@ body {
 
 .card {
   background: #fff;
-  border: 2px solid #251886;
   border-radius: 15px;
   padding: 1.5rem;
   max-width: 500px;

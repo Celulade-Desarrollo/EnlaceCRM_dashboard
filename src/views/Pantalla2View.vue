@@ -45,10 +45,6 @@ onMounted(() => {
         <h3 class="card-header-text">Pago a proveedor Alpina</h3>
         <img src="/Alpina.png" alt="Alpina" class="alpina-logo-outside" />
       </div>
-      <div class="provider-content">
-        <div class="text-center">
-        </div>
-      </div>
       <div class="form-group">
          <label for="valor" class="input-label">
           <input
@@ -85,7 +81,7 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 body {
   font-family: 'Verdana', sans-serif;
-  background-color: white;
+  background-color: #251886;
   margin: 0;
   padding: 0;
 }
@@ -110,7 +106,6 @@ body {
 
 .card {
   background: #fff;
-  border: 2px solid #251886;
   border-radius: 15px;
   padding: 1.5rem;
   max-width: 500px;
