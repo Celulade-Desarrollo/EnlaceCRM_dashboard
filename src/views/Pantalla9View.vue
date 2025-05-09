@@ -123,6 +123,7 @@ body {
 .form-group button{
   width: 100%;
   margin-top: 10px;
+  background-color: #251886;
 }
 
 .login-card {
