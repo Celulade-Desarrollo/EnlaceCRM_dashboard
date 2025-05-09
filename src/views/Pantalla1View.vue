@@ -1,9 +1,23 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
-let dataInfoapp = JSON.parse(localStorage.getItem('data')) || [{ nombre: 'Juan', saldorestante: '$50,000', saldoabonado: '$100,000' }];
+const dataInfoapp = ref([{ nombre: 'Juan', saldorestante: '$0', saldoabonado: '$0' }]);
+
+onMounted(() => {
+  // Establece fondo morado al cargar esta pantalla
+  document.body.style.backgroundColor = '#2e008b';
+
+  const data = localStorage.getItem('data');
+  if (data) {
+    try {
+      dataInfoapp.value = JSON.parse(data);
+    } catch (e) {
+      console.error('Error al parsear data desde localStorage:', e);
+    }
+  }
+});
 
 const goToPantalla2 = () => {
   router.push('/Pantalla2View');
@@ -23,9 +37,9 @@ const goToPantalla5 = () => {
   <!-- Encabezado -->
   <header class="header">
     <span class="icon-left icon-circle"><i class="fas fa-user"></i></span>
-    <p>Hola, {{ dataInfoapp[0].nombre }}</p>
+    <p>Hola, {{ dataInfoapp[0]?.nombre }}</p>
     <span class="icon-right icon-circle"><i class="fas fa-question-circle"></i></span>
-    <!-- Font Awesome CDN -->
+    <!-- Agrega esto en el <head> de tu index.html -->
 <link
   rel="stylesheet"
   href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -37,10 +51,10 @@ const goToPantalla5 = () => {
     <!-- Tarjeta de deuda -->
     <div class="card">
       <h2>Deuda total</h2>
-      <p class="bold">{{ dataInfoapp[0].saldorestante }}</p>
-      <p><span class="bold">Fecha siguiente abono:</span></p>
-      <p>Cupo disponible: <span class="pink bold">{{ dataInfoapp[0].saldoabonado }}</span></p>
-      <button class="btn" @click="goToPantalla5">Ver más</button>
+      <p class="bold">{{ dataInfoapp[0]?.saldorestante }}</p>
+      <p><span class="bold pink">Fecha siguiente abono:</span></p>
+      <p>Cupo disponible: <span class="pink bold">{{ dataInfoapp[0]?.saldoabonado }}</span></p>
+      <button class="button" @click="goToPantalla5">Ver más</button>
     </div>
 
     <!-- Tarjeta de proveedor -->
@@ -50,18 +64,17 @@ const goToPantalla5 = () => {
         <img src="/Alpina.png" alt="Alpina" class="alpina-img" />
         <div class="text-center">
           <p class="bold">Alpina</p>
-          <button class="btn2" @click="goToPantalla2">Pagar</button>
+          <button class="button" @click="goToPantalla2">Pagar</button>
         </div>
       </div>
     </div>
   </section>
 </template>
 
-<style scoped>
-/* Estructura general */
+<style>
 body {
   font-family: 'Verdana', sans-serif;
-  background-color: white;
+  background-color: #2e008b; /* Fondo morado */
   margin: 0;
   padding: 0;
 }
@@ -70,15 +83,15 @@ body {
   text-align: center;
   margin-top: 1rem;
 }
+
 .logo-main {
   max-width: 200px;
   height: auto;
 }
 
-/* Encabezado */
 .header {
-  background-color: #021066;;
-  color: rgb(255, 255, 255);
+  background-color: #021066;
+  color: white;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -105,7 +118,6 @@ body {
   justify-content: center;
 }
 
-/* Contenido */
 .content {
   padding: 1rem;
   display: flex;
@@ -141,7 +153,7 @@ body {
   color: #dd3590;
 }
 
-.btn {
+.button {
   background-color: #dd3590;
   color: white;
   border: none;
@@ -150,19 +162,13 @@ body {
   font-weight: bold;
   margin-top: 1rem;
   cursor: pointer;
-}
-
-.btn2{
-    color: white;
-  border: none;
-  padding: 10px 24px;
-  border-radius: 25px;
-  font-weight: bold;
-  margin-top: 1rem;
-  cursor: pointer;
   width: 200px;
 }
-/* Proveedor */
+
+.button:hover {
+  background-color: #f15bab;
+}
+
 .provider-content {
   display: flex;
   align-items: center;
@@ -180,7 +186,6 @@ body {
   text-align: center;
 }
 
-/* Responsive */
 @media (max-width: 600px) {
   .provider-content {
     flex-direction: column;
