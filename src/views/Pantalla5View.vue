@@ -148,7 +148,6 @@ body {
 .banner1,
 .banner2 {
     background-color: #ffffff;
-    border: 2px solid #dd3590;
     border-radius: 15px;
     padding: 20px;
     width: 100%;
@@ -169,7 +168,6 @@ body {
     color: #fff;
     background-color: #2e008b;
     padding: 10px;
-    border: solid #dd3590;
     text-align: center;
     border-radius: 10px;
 }
