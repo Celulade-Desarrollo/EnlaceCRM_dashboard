@@ -89,31 +89,30 @@ onMounted(() => {
     <div class="login-card">
       <form id="myForm" class="myForm" @submit.prevent="validar">
         <div class="form-group">
-          <p class="subtitulo mt-4">Ingresa tu teléfono</p>
-          <label for="telefono" id="label-telefono">
+          <label for="telefono" class="input-label">
             <input
-              class="form-control text-center mb-4"
+              class="form-control"
               v-model="telefono"
+              placeholder=""
               type="tel"
-              placeholder="Número Telefónico"
-
               pattern="[0-9]{10}"
             />
+             <span class="floating-label">Ingresa tu teléfono</span>
           </label>
         </div>
         <div class="form-group">
-          <p class="subtitulo">Ingresa contraseña</p>
-          <label for="password" id="label-password">
+          <label for="password" class="input-label">
             <input
-              class="form-control text-center"
+              class="form-control"
               v-model="password"
               type="password"
-              placeholder="Contraseña"
+              placeholder=""
               
             />
+             <span class="floating-label">Ingresa contraseña</span>
           </label>
         </div>
-        <button type="submit" class="login">Ingresar</button>
+        <button type="submit" class="button mt-4">Ingresar</button>
       </form>
       <p class="subtitulo mt-4">
         ¿No estás registrado?<br />
@@ -127,23 +126,62 @@ onMounted(() => {
   </section>
 </template>
 
-<style >
-body {
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
-  background-color: #251886;
-  margin: 0;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+<style scoped>
+.input-label {
+  position: relative;
+  display: block;
+  width: 100%;
+  margin-top: 24px;
 }
+
+.form-control {
+  width: 100%;
+  padding: 10px 0;
+  font-size: 16px;
+  border: none;
+  border-bottom: 2px solid #09008be1;
+  background: transparent;
+  font-family: sans-serif;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.floating-label {
+  position: absolute;
+  left: 0;
+  top: 0px;
+  color: black;
+  font-size: 16px;
+  pointer-events: none;
+  transition: 0.3s ease all;
+  font-family: sans-serif;
+}
+
+/* Animación al enfocar o escribir */
+.form-control:focus + .floating-label,
+.form-control:not(:placeholder-shown) + .floating-label {
+  top: -15px;
+  font-size: 12px;
+  color: black;
+}
+
+.input-label:hover .form-control {
+  border-bottom-color: #ff00f2;
+}
+
+.form-control:focus {
+  border-bottom-color: #0064e6cc;
+  outline: none;
+  box-shadow: none;
+}
+
+
 
 .logo-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 50px;
-  margin-bottom: 20px;
+  margin-bottom: 7px;
 }
 
 .logo .img-fluid {
@@ -151,6 +189,7 @@ body {
   margin-bottom: 30px;
   max-width: 300px;
   height: auto;
+
 }
 
 .titulo-login {
@@ -194,28 +233,27 @@ span {
   text-align: center;
 }
 
-.form-group input {
-  background-color: transparent;
-  border-width: 0 0 1px;
-  border-bottom: solid 1px rgba(17, 17, 17, 0.2);
-  color: rgb(17, 17, 17);
-  padding: 8px 0;
-  width: 100%;
-  outline: none;
-}
-
 button {
   padding-left: 1.25rem;
   padding-right: 1.25rem;
   border-radius: 6.25rem;
   background: #dd3590;
-  color: #fff;
+  color: white;
   height: 3rem;
   width: 100%;
   margin-top: 20px;
   cursor: pointer;
   border: none;
+  outline: none;
   align-items: center;
+}
+.button:hover {
+  background-color: #f15bab;
+}
+
+button:focus {
+  outline: none;
+  box-shadow: none;
 }
 
 .subtitulo {
