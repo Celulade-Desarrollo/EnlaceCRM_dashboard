@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import Heading from '../components/UI/Heading.vue';
+import Heading from "../components/UI/Heading.vue";
 const router = useRouter();
 const dataInfoapp = ref([{ nombre: 'Juan', saldorestante: '$0', saldoabonado: '$0' }]);
 
@@ -28,15 +28,10 @@ const goToPantalla5 = () => {
 };
 </script>
 
+
 <template>
-  <!-- Logo principal -->
-  <section class="logo-container">
-    <img src="/public/enlaceFiado.png" alt="logo Enlace CRM" class="logo-main" />
-  </section>
-
-  <!-- Encabezado -->
+   <!-- Encabezado -->
     <Heading :mensaje="'Hola, ' + dataInfoapp[0].nombre" />
-
   <section class="content">
     <!-- Tarjeta de deuda -->
     <div class="card">
@@ -77,6 +72,21 @@ body {
 .logo-main {
   max-width: 200px;
   height: auto;
+}
+
+.icon-left,
+.icon-right {
+  font-size: 1.2rem;
+}
+
+.icon-circle {
+  background-color: white;
+  color: #2b008b;
+  padding: 0.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .content {
@@ -123,18 +133,12 @@ body {
   font-weight: bold;
   margin-top: 1rem;
   cursor: pointer;
+  width: 200px;
+  margin-left: auto;
+  display: block;
+  text-align: center;
 }
 
-.btn2{
- color: white;
-  border: none;
-  padding: 10px 24px;
-  border-radius: 25px;
-  font-weight: bold;
-  margin-top: 1rem;
-  cursor: pointer;
-  width: 200px;
-}
 
 .button:hover {
   background-color: #f15bab;

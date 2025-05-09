@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
+import Heading from "../components/UI/Heading.vue";
 
 const deudaTotal = ref(0);
 const cupoTotal = ref(0);
@@ -37,15 +38,8 @@ watch([deudaTotal, cupoTotal], updateProgressBar);
 <template>
   <div>
     <!-- Encabezado -->
-    <header class="header">
-      <div class="header-icons">
-        <span><i class="fas fa-user"></i></span>
-        <span><i class="fas fa-question-circle"></i></span>
-      </div>
-      <div class="header-text">
-        <p>Hola, {{ dataInfoapp[0].nombre }}</p>
-      </div>
-    </header>
+    <Heading :mensaje="'Hola, ' + dataInfoapp[0].nombre" />
+
 
     <!-- Información financiera -->
     <section class="container banners">
