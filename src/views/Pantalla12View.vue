@@ -183,7 +183,6 @@ onMounted(() => {
 .dropdown-content {
   background-color: #251886;
   color: #fff;
-  border: 1px solid #000000;
   padding: 10px;
   margin-top: 10px;
   border-radius: 10px;

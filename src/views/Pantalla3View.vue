@@ -17,12 +17,19 @@ let pagarValor = localStorage.getItem('pagarValor');
 const handlePago1Click = () => {
   window.open("/Pantalla4View", "_parent");
 };
+const handlePagina2Click = () => {
+  window.open("/Pantalla2View", "_parent");
+};
 
 // Montar el event listener para el envío del formulario y clic en el botón
 onMounted(() => {;
   const pago1Button = document.getElementById('boton-pago');
   if (pago1Button) {
     pago1Button.addEventListener('click', handlePago1Click);
+  }
+    const atras = document.getElementById('boton-atras');
+  if (atras) {
+    atras.addEventListener('click', handlePagina2Click);
   }
 });
 </script>
@@ -65,7 +72,7 @@ onMounted(() => {;
         <button type="button" id="boton-pago" class="boton">
           Pagar
         </button>
-        <button type="button" id="atras" class="boton">
+        <button type="button" id="boton-atras" class="boton">
           Atrás
         </button>
       </div>

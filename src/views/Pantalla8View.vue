@@ -15,7 +15,7 @@ const router = useRouter();
 
 
 let dataInfoapp = JSON.parse(localStorage.getItem('data'));
-
+    
 // Función para manejar el clic en el botón "Pantalla7"
 const handlePantalla7Click = () => {
     window.open("/Pantalla7View", "_parent");
