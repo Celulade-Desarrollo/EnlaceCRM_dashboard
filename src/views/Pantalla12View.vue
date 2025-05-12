@@ -67,7 +67,7 @@ onMounted(() => {
           <h2 class="proveedores">Rutas:</h2>
           <h1 class="ruta-header" @click="toggleDropdown(`ruta${index + 1}`)">
             Ruta {{ index + 1 }} - $100.00
-            <span class="ver-aqui">CLICK AQUÍ</span>
+            <span class="ver-aqui">Detalle</span>
           </h1>
           <div v-if="dropdownsVisible[`ruta${index + 1}`]" class="dropdown-content">
             <div class="dropdown-row">
