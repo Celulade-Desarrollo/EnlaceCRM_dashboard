@@ -1,11 +1,9 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import axios from 'axios';
 import { useRouter } from 'vue-router';
 import RouterLink from "../components/UI/Routerlink.vue";
 import Heading from "../components/UI/Heading.vue";
 
-// Variables reactivas
 const celular = ref('');
 const data = ref(null);
 const error = ref('');
@@ -16,18 +14,15 @@ const dropdownsVisible = ref({
   ruta4: false
 });
 
-// Instancia de router
 const router = useRouter();
 let dataInfoapp = JSON.parse(localStorage.getItem('data'));
 
-// Alterna la visibilidad de los dropdowns
 const toggleDropdown = (ruta) => {
   Object.keys(dropdownsVisible.value).forEach(key => {
     dropdownsVisible.value[key] = key === ruta ? !dropdownsVisible.value[key] : false;
   });
 };
 
-// Redirecciones
 const handlePantalla2Click = () => window.open("/Pantalla2View", "_parent");
 const handlePantalla5Click = () => window.open("/Pantalla5View", "_parent");
 
@@ -49,7 +44,7 @@ onMounted(() => {
   </section>
 
   <Heading :mensaje="'Hola, ' + dataInfoapp[0].nombre" />
-  
+
   <section class="banners-container">
     <!-- Banner principal -->
     <div class="banner">
@@ -59,12 +54,10 @@ onMounted(() => {
           <input type="date" class="date-input" />
         </div>
         <p class="deuda-total" id="ruta-total">{{ dataInfoapp[0].saldorestante }}</p>
+        <div class="boton-container-inside">
+          <button class="boton" id="Pantalla5">Ver más</button>
+        </div>
       </div>
-    </div>
-
-    <!-- Botón fuera del banner -->
-    <div class="boton-container">
-      <button class="boton" id="Pantalla5">Ver más</button>
     </div>
 
     <!-- Banners de rutas -->
@@ -72,19 +65,18 @@ onMounted(() => {
       <div class="banner">
         <div class="info-banner">
           <h2 class="proveedores">Rutas:</h2>
-          <div class="dropdown">
-            <h1 @click="toggleDropdown(`ruta${index + 1}`)" class="ruta-header">
-              Ruta {{ index + 1 }} - $100.00
-            </h1>
-            <div v-if="dropdownsVisible[`ruta${index + 1}`]" class="dropdown-content">
-              <div class="dropdown-row">
-                <div class="column">Número de Factura</div>
-                <div class="column">Monto de la Factura</div>
-              </div>
-              <div class="dropdown-row">
-                <div class="column">FE{{ 1000 + index * 1234 }}</div>
-                <div class="column">$100.00</div>
-              </div>
+          <h1 class="ruta-header" @click="toggleDropdown(`ruta${index + 1}`)">
+            Ruta {{ index + 1 }} - $100.00
+            <span class="ver-aqui">CLICK AQUÍ</span>
+          </h1>
+          <div v-if="dropdownsVisible[`ruta${index + 1}`]" class="dropdown-content">
+            <div class="dropdown-row">
+              <div class="column">Número de Factura</div>
+              <div class="column">Monto de la Factura</div>
+            </div>
+            <div class="dropdown-row">
+              <div class="column">FE{{ 1000 + index * 1234 }}</div>
+              <div class="column">$100.00</div>
             </div>
           </div>
         </div>
@@ -153,17 +145,15 @@ body {
   border-radius: 6px;
 }
 
-.boton-container {
+.boton-container-inside {
   display: flex;
   justify-content: flex-end;
-  max-width: 800px;
-  margin: -0.5rem auto 1rem auto;
-  padding: 0 1rem;
+  margin-top: 1rem;
 }
 
 .boton {
   padding: 0.5rem 1rem;
-  border-radius:25px;
+  border-radius: 25px;
   background: #dd3590;
   color: #fff;
   cursor: pointer;
@@ -171,6 +161,7 @@ body {
   font-size: 1rem;
   width: fit-content;
   min-width: 200px;
+  outline: none;
 }
 
 .boton:hover {
@@ -183,7 +174,20 @@ body {
   margin-top: 1rem;
   color: #000;
   cursor: pointer;
+  display: flex;
+  align-items: center;
 }
+
+.ver-aqui {
+  color: #dd3590;
+  font-weight: bold;
+  margin-left: 1rem;
+  text-decoration: underline;
+  text-decoration-color: blue; /* línea subrayada azul */
+  cursor: pointer;
+  font-size: 1.1rem;
+}
+
 
 .dropdown-content {
   background-color: #251886;
@@ -191,6 +195,7 @@ body {
   border: 1px solid #000000;
   padding: 10px;
   margin-top: 10px;
+  border-radius: 10px;
 }
 
 .dropdown-row {
