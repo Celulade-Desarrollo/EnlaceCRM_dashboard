@@ -148,14 +148,16 @@ onMounted(() => {
 
 .floating-label {
   position: absolute;
-  left: 0;
-  top: 0px;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
   color: black;
   font-size: 16px;
   pointer-events: none;
   transition: 0.3s ease all;
   font-family: sans-serif;
 }
+
 
 /* Animación al enfocar o escribir */
 .form-control:focus + .floating-label,
@@ -174,7 +176,6 @@ onMounted(() => {
   outline: none;
   box-shadow: none;
 }
-
 
 
 .logo-container {

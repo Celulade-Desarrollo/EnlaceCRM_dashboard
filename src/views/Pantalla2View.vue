@@ -74,7 +74,6 @@ onMounted(() => {
   </section>
 </template>
 
-
 <style scoped>
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
@@ -102,13 +101,15 @@ input[type="number"]::-webkit-inner-spin-button {
 
 .floating-label {
   position: absolute;
-  left: 0;
-  top: 0px;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
   color: black;
   font-size: 16px;
   pointer-events: none;
   transition: 0.3s ease all;
   font-family: sans-serif;
+  white-space: nowrap
 }
 
 /* Animación al enfocar o escribir */

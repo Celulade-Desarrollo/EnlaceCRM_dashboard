@@ -86,15 +86,6 @@ onMounted(() => {
 </template>
 
 <style scoped>
-body {
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
-  background-color: #251886;
-  margin: 0;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
 
 .banners-container {
   display: flex;
@@ -210,7 +201,6 @@ body {
 }
 
 .proveedores {
-  border: 1px solid #000000;
   background-color: #251886;
   color: #fff;
   border-radius: 25px;

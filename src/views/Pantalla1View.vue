@@ -51,7 +51,7 @@ onMounted(() => {
       <p class="bold">{{ dataInfoapp[0]?.saldorestante }}</p>
       <p><span class="bold pink">Fecha siguiente abono:</span></p>
       <p>Cupo disponible: <span class="pink bold">{{ dataInfoapp[0]?.saldoabonado }}</span></p>
-      <button class="button" @click="goToPantalla5">Ver más</button>
+      <button class="button" @click="goToPantalla5" id="Pantalla5">Ver más</button>
     </div>
 
     <!-- Tarjeta de proveedor -->
@@ -61,7 +61,7 @@ onMounted(() => {
         <img src="/Alpina.png" alt="Alpina" class="alpina-img" />
         <div class="text-center">
           <p class="bold">Alpina</p>
-          <button class="button" @click="goToPantalla2">Pagar</button>
+          <button class="button" @click="goToPantalla2" id="Pantalla2">Pagar</button>
         </div>
       </div>
     </div>
