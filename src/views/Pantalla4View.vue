@@ -80,7 +80,7 @@ onMounted(() => {
 
 .header-container {
   display: flex;
-  flex-direction: column; /* Apilar elementos verticalmente */
+  flex-direction: column;
   align-items: center;
   margin-bottom: 1rem;
   justify-content: center;
@@ -89,14 +89,6 @@ onMounted(() => {
 .logo {
   margin-bottom: 1rem; /* Espacio debajo del logo */
   margin-top: 0px;
-}
-
-.card-header-text {
-  background-color: #251886;
-  color: white;
-  padding: 0.75rem 1rem;
-  border-radius: 10px;
-  margin: 0;
 }
 
 .alpina-logo-outside {
@@ -130,7 +122,7 @@ button:focus {
   outline: none;
   box-shadow: none;
 }
-/* Proveedor */
+
 .provider-content {
   display: flex;
   align-items: center;

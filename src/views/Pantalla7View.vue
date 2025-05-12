@@ -15,19 +15,25 @@ const router = useRouter();
 
 let dataInfoapp = JSON.parse(localStorage.getItem('data'));
 
-
 // Función para manejar el clic en el botón "Pantalla2"
 const handlePantalla8Click = () => {
     window.open("/Pantalla8View", "_parent");
+};
+const handlePantalla2Click = () => {
+    window.open("/Pantalla2View", "_parent");
 };
 
 // Montar el event listener para el envío del formulario
 onMounted(() => {
   const Pantalla8Button = document.getElementById('Pantalla8');
+  const Pantalla2Button = document.getElementById('Pantalla2');
+
   if (Pantalla8Button) {
     Pantalla8Button.addEventListener('click', handlePantalla8Click); // Agrega el event listener al botón
   }
-
+  if (Pantalla2Button){
+    Pantalla2Button.addEventListener('click', handlePantalla2Click); // Agrega el event listener al botón
+  }
 });
 
 </script>
@@ -39,18 +45,17 @@ onMounted(() => {
 
   <Heading :mensaje="'Hola, ' + (dataInfoapp && dataInfoapp.length > 0 ? dataInfoapp[0].nombre : 'Usuario')" />
 
+  <h2 class="proveedores">¿Como quieres pagar?</h2>
+  <h2 class="valor">${{dataInfoapp[0].pagoMinimo}}</h2>
   <section class="container banners">
     <div class="card banner1">
-      <div class="header-container">
-        <h2 class="proveedores">¿Como quieres pagar?<br>${{dataInfoapp[0].pagoMinimo}}</h2>
-        <div class="info-banner">
-          <p class="mt-5">Desde tu billeteraW</p>
-          <div class="d-flex align-items-center">
-            <div class="image-section">
-              <picture class="logo">
-                <img src="/public/billeteraW.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
-              </picture>
-            </div>
+      <div class="info-banner">
+        <p>Desde tu billeteraW</p>
+        <div class="d-flex align-items-center">
+          <div class="image-section">
+            <picture class="logo">
+              <img src="/public/billeteraW.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
+            </picture>
           </div>
           <div class="text-section ml-3">
             <div class="button-banner">
@@ -58,10 +63,11 @@ onMounted(() => {
                 Pagar
               </button>
             </div>
-          </div>
+         </div>
         </div>
       </div>
     </div>
+    
     <div class="card banner2">
       <div class="info-banner">
         <p>Desde PSE</p>
@@ -148,13 +154,14 @@ onMounted(() => {
   height: auto;
   display: inline-block;
 }
-.formkit-wrapper {
-  align-items: center;
+.card {
+  background: #fff;
+  border-radius: 15px;
+  padding: 1.5rem;
+  max-width: 500px;
   width: 100%;
-}
-
-.formkit-input {
   text-align: center;
+  font-size: 17px;
 }
 
 .formkit-help {
@@ -284,17 +291,23 @@ button:focus {
 
 .proveedores {
   font-weight: bold;
-  color: black;
+  color: white;
   width: 100%;
   letter-spacing: -0.03em;
-  line-height: 1.2;
-  background-color: #fff;
   padding: 24px;
   display: flex;
-  align-items: center;
-  margin-bottom: -40px;
+  justify-content: center;
 }
-
+.valor{
+  font-weight: bold;
+  color: white;
+  width: 100%;
+  letter-spacing: -0.03em;
+  padding: 24px;
+  display: flex;
+  justify-content: center;
+  margin-top: -22px
+}
 .banners {
   display: flex;
   flex-direction: column;
@@ -329,7 +342,7 @@ button:focus {
   }
 
   .banners .card {
-    width: 100%; /* Se asegura que sigan ocupando el ancho completo en responsive */
+    width: 100%;
   }
 }
 </style>

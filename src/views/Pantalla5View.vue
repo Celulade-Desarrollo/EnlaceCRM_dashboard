@@ -216,8 +216,9 @@ watch([deudaTotal, cupoTotal], updateProgressBar);
 }
 
 .button:hover {
-    background-color: #c02680 !important;
+  background-color: #f15bab;
 }
+
 button:focus {
   outline: none;
   box-shadow: none;
