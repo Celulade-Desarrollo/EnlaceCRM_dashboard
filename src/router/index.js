@@ -84,6 +84,8 @@ const router = createRouter({
   routes,
 });
 
+// Comentar si es necesario para desactivar temporalmente las protección de las rutas
+
 router.beforeEach((to, from, next) => {
   const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
 

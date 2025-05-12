@@ -55,20 +55,19 @@ const handleSubmit = async (event) => {
   await fetchData(); // Llama a la función fetchData para obtener datos
 };
 
-
 const validar = async () => {
   if (!telefono.value || !password.value) {
-    errorMessage.value = 'Todos los campos son obligatorios';
+    errorMessage.value = "Todos los campos son obligatorios";
     setTimeout(() => {
       alerta.mensaje = "";
       alerta.tipo = "";
     }, 3000);
-  } else if(!telefonoRegex.test(telefono.value)){
+  } else if (!telefonoRegex.test(telefono.value)) {
     errorMessage.value = "Ingrese un número de teléfono válido";
-        setTimeout(() => {
+    setTimeout(() => {
       errorMessage.value = "";
     }, 3000);
-  } else if(!password.value){
+  } else if (!password.value) {
     errorMessage.value = "La contraseña no puede estar vacía";
     setTimeout(() => {
       errorMessage.value = "";
@@ -79,7 +78,6 @@ const validar = async () => {
     return;
   }
 };
-
 </script>
 
 <template>
@@ -101,7 +99,10 @@ const validar = async () => {
     <div class="login-card">
       <form id="myForm" class="myForm" @submit.prevent="validar">
         <div class="form-group">
-          <label for="telefono" class="input-label flex text-center justify-center items-center">
+          <label
+            for="telefono"
+            class="input-label flex text-center justify-center items-center"
+          >
             <input
               class="form-control"
               v-model="telefono"
@@ -110,7 +111,7 @@ const validar = async () => {
               @input="soloNumeros"
               maxlength="10"
             />
-             <span class="floating-label">Ingresa tu teléfono</span>
+            <span class="floating-label">Ingresa tu teléfono</span>
           </label>
         </div>
         <div class="form-group">
@@ -121,11 +122,15 @@ const validar = async () => {
               type="password"
               placeholder="Contraseña"
             />
-             <span class="floating-label">Ingresa contraseña</span>
+            <span class="floating-label">Ingresa contraseña</span>
           </label>
         </div>
-        <button type="submit" class="button mt-4">Ingresar</button>
-        <p v-if="errorMessage.value" class="text-danger mt-2">{{ errorMessage.value }}</p>
+        <button type="submit" class="button mt-4" @click="handleSubmit">
+          Ingresar
+        </button>
+        <p v-if="errorMessage.value" class="text-danger mt-2">
+          {{ errorMessage.value }}
+        </p>
       </form>
       <p class="subtitulo mt-4">
         ¿No estás registrado?<br />
@@ -162,7 +167,6 @@ body {
   margin-bottom: 30px;
   max-width: 300px;
   height: auto;
-
 }
 
 .titulo-login {

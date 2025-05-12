@@ -15,7 +15,7 @@ let dataInfoapp = $.parseJSON(localStorage.getItem("data"));
 // Función para manejar el clic en el botón "Pagar"
 const handlePago1Click = () => {
   const valorPago = pagar.value;
-  const regex = /^\d{6,}$/; // Mínimo 6 dígitos, solo números
+  const regex = /^\d{5,}$/; // Mínimo 6 dígitos, solo números
 
   if (!valorPago || isNaN(valorPago) || !regex.test(valorPago)) {
     errorMessage.value =
