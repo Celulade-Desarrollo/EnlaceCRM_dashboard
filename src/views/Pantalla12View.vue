@@ -22,7 +22,6 @@ let dataInfoapp = JSON.parse(localStorage.getItem('data'));
 
 // Alterna la visibilidad de los dropdowns
 const toggleDropdown = (ruta) => {
-  // Cierra todos los dropdowns excepto el seleccionado
   Object.keys(dropdownsVisible.value).forEach(key => {
     dropdownsVisible.value[key] = key === ruta ? !dropdownsVisible.value[key] : false;
   });
@@ -32,7 +31,6 @@ const toggleDropdown = (ruta) => {
 const handlePantalla2Click = () => window.open("/Pantalla2View", "_parent");
 const handlePantalla5Click = () => window.open("/Pantalla5View", "_parent");
 
-// Configura eventos en botones al montar
 onMounted(() => {
   const Pantalla5Button = document.getElementById('Pantalla5');
   if (Pantalla5Button) {
@@ -46,9 +44,14 @@ onMounted(() => {
 </script>
 
 <template>
+  <section class="logo-container">
+    <img src="/public/enlaceFiado.png" alt="logo Enlace CRM" class="logo-main" />
+  </section>
+
   <Heading :mensaje="'Hola, ' + dataInfoapp[0].nombre" />
+  
   <section class="banners-container">
-    <!-- Banner 1 -->
+    <!-- Banner principal -->
     <div class="banner">
       <div class="info-banner">
         <div class="banner-header">
@@ -56,11 +59,13 @@ onMounted(() => {
           <input type="date" class="date-input" />
         </div>
         <p class="deuda-total" id="ruta-total">{{ dataInfoapp[0].saldorestante }}</p>
-        <button class="boton" id="Pantalla5">Ver más</button>
       </div>
     </div>
 
-    <div class="separator"></div>
+    <!-- Botón fuera del banner -->
+    <div class="boton-container">
+      <button class="boton" id="Pantalla5">Ver más</button>
+    </div>
 
     <!-- Banners de rutas -->
     <template v-for="(ruta, index) in 4" :key="index">
@@ -116,6 +121,17 @@ body {
   padding: 1rem;
 }
 
+.logo-container {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.logo-main {
+  width: 200px;
+  height: auto;
+  display: inline-block;
+}
+
 .banner-header {
   display: flex;
   flex-direction: column;
@@ -133,22 +149,31 @@ body {
 .date-input {
   max-width: 150px;
   padding: 6px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  border: 1px solid #251886;
+  border-radius: 6px;
 }
 
-.button {
+.boton-container {
+  display: flex;
+  justify-content: flex-end;
+  max-width: 800px;
+  margin: -0.5rem auto 1rem auto;
+  padding: 0 1rem;
+}
+
+.boton {
   padding: 0.5rem 1rem;
-  border-radius: 50px;
+  border-radius:25px;
   background: #dd3590;
   color: #fff;
-  margin-top: 1rem;
   cursor: pointer;
   border: none;
   font-size: 1rem;
   width: fit-content;
+  min-width: 200px;
 }
-.button:hover {
+
+.boton:hover {
   background-color: #f15bab;
 }
 
@@ -161,8 +186,9 @@ body {
 }
 
 .dropdown-content {
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
+  background-color: #251886;
+  color: #fff;
+  border: 1px solid #000000;
   padding: 10px;
   margin-top: 10px;
 }
@@ -178,10 +204,15 @@ body {
   font-weight: bold;
 }
 
-.separator {
-  width: 100%;
-  background-color: #b3b0b0;
-  height: 1px;
+.proveedores {
+  border: 1px solid #000000;
+  background-color: #251886;
+  color: #fff;
+  border-radius: 25px;
+  width: 100px;
+  height: 30px;
+  text-align: center;
+  padding-top: 5px;
 }
 
 .deuda-total {
