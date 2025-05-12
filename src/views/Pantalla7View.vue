@@ -26,14 +26,14 @@ const handlePantalla2Click = () => {
 // Montar el event listener para el envío del formulario
 onMounted(() => {
   const Pantalla8Button = document.getElementById('Pantalla8');
-  const Pantalla2Button = document.getElementById('Pantalla2');
+  const Pantalla2Button = document.querySelectorAll('.pantalla2');
 
   if (Pantalla8Button) {
     Pantalla8Button.addEventListener('click', handlePantalla8Click); // Agrega el event listener al botón
   }
-  if (Pantalla2Button){
-    Pantalla2Button.addEventListener('click', handlePantalla2Click); // Agrega el event listener al botón
-  }
+  Pantalla2Button.forEach(btn => {
+    btn.addEventListener('click', handlePantalla2Click);
+  });
 });
 
 </script>
@@ -59,7 +59,7 @@ onMounted(() => {
           </div>
           <div class="text-section ml-3">
             <div class="button-banner">
-              <button type="submit" class="button" id="Pantalla2">
+              <button type="submit" class="button pantalla2">
                 Pagar
               </button>
             </div>
@@ -67,7 +67,7 @@ onMounted(() => {
         </div>
       </div>
     </div>
-    
+
     <div class="card banner2">
       <div class="info-banner">
         <p>Desde PSE</p>
@@ -79,7 +79,7 @@ onMounted(() => {
           </div>
           <div class="text-section ml-3">
             <div class="button-banner">
-              <button type="submit" class="button" id="Pantalla2">
+              <button type="submit" class="button pantalla2">
                 Pagar
               </button>
             </div>
@@ -98,7 +98,7 @@ onMounted(() => {
           </div>
           <div class="text-section ml-3">
             <div class="button-banner">
-              <button type="submit" class="button" id="Pantalla2">
+              <button type="submit" class="button pantalla2">
                 Pagar
               </button>
             </div>
@@ -117,7 +117,7 @@ onMounted(() => {
           </div>
           <div class="text-section ml-3">
             <div class="button-banner">
-              <button type="submit" class="button" id="Pantalla2">
+              <button type="submit" class="button pantalla2">
                 Pagar
               </button>
             </div>
@@ -164,10 +164,8 @@ onMounted(() => {
   font-size: 17px;
 }
 
-.formkit-help {
-  margin-left: 50px;
-}
-button {
+
+button { 
   padding-left: 1.25rem;
   padding-right: 1.25rem;
   border-radius: 6.25rem;
@@ -207,14 +205,6 @@ button:focus {
   width: 60%;
 }
 
-.container button svg {
-  margin-left: 8px;
-}
-
-.parrafo {
-  margin: 20px 0;
-  font-size: medium;
-}
 
 .info-banner {
   width: 100%;
@@ -238,41 +228,6 @@ button:focus {
   align-items: center;
 }
 
-.titulo-1 {
-  font-weight: bold;
-}
-
-.titulo {
-  margin: 0 0 16px;
-  color: inherit;
-  font-weight: bold;
-  letter-spacing: -0.03em;
-  font-size: 1.875rem;
-  line-height: 1.2;
-}
-
-.subtitulo {
-  color: black;
-}
-
-.deuda-total {
-  font-weight: bold;
-}
-
-.fecha-pago {
-  font-weight: bold;
-}
-
-.cupo-disponible-dinero {
-  font-weight: bold;
-}
-
-.separator {
-  width: 100%;
-  background-color: #b3b0b0;
-  height: 1px;
-  margin: 0 auto;
-}
 
 .parrafo-marcas {
   font-weight: bold;
