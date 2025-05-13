@@ -1,39 +1,43 @@
 <script setup>
-import { ref, onMounted, reactive } from 'vue';
-import axios from 'axios';
-import Alerta from '../components/UI/Alerta.vue';
+import { ref, reactive } from "vue";
+import axios from "axios";
+import { useRouter } from "vue-router";
+const router = useRouter();
 
 // Referencias para los campos del formulario
-const telefono = ref('');
-const password = ref('');
+const telefono = ref("");
+const password = ref("");
+const errorMessage = ref("");
+const telefonoRegex = /^[0-9]{10}$/;
 
 // Función para obtener datos
 const fetchData = async () => {
   try {
-    const response = await axios.get(`https://enlacecrm.com/api/get_data.php?tipo=login&&usuario=${telefono.value}&&pass=${password.value}`);
+    const response = await axios.get(
+      `https://enlacecrm.com/api/get_data.php?tipo=login&&usuario=${telefono.value}&&pass=${password.value}`
+    );
     if (response.data == "NO") {
-      alerta.mensaje = 'Usuario y clave incorrecto';
-      alerta.tipo = 'error';
+      errorMessage.value = "Usuario y clave incorrecto";
       setTimeout(() => {
-        alerta.mensaje = '';
-        alerta.tipo = '';
+        errorMessage.value = "";
       }, 3000);
       return;
     } else {
       let data = response.data;
       data = JSON.stringify(data);
       console.log(data);
-      localStorage.setItem('data', data);
+      localStorage.setItem("data", data);
 
-      let respuesta = JSON.parse(localStorage.getItem('data'));
-      window.open("/Pantalla1View", "_parent");
+      let respuesta = JSON.parse(localStorage.getItem("data"));
+      localStorage.setItem("isAuthenticated", "true");
+      router.push("/Pantalla1View");
     }
   } catch (error) {
-    alerta.mensaje = 'Error al conectarse al servidor';
-    alerta.tipo = 'error';
+    alerta.mensaje = "Error al conectarse al servidor";
+    alerta.tipo = "error";
     setTimeout(() => {
-      alerta.mensaje = '';
-      alerta.tipo = '';
+      alerta.mensaje = "";
+      alerta.tipo = "";
     }, 3000);
   }
 };
@@ -42,46 +46,52 @@ const goToPantalla9 = () => {
   window.open("/Pantalla9View", "_parent");
 };
 
+const soloNumeros = (e) => {
+  telefono.value = e.target.value.replace(/\D/g, ""); // Reemplaza todo lo que no sea dígito
+};
+
 const handleSubmit = async (event) => {
   event.preventDefault(); // Evita el envío del formulario por defecto
   await fetchData(); // Llama a la función fetchData para obtener datos
 };
 
-const alerta = reactive({
-  tipo: '',
-  mensaje: ''
-});
-
-const validar = () => {
+const validar = async () => {
   if (!telefono.value || !password.value) {
-    // alerta.mensaje = 'Todos los campos son obligatorios';
-    alerta.tipo = 'error';
+    errorMessage.value = "Todos los campos son obligatorios";
     setTimeout(() => {
-      alerta.mensaje = '';
-      alerta.tipo = '';
+      alerta.mensaje = "";
+      alerta.tipo = "";
     }, 3000);
-    return false;
+  } else if (!telefonoRegex.test(telefono.value)) {
+    errorMessage.value = "Ingrese un número de teléfono válido";
+    setTimeout(() => {
+      errorMessage.value = "";
+    }, 3000);
+  } else if (!password.value) {
+    errorMessage.value = "La contraseña no puede estar vacía";
+    setTimeout(() => {
+      errorMessage.value = "";
+    }, 3000);
+  } else {
+    errorMessage.value = "";
+    await fetchData();
+    return;
   }
-  return true;
 };
-
-onMounted(() => {
-  const form = document.getElementById('myForm');
-  if (form) {
-    form.addEventListener('submit', handleSubmit);
-  }
-});
 </script>
 
 <template>
   <section class="logo-container">
     <picture class="logo">
-      <img src="/public/enlaceFiado.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
+      <img
+        src="/public/enlaceFiado.png"
+        alt="logo"
+        class="img-fluid"
+        loading="lazy"
+        title="logo"
+      />
     </picture>
   </section>
-
-  <!-- Mostrar la alerta solo si existe un mensaje -->
-  <Alerta v-if="alerta.mensaje" :alerta="alerta" />
 
   <!-- Contenido de login centrado -->
   <h3 class="titulo-login">Ingresa a tu cuenta</h3>
@@ -89,15 +99,19 @@ onMounted(() => {
     <div class="login-card">
       <form id="myForm" class="myForm" @submit.prevent="validar">
         <div class="form-group">
-          <label for="telefono" class="input-label">
+          <label
+            for="telefono"
+            class="input-label flex text-center justify-center items-center"
+          >
             <input
               class="form-control"
               v-model="telefono"
-              placeholder=""
               type="tel"
-              pattern="[0-9]{10}"
+              placeholder="Número Telefónico"
+              @input="soloNumeros"
+              maxlength="10"
             />
-             <span class="floating-label">Ingresa tu teléfono</span>
+            <span class="floating-label">Ingresa tu teléfono</span>
           </label>
         </div>
         <div class="form-group">
@@ -106,13 +120,17 @@ onMounted(() => {
               class="form-control"
               v-model="password"
               type="password"
-              placeholder=""
-              
+              placeholder="Contraseña"
             />
-             <span class="floating-label">Ingresa contraseña</span>
+            <span class="floating-label">Ingresa contraseña</span>
           </label>
         </div>
-        <button type="submit" class="button mt-4">Ingresar</button>
+        <button type="submit" class="button mt-4" @click="handleSubmit">
+          Ingresar
+        </button>
+        <p v-if="errorMessage.value" class="text-danger mt-2">
+          {{ errorMessage.value }}
+        </p>
       </form>
       <p class="subtitulo mt-4">
         ¿No estás registrado?<br />
@@ -126,57 +144,16 @@ onMounted(() => {
   </section>
 </template>
 
-<style scoped>
-.input-label {
-  position: relative;
-  display: block;
-  width: 100%;
-  margin-top: 24px;
+<style>
+body {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  background-color: #251886;
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
-
-.form-control {
-  width: 100%;
-  padding: 10px 0;
-  font-size: 16px;
-  border: none;
-  border-bottom: 2px solid #09008be1;
-  background: transparent;
-  font-family: sans-serif;
-  outline: none;
-  transition: border-color 0.3s ease;
-}
-
-.floating-label {
-  position: absolute;
-  left: 50%;
-  top: 0;
-  transform: translateX(-50%);
-  color: black;
-  font-size: 16px;
-  pointer-events: none;
-  transition: 0.3s ease all;
-  font-family: sans-serif;
-}
-
-
-/* Animación al enfocar o escribir */
-.form-control:focus + .floating-label,
-.form-control:not(:placeholder-shown) + .floating-label {
-  top: -15px;
-  font-size: 12px;
-  color: black;
-}
-
-.input-label:hover .form-control {
-  border-bottom-color: #ff00f2;
-}
-
-.form-control:focus {
-  border-bottom-color: #0064e6cc;
-  outline: none;
-  box-shadow: none;
-}
-
 
 .logo-container {
   display: flex;
@@ -190,7 +167,6 @@ onMounted(() => {
   margin-bottom: 30px;
   max-width: 300px;
   height: auto;
-
 }
 
 .titulo-login {

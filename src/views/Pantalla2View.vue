@@ -1,43 +1,58 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import Heading from "../components/UI/Heading.vue";
 
 // Variables reactivas
-const pagar = ref('');
+const pagar = ref("");
+const errorMessage = ref("");
 
 // Instancia de Vue Router
 const router = useRouter();
 
-let dataInfoapp = $.parseJSON(localStorage.getItem('data'))
+let dataInfoapp = $.parseJSON(localStorage.getItem("data"));
 
 // Función para manejar el clic en el botón "Pagar"
 const handlePago1Click = () => {
-  const valorPago = pagar.value; // Asegúrate de que sea un númerogit branch -a
-  if (!valorPago || isNaN(valorPago) || valorPago <=0) {
-    alert('Por favor, ingresar un valor válido para el pago.')
-    return
+  const valorPago = pagar.value;
+  const regex = /^\d{5,}$/; // Mínimo 6 dígitos, solo números
+
+  if (!valorPago || isNaN(valorPago) || !regex.test(valorPago)) {
+    errorMessage.value =
+      "Ingrese un valor válido de al menos 6 dígitos sin puntos ni comas";
+    return;
   }
 
-  localStorage.setItem('pagarValor', valorPago); // Guarda el valor en localStorage
+  localStorage.setItem("pagarValor", valorPago); // Guarda el valor en localStorage
   window.open("/Pantalla3View", "_parent");
 };
 
 // Montar el event listener para el envío del formulario y clic en el botón
 onMounted(() => {
-  const pago1Button = document.getElementById('boton-pago');
+  const pago1Button = document.getElementById("boton-pago");
   if (pago1Button) {
-    pago1Button.addEventListener('click', handlePago1Click);
+    pago1Button.addEventListener("click", handlePago1Click);
   }
 });
 </script>
 
 <template>
   <section class="logo-container">
-    <img src="/public/enlaceFiado.png" alt="logo Enlace CRM" class="logo-main" />
+    <img
+      src="/public/enlaceFiado.png"
+      alt="logo Enlace CRM"
+      class="logo-main"
+    />
   </section>
 
-  <Heading :mensaje="'Hola, ' + (dataInfoapp && dataInfoapp.length > 0 ? dataInfoapp[0].nombre : 'Usuario')" />
+  <Heading
+    :mensaje="
+      'Hola, ' +
+      (dataInfoapp && dataInfoapp.length > 0
+        ? dataInfoapp[0].nombre
+        : 'Usuario')
+    "
+  />
 
   <section class="content">
     <div class="card">
@@ -46,28 +61,28 @@ onMounted(() => {
         <img src="/Alpina.png" alt="Alpina" class="alpina-logo-outside" />
       </div>
       <div class="form-group">
-         <label for="valor" class="input-label">
+        <label for="valor" class="input-label">
           <input
             class="form-control text-center"
             aria-required="true"
             aria-invalid="false"
             aria-labelledby="label-pagar"
             name="pagar"
-            v-model.number= pagar
+            v-model.number="pagar"
             type="number"
             placeholder=""
             autocomplete="off"
             id="pagar-valor"
-            required
             aria-describedby="error-pagar"
           />
           <span class="floating-label">Ingresa el valor a pagar</span>
         </label>
       </div>
       <div class="button-banner">
-        <button type="button" id="boton-pago" class="button">
-          Pagar
-        </button>
+        <button type="button" id="boton-pago">Pagar</button>
+        <p v-if="errorMessage" id="error-email" class="text-danger mt-1">
+          {{ errorMessage }}
+        </p>
       </div>
     </div>
   </section>
@@ -79,68 +94,11 @@ input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-.input-label {
-  position: relative;
-  display: block;
-  width: 100%;
-  margin-top: 24px;
-}
-
-.form-control {
-  width: 100%;
-  padding: 10px 0;
-  font-size: 16px;
-  border: none;
-  border-bottom: 2px solid #09008be1;
-  background: transparent;
-  font-family: sans-serif;
-  outline: none;
-  transition: border-color 0.3s ease;
-}
-
-.floating-label {
-  position: absolute;
-  left: 50%;
-  top: 0;
-  transform: translateX(-50%);
-  color: black;
-  font-size: 16px;
-  pointer-events: none;
-  transition: 0.3s ease all;
-  font-family: sans-serif;
-  white-space: nowrap
-}
-
-/* Animación al enfocar o escribir */
-.form-control:focus + .floating-label,
-.form-control:not(:placeholder-shown) + .floating-label {
-  top: -15px;
-  font-size: 12px;
-  color: black;
-}
-
-.input-label:hover .form-control {
-  border-bottom-color: #ff00f2;
-}
-
-.form-control:focus {
-  border-bottom-color: #0064e6cc;
-  outline: none;
-  box-shadow: none;
-}
-button {
-  padding-left: 1.25rem;
-  padding-right: 1.25rem;
-  border-radius: 6.25rem;
-  background: #dd3590;
-  color: white;
-  height: 3rem;
-  width: 100%;
-  margin-top: 20px;
-  cursor: pointer;
-  border: none;
-  outline: none;
-  align-items: center;
+body {
+  font-family: "Verdana", sans-serif;
+  background-color: #251886;
+  margin: 0;
+  padding: 0;
 }
 .button:hover {
   background-color: #f15bab;
@@ -190,7 +148,7 @@ button:focus {
   color: white;
   padding: 0.75rem 1rem;
   border-radius: 10px;
-  margin: 0; 
+  margin: 0;
 }
 
 .alpina-logo-outside {
@@ -204,7 +162,6 @@ button:focus {
 }
 #boton-pago:hover {
   background-color: #f15bab;
-
 }
 /* Proveedor */
 .provider-content {
@@ -281,7 +238,3 @@ button:focus {
   }
 }
 </style>
-
-
-
-
