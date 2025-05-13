@@ -107,7 +107,7 @@ const validar = async () => {
               class="form-control"
               v-model="telefono"
               type="tel"
-              placeholder="Número Telefónico"
+              placeholder=""
               @input="soloNumeros"
               maxlength="10"
             />
@@ -120,7 +120,7 @@ const validar = async () => {
               class="form-control"
               v-model="password"
               type="password"
-              placeholder="Contraseña"
+              placeholder=""
             />
             <span class="floating-label">Ingresa contraseña</span>
           </label>
@@ -144,15 +144,54 @@ const validar = async () => {
   </section>
 </template>
 
-<style>
-body {
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
-  background-color: #251886;
-  margin: 0;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+<style scoped>
+.input-label {
+  position: relative;
+  display: block;
+  width: 100%;
+  margin-top: 24px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 10px 0;
+  font-size: 16px;
+  border: none;
+  border-bottom: 2px solid #09008be1;
+  background: transparent;
+  font-family: sans-serif;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.floating-label {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  color: black;
+  font-size: 16px;
+  pointer-events: none;
+  transition: 0.3s ease all;
+  font-family: sans-serif;
+}
+
+/* Animación al enfocar o escribir */
+.form-control:focus + .floating-label,
+.form-control:not(:placeholder-shown) + .floating-label {
+  top: -15px;
+  font-size: 12px;
+  color: black;
+}
+
+.input-label:hover .form-control {
+  border-bottom-color: #ff00f2;
+}
+
+.form-control:focus {
+  border-bottom-color: #0064e6cc;
+  outline: none;
+  box-shadow: none;
 }
 
 .logo-container {
