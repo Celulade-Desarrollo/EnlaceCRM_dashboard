@@ -14,15 +14,17 @@ const cupoTotal = ref(0);
 
 // Instancia de router
 const router = useRouter();
-
+let pagarValor = localStorage.getItem('pagarValor');
 let dataInfoapp = JSON.parse(localStorage.getItem('data'));
 
 deudaTotal.value = parseFloat(dataInfoapp[0].saldorestante.replace(/[$,]/g, ''));
 cupoTotal.value = parseFloat(dataInfoapp[0].saldoabonado.replace(/[$,]/g, ''));
 
-const handlePantalla6Click = () => {
-    window.open("/Pantalla6View", "_parent");
+
+const handlePago1Click = () => {
+  window.open("/Pantalla1View", "_parent");
 };
+
 
 // Función para calcular y ajustar la barra de progreso
 const updateProgressBar = () => {
@@ -65,7 +67,7 @@ watch([deudaTotal, cupoTotal], updateProgressBar);
           <h2 class="proveedores mb-4" id="pagado">Su pago por <span>${{ pagarValor }}</span> para Alpina <br>ha sido recibido</h2>
           <h1 class="proveedores mb-4" id="cantidad-pagar"><strong>¡Muchas gracias!</strong></h1>
       </div>
-       <div class="button-inicio" @click="handlePago1Click">
+         <div class="button-inicio" @click="handlePago1Click">
         <button type="button"  class="button">Inicio</button>
       </div>
     </div>
