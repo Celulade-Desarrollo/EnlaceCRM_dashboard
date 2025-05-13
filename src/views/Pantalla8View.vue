@@ -14,8 +14,9 @@ const error = ref('');
 const router = useRouter();
 
 
-
-// Función para manejar el clic en el botón "Pantalla2"
+let dataInfoapp = JSON.parse(localStorage.getItem('data'));
+    
+// Función para manejar el clic en el botón "Pantalla7"
 const handlePantalla7Click = () => {
     window.open("/Pantalla7View", "_parent");
 };
@@ -32,100 +33,67 @@ onMounted(() => {
 </script>
 
 <template>
-     <header class="header">
-    <div class="header-icons">
-      <!-- Ícono de ayuda a la izquierda -->
-      <span class="icon-left">
-        <i class="fas fa-user"></i>
-      </span>
-      
-      <!-- Ícono de usuario a la derecha -->
-      <span class="icon-right">
-        <i class="fas fa-question-circle"></i>
-      </span>
-    </div>
-    
-    <!-- Mensaje de saludo -->
-    <div class="header-text">
-      <p>Hola, {{dataInfoapp[0].nombre}}</p>
-    </div>
-  </header>
+     <section class="logo-container">
+    <img src="/public/enlaceFiado.png" alt="logo Enlace CRM" class="logo-main" />
+  </section>
 
-  <section class="container banners">
-    <div class="row">
-      <!-- Banner 1 -->
-      <div class="col-md-4 banner1">
-        <h2 class="proveedores">Dírigete a tu suscursal más cercana</h2>
-        <div class="info-banner-main mb-4">
-          <p class="deuda-total mb-2" id="deuda-total">Fecha limite de pago: 12 AGO</p>
-          <p class="fecha-pago ml-5 mb-2" id="fecha-pago">Valor a pagar: $226.000</p>
-          <p class="cupo-disponible mb-2" id="cupo-disponible">Referencia de pago:<span class="cupo-disponible-dinero"> xys123</span></p>
+  <Heading :mensaje="'Hola, ' + (dataInfoapp && dataInfoapp.length > 0 ? dataInfoapp[0].nombre : 'Usuario')" />
+
+  <section class="content">
+    <div class="card">
+        <div class="header-container">
+            <h2 class="proveedores">Dírigete a tu suscursal más cercana</h2>
+            <div class="info-banner-main mb-4">
+                <p class="deuda-total mb-2" id="deuda-total">Fecha limite de pago: 12 AGO</p>
+                <p class="fecha-pago ml-5 mb-2" id="fecha-pago">Valor a pagar: $226.000</p>
+                <p class="cupo-disponible mb-2" id="cupo-disponible">Referencia de pago:<span class="cupo-disponible-dinero"> xys123</span></p>
+            </div>
+            <div class="button-banner"> 
+                <button type="submit" class="button" id="Pantalla7">
+                    Atras
+                </button>
+            </div>
         </div>
-        <div class="button-banner"> 
-            <button type="submit" class="btn btn-primary mt-2 btn-size" id="Pantalla6">
-                Atras
-            </button>
-        </div>
-      </div>
-      <!-- Banner 2 -->
-<
     </div>
-    
   </section>
 </template>
 
 <style scoped>
-body {
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-    background-color: white;
+.content {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
 }
 
-.formkit-wrapper {
-    align-items: center;
-    width: 100%;
+.card {
+  background: #fff;
+  border-radius: 15px;
+  padding: 1.5rem;
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+  font-size: 17px;
 }
 
-.formkit-input {
-    text-align: center;
+.header-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1rem;
+  justify-content: center;
 }
 
-.formkit-help {
-    margin-left: 50px;
+.logo-container {
+  text-align: center;
+  margin-top: 1rem;
 }
 
-.form-group input {
-    background-color: transparent;
-    border-width: 0 0 1px;
-    border-bottom: solid 1px rgba(17, 17, 17, 0.2);
-    color: rgb(17, 17, 17);
-    padding: 8px 0;
-    width: 100%;
-    outline: none;
-}
-
-.container button {
-    padding: 0.5rem 1rem;
-    border-radius: 6.25rem;
-    background: #dd3590;
-    color: #fff;
-    display: flex;
-    margin-bottom: 1rem;
-    cursor: pointer;
-    border: none;
-    align-items: center;
-    position: relative;
-    font-size: 1rem;
-    justify-content: center;
-    width: auto;
-}
-
-.container button svg {
-    margin-left: 8px;
-}
-
-.parrafo {
-    margin: 20px 0;
-    font-size: medium;
+.logo-main {
+  width: 200px;
+  height: auto;
+  display: inline-block;
 }
 
 .info-banner {
@@ -174,36 +142,35 @@ body {
     align-items: center;
     margin-top: -80px; 
 }
-.titulo-1 {
-    font-weight: bold;
+
+
+.button {
+  background-color: #dd3590;
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 25px;
+  font-weight: bold;
+  margin-top: 1rem;
+  cursor: pointer;
+  width: 200px;
+  margin-left: auto;
+
 }
 
-.titulo {
-    margin: 0 0 16px;
-    color: black;
-    font-weight: bold;
-    letter-spacing: -0.03em;
-    font-size: 1.875rem;
-    line-height: 1.2;
+.button:hover {
+  background-color: #f15bab;
 }
 
-.subtitulo {
-    color: black;
-}
-
-.proveedores-pedidos,
-.precio-pedido{
-  color: black;
-}
-
-.button-banner button {
-    background-color: #dd3590;
-    color: white;
+button:focus {
+  outline: none;
+  box-shadow: none;
 }
 
 .deuda-total {
     font-weight: bold;
 }
+
 .proveedores{
     font-weight: bold;
     color: black;
@@ -215,6 +182,7 @@ body {
     display: flex;
     align-items: center;
     margin-bottom: -40px;
+
 }
 .fecha-pago {
     font-weight: bold;
@@ -222,15 +190,12 @@ body {
 
 .cupo-disponible-dinero {
     font-weight: bold;
-}
+    color: #f15bab;
+}   
+.cupo-disponible{
+    font-weight: bold;
 
-.separator {
-    width: 100%;
-    background-color: #b3b0b0;
-    height: 1px;
-    margin: 0 auto;
 }
-
 .parrafo-marcas{
     font-weight: bold;
     text-align: center;
@@ -246,29 +211,21 @@ body {
     margin-left: 20px;
 }
 
-.proveedores{
-    font-weight: bold;
+@media (max-width: 600px) {
+.header-container {
+flex-direction: column; /* Asegurar que siga siendo columna en responsive */
+align-items: center;
+text-align: center;
 }
-@media (max-width: 767px) {
-    .img-fluid {
-        margin-top: -90px;
-    }
 
-    .tarjeta {
-        background-color: #fff;
-        padding: 24px;
-        border-radius: 16px;
-        width: 100%;
-    }
+.info-banner {
+    flex-direction: column;
+    align-items: flex-start;
+}
 
-    .info-banner {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .text-section {
-        margin-left: 0;
-        margin-top: 10px;
-    }
+.text-section {
+    margin-left: 0;
+    margin-top: 10px;
+}
 }
 </style>

@@ -51,8 +51,8 @@ watch([deudaTotal, cupoTotal], updateProgressBar);
 
 <template>
   <section class="logo-container">
-    <img src="/public/enlaceFiado.png" alt="logo Enlace CRM" class="logo-main" />
-  </section>
+      <img src="/public/enlaceFiado.png" alt="logo Enlace CRM" class="logo-main" />
+    </section>
 
   <Heading :mensaje="'Hola, ' + (dataInfoapp && dataInfoapp.length > 0 ? dataInfoapp[0].nombre : 'Usuario')" /> 
 
@@ -66,27 +66,22 @@ watch([deudaTotal, cupoTotal], updateProgressBar);
           <h1 class="proveedores mb-4" id="cantidad-pagar"><strong>¡Muchas gracias!</strong></h1>
       </div>
        <div class="button-inicio" @click="handlePago1Click">
-        <button type="button"  class="boton">Inicio</button>
+        <button type="button"  class="button">Inicio</button>
       </div>
     </div>
   </section>
 </template>
-<style scoped>
-body {
-  font-family: 'Verdana', sans-serif;
-  background-color: #251886;
-  margin: 0;
-  padding: 0;
-}
 
+<style scoped>
 .logo-container {
   text-align: center;
   margin-top: 1rem;
 }
 
 .logo-main {
-  max-width: 200px;
+  width: 200px;
   height: auto;
+  display: inline-block;
 }
 
 /* Contenido */
@@ -110,7 +105,7 @@ body {
 
 .header-container {
   display: flex;
-  flex-direction: column; /* Apilar elementos verticalmente */
+  flex-direction: column;
   align-items: center;
   margin-bottom: 1rem;
   justify-content: center;
@@ -118,35 +113,41 @@ body {
 
 .logo {
   margin-bottom: 1rem; /* Espacio debajo del logo */
-  margin-top: -40px;
-}
-
-.card-header-text {
-  background-color: #251886;
-  color: white;
-  padding: 0.75rem 1rem;
-  border-radius: 10px;
-  margin: 0;
+  margin-top: 0px;
 }
 
 .alpina-logo-outside {
   width: 80px;
   height: auto;
-  margin-left: 1rem;
+  margin-left: rem;
 }
 
 .bold {
   font-weight: bold;
 }
+.button {
+  background-color: #dd3590;
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 25px;
+  font-weight: bold;
+  margin-top: 1rem;
+  cursor: pointer;
+  width: 200px;
+  margin-left: auto;
 
-.boton:hover {
+}
+
+.button:hover {
   background-color: #f15bab;
 }
-.boton {
-  margin-top: -5px;
+
+button:focus {
+  outline: none;
+  box-shadow: none;
 }
 
-/* Proveedor */
 .provider-content {
   display: flex;
   align-items: center;

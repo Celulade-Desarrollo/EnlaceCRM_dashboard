@@ -17,6 +17,9 @@ let pagarValor = localStorage.getItem('pagarValor');
 const handlePago1Click = () => {
   window.open("/Pantalla4View", "_parent");
 };
+const handlePagina2Click = () => {
+  window.open("/Pantalla2View", "_parent");
+};
 
 // Montar el event listener para el envío del formulario y clic en el botón
 onMounted(() => {;
@@ -24,13 +27,17 @@ onMounted(() => {;
   if (pago1Button) {
     pago1Button.addEventListener('click', handlePago1Click);
   }
+    const atras = document.getElementById('boton-atras');
+  if (atras) {
+    atras.addEventListener('click', handlePagina2Click);
+  }
 });
 </script>
 
 <template>
-  <section class="logo-container">
-    <img src="/public/enlaceFiado.png" alt="logo Enlace CRM" class="logo-main" />
-  </section>
+    <section class="logo-container">
+        <img src="/public/enlaceFiado.png" alt="logo Enlace CRM" class="logo-main" />
+    </section>
 
   <Heading :mensaje="'Hola, ' + (dataInfoapp && dataInfoapp.length > 0 ? dataInfoapp[0].nombre : 'Usuario')" />
 
@@ -65,34 +72,98 @@ onMounted(() => {;
         <button type="button" id="boton-pago" class="boton">
           Pagar
         </button>
-        <button type="button" id="atras" class="boton">
+        <button type="button" id="boton-atras" class="boton">
           Atrás
         </button>
       </div>
     </div>
   </section>
 </template>
+
 <style scoped>
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+.input-label {
+  position: relative;
+  display: block;
+  width: 100%;
+  margin-top: 24px;
+}
+button {
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+  border-radius: 6.25rem;
+  background: #dd3590;
+  color: white;
+  height: 3rem;
+  width: 100%;
+  margin-top: 20px;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  align-items: center;
+}
+.button:hover {
+  background-color: #f15bab;
+}
 
-body {
-  font-family: 'Verdana', sans-serif;
-  background-color: #251886;
-  margin: 0;
-  padding: 0;
+button:focus {
+  outline: none;
+  box-shadow: none;
+}
+.form-control {
+  width: 100%;
+  padding: 10px 0;
+  font-size: 16px;
+  border: none;
+  border-bottom: 2px solid #09008be1;
+  background: transparent;
+  font-family: sans-serif;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.floating-label {
+  position: absolute;
+  left: 0;
+  top: 0px;
+  color: black;
+  font-size: 16px;
+  pointer-events: none;
+  transition: 0.3s ease all;
+  font-family: sans-serif;
+}
+
+/* Animación al enfocar o escribir */
+.form-control:focus + .floating-label,
+.form-control:not(:placeholder-shown) + .floating-label {
+  top: -15px;
+  font-size: 12px;
+  color: black;
+}
+
+.input-label:hover .form-control {
+  border-bottom-color: #ff00f2;
+}
+
+.form-control:focus {
+  border-bottom-color: #0064e6cc;
+  outline: none;
+  box-shadow: none;
 }
 
 .logo-container {
   text-align: center;
   margin-top: 1rem;
 }
+
 .logo-main {
-  max-width: 200px;
+  width: 200px;
   height: auto;
+  display: inline-block;
 }
 
 /* Contenido */

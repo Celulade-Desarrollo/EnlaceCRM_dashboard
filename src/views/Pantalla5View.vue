@@ -41,6 +41,9 @@ watch([deudaTotal, cupoTotal], updateProgressBar);
 </script>
 
 <template>
+    <section class="logo-container">
+        <img src="/public/enlaceFiado.png" alt="logo Enlace CRM" class="logo-main" />
+    </section>
     <Heading :mensaje="'Hola, ' + dataInfoapp[0].nombre" />
 
     <section class="container banners py-4">
@@ -133,18 +136,20 @@ watch([deudaTotal, cupoTotal], updateProgressBar);
 </template>
 
 <style scoped>
-body {
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-    background-color: #2e008b;
-    margin: 0;
-    padding: 0;
-}
-
 .banners {
     background-color: #2e008b;
     min-height: 100vh;
 }
+.logo-container {
+  text-align: center;
+  margin-top: 1rem;
+}
 
+.logo-main {
+  width: 200px;
+  height: auto;
+  display: inline-block;
+}
 .banner1,
 .banner2 {
     background-color: #ffffff;
@@ -211,7 +216,12 @@ body {
 }
 
 .button:hover {
-    background-color: #c02680 !important;
+  background-color: #f15bab;
+}
+
+button:focus {
+  outline: none;
+  box-shadow: none;
 }
 
 .deuda-bar {
@@ -230,7 +240,7 @@ body {
         background-color: #2e008b;
         color: #ffffff;
         padding: 10px 10px;
-        border-radius: 0px;
+        border-radius: 10px;
         width: 200px;
     }
 
@@ -252,12 +262,13 @@ body {
         background-color: #2e008b;
         color: #ffffff;
         padding: 10px 10px;
-        border-radius: 0px;
+        border-radius: 10px;
         width: 200px;
     }
 
     .dinero-pagado {
         text-align: left;
+        border-radius: 10px;
     }
 }
 </style>

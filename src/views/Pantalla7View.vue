@@ -15,19 +15,25 @@ const router = useRouter();
 
 let dataInfoapp = JSON.parse(localStorage.getItem('data'));
 
-
 // Función para manejar el clic en el botón "Pantalla2"
 const handlePantalla8Click = () => {
     window.open("/Pantalla8View", "_parent");
+};
+const handlePantalla2Click = () => {
+    window.open("/Pantalla2View", "_parent");
 };
 
 // Montar el event listener para el envío del formulario
 onMounted(() => {
   const Pantalla8Button = document.getElementById('Pantalla8');
+  const Pantalla2Button = document.querySelectorAll('.pantalla2');
+
   if (Pantalla8Button) {
     Pantalla8Button.addEventListener('click', handlePantalla8Click); // Agrega el event listener al botón
   }
-
+  Pantalla2Button.forEach(btn => {
+    btn.addEventListener('click', handlePantalla2Click);
+  });
 });
 
 </script>
@@ -39,29 +45,29 @@ onMounted(() => {
 
   <Heading :mensaje="'Hola, ' + (dataInfoapp && dataInfoapp.length > 0 ? dataInfoapp[0].nombre : 'Usuario')" />
 
+  <h2 class="proveedores">¿Como quieres pagar?</h2>
+  <h2 class="valor">${{dataInfoapp[0].pagoMinimo}}</h2>
   <section class="container banners">
     <div class="card banner1">
-      <div class="header-container">
-        <h2 class="proveedores">¿Como quieres pagar?<br>${{dataInfoapp[0].pagoMinimo}}</h2>
-        <div class="info-banner">
-          <p class="mt-5">Desde tu billeteraW</p>
-          <div class="d-flex align-items-center">
-            <div class="image-section">
-              <picture class="logo">
-                <img src="/public/billeteraW.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
-              </picture>
-            </div>
+      <div class="info-banner">
+        <p>Desde tu billeteraW</p>
+        <div class="d-flex align-items-center">
+          <div class="image-section">
+            <picture class="logo">
+              <img src="/public/billeteraW.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
+            </picture>
           </div>
           <div class="text-section ml-3">
             <div class="button-banner">
-              <button type="submit" class="button" id="Pantalla2">
+              <button type="submit" class="button pantalla2">
                 Pagar
               </button>
             </div>
-          </div>
+         </div>
         </div>
       </div>
     </div>
+
     <div class="card banner2">
       <div class="info-banner">
         <p>Desde PSE</p>
@@ -73,7 +79,7 @@ onMounted(() => {
           </div>
           <div class="text-section ml-3">
             <div class="button-banner">
-              <button type="submit" class="button" id="Pantalla2">
+              <button type="submit" class="button pantalla2">
                 Pagar
               </button>
             </div>
@@ -92,7 +98,7 @@ onMounted(() => {
           </div>
           <div class="text-section ml-3">
             <div class="button-banner">
-              <button type="submit" class="button" id="Pantalla2">
+              <button type="submit" class="button pantalla2">
                 Pagar
               </button>
             </div>
@@ -111,7 +117,7 @@ onMounted(() => {
           </div>
           <div class="text-section ml-3">
             <div class="button-banner">
-              <button type="submit" class="button" id="Pantalla2">
+              <button type="submit" class="button pantalla2">
                 Pagar
               </button>
             </div>
@@ -138,33 +144,48 @@ onMounted(() => {
 </template>
 
 <style scoped>
-body {
-  font-family: 'Verdana', sans-serif;
-  background-color: #2e008b; /* Fondo morado */
-  margin: 0;
-  padding: 0;
-}
-
-.formkit-wrapper {
-  align-items: center;
-  width: 100%;
-}
-
-.formkit-input {
+.logo-container {
   text-align: center;
-}
-
-.formkit-help {
-  margin-left: 50px;
-}
-.button {
-  font-weight: bold;
   margin-top: 1rem;
-  cursor: pointer;
+}
+
+.logo-main {
   width: 200px;
-  margin-left: auto;
-  display: block;
+  height: auto;
+  display: inline-block;
+}
+.card {
+  background: #fff;
+  border-radius: 15px;
+  padding: 1.5rem;
+  max-width: 500px;
+  width: 100%;
   text-align: center;
+  font-size: 17px;
+}
+
+
+button { 
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+  border-radius: 6.25rem;
+  background: #dd3590;
+  color: white;
+  height: 3rem;
+  width: 100%;
+  margin-top: 20px;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  align-items: center;
+}
+.button:hover {
+  background-color: #f15bab;
+}
+
+button:focus {
+  outline: none;
+  box-shadow: none;
 }
 .form-group input {
   background-color: transparent;
@@ -184,14 +205,6 @@ body {
   width: 60%;
 }
 
-.container button svg {
-  margin-left: 8px;
-}
-
-.parrafo {
-  margin: 20px 0;
-  font-size: medium;
-}
 
 .info-banner {
   width: 100%;
@@ -215,41 +228,6 @@ body {
   align-items: center;
 }
 
-.titulo-1 {
-  font-weight: bold;
-}
-
-.titulo {
-  margin: 0 0 16px;
-  color: inherit;
-  font-weight: bold;
-  letter-spacing: -0.03em;
-  font-size: 1.875rem;
-  line-height: 1.2;
-}
-
-.subtitulo {
-  color: black;
-}
-
-.deuda-total {
-  font-weight: bold;
-}
-
-.fecha-pago {
-  font-weight: bold;
-}
-
-.cupo-disponible-dinero {
-  font-weight: bold;
-}
-
-.separator {
-  width: 100%;
-  background-color: #b3b0b0;
-  height: 1px;
-  margin: 0 auto;
-}
 
 .parrafo-marcas {
   font-weight: bold;
@@ -268,17 +246,23 @@ body {
 
 .proveedores {
   font-weight: bold;
-  color: black;
+  color: white;
   width: 100%;
   letter-spacing: -0.03em;
-  line-height: 1.2;
-  background-color: #fff;
   padding: 24px;
   display: flex;
-  align-items: center;
-  margin-bottom: -40px;
+  justify-content: center;
 }
-
+.valor{
+  font-weight: bold;
+  color: white;
+  width: 100%;
+  letter-spacing: -0.03em;
+  padding: 24px;
+  display: flex;
+  justify-content: center;
+  margin-top: -22px
+}
 .banners {
   display: flex;
   flex-direction: column;
@@ -313,7 +297,7 @@ body {
   }
 
   .banners .card {
-    width: 100%; /* Se asegura que sigan ocupando el ancho completo en responsive */
+    width: 100%;
   }
 }
 </style>

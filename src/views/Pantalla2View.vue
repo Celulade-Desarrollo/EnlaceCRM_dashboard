@@ -65,7 +65,7 @@ onMounted(() => {
         </label>
       </div>
       <div class="button-banner">
-        <button type="button" id="boton-pago">
+        <button type="button" id="boton-pago" class="button">
           Pagar
         </button>
       </div>
@@ -79,20 +79,86 @@ input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-body {
-  font-family: 'Verdana', sans-serif;
-  background-color: #251886;
-  margin: 0;
-  padding: 0;
+.input-label {
+  position: relative;
+  display: block;
+  width: 100%;
+  margin-top: 24px;
 }
 
+.form-control {
+  width: 100%;
+  padding: 10px 0;
+  font-size: 16px;
+  border: none;
+  border-bottom: 2px solid #09008be1;
+  background: transparent;
+  font-family: sans-serif;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.floating-label {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  color: black;
+  font-size: 16px;
+  pointer-events: none;
+  transition: 0.3s ease all;
+  font-family: sans-serif;
+  white-space: nowrap
+}
+
+/* Animación al enfocar o escribir */
+.form-control:focus + .floating-label,
+.form-control:not(:placeholder-shown) + .floating-label {
+  top: -15px;
+  font-size: 12px;
+  color: black;
+}
+
+.input-label:hover .form-control {
+  border-bottom-color: #ff00f2;
+}
+
+.form-control:focus {
+  border-bottom-color: #0064e6cc;
+  outline: none;
+  box-shadow: none;
+}
+button {
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+  border-radius: 6.25rem;
+  background: #dd3590;
+  color: white;
+  height: 3rem;
+  width: 100%;
+  margin-top: 20px;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  align-items: center;
+}
+.button:hover {
+  background-color: #f15bab;
+}
+
+button:focus {
+  outline: none;
+  box-shadow: none;
+}
 .logo-container {
   text-align: center;
   margin-top: 1rem;
 }
+
 .logo-main {
-  max-width: 200px;
+  width: 200px;
   height: auto;
+  display: inline-block;
 }
 
 /* Contenido */

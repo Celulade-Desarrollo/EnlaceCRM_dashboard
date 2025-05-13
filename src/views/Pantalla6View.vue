@@ -31,9 +31,9 @@ onMounted(() => {
 
 </script>
 <template>
- <section class="logo-container">
-    <img src="/public/enlaceFiado.png" alt="logo Enlace CRM" class="logo-main" />
-  </section>
+    <section class="logo-container">
+        <img src="/public/enlaceFiado.png" alt="logo Enlace CRM" class="logo-main" />
+    </section>
 
   <Heading :mensaje="'Hola, ' + (dataInfoapp && dataInfoapp.length > 0 ? dataInfoapp[0].nombre : 'Usuario')" />
 
@@ -72,16 +72,8 @@ onMounted(() => {
 </template>
 
 <style scoped>
-body {
-  font-family: 'Verdana', sans-serif;
-  background-color: #2e008b; /* Fondo morado */
-  margin: 0;
-  padding: 0;
-}
-
-.logo-container {
-  text-align: center;
-  margin-top: 1rem;
+.cupo-disponible-dinero{
+  color: #f15bab;
 }
 .proveedores {
   text-align: center;
@@ -91,9 +83,15 @@ body {
 .button:hover {
   background-color: #f15bab;
 }
+.logo-container {
+  text-align: center;
+  margin-top: 1rem;
+}
+
 .logo-main {
-  max-width: 200px;
+  width: 200px;
   height: auto;
+  display: inline-block;
 }
 
 .icon-left,
@@ -146,6 +144,11 @@ body {
 }
 
 .button {
+  background-color: #dd3590;
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 25px;
   font-weight: bold;
   margin-top: 1rem;
   cursor: pointer;
@@ -164,7 +167,10 @@ body {
 .button:hover {
   background-color: #f15bab;
 }
-
+button:focus {
+  outline: none;
+  box-shadow: none;
+}
 .provider-content {
   display: flex;
   align-items: center;

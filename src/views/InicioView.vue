@@ -89,7 +89,7 @@ onMounted(() => {
     <div class="login-card">
       <form id="myForm" class="myForm" @submit.prevent="validar">
         <div class="form-group">
-          <label for="telefono" class="input-label flex text-center justify-center items-center">
+          <label for="telefono" class="input-label">
             <input
               class="form-control"
               v-model="telefono"
@@ -129,12 +129,9 @@ onMounted(() => {
 <style scoped>
 .input-label {
   position: relative;
+  display: block;
   width: 100%;
   margin-top: 24px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
 }
 
 .form-control {
@@ -152,15 +149,15 @@ onMounted(() => {
 .floating-label {
   position: absolute;
   left: 50%;
-  top: 0px;
+  top: 0;
+  transform: translateX(-50%);
   color: black;
   font-size: 16px;
-  transform: translateX(-50%);
   pointer-events: none;
   transition: 0.3s ease all;
   font-family: sans-serif;
-  
 }
+
 
 /* Animación al enfocar o escribir */
 .form-control:focus + .floating-label,
@@ -180,16 +177,6 @@ onMounted(() => {
   box-shadow: none;
 }
 
-
-body {
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
-  background-color: #251886;
-  margin: 0;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
 
 .logo-container {
   display: flex;

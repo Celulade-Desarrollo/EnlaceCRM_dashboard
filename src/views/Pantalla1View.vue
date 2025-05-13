@@ -30,11 +30,12 @@ const goToPantalla5 = () => {
 
 
 <template>
-    <section class="logo-container">
-    <img src="/public/enlaceFiado.png" alt="logo Enlace CRM" class="logo-main" />
-  </section>
+<section class="logo-container">
+  <img src="/public/enlaceFiado.png" alt="logo Enlace CRM" class="logo-main" />
+</section>
    <!-- Encabezado -->
     <Heading :mensaje="'Hola, ' + dataInfoapp[0].nombre" />
+    
   <section class="content">
     <!-- Tarjeta de deuda -->
     <div class="card">
@@ -42,7 +43,7 @@ const goToPantalla5 = () => {
       <p class="bold">{{ dataInfoapp[0]?.saldorestante }}</p>
       <p><span class="bold pink">Fecha siguiente abono:</span></p>
       <p>Cupo disponible: <span class="pink bold">{{ dataInfoapp[0]?.saldoabonado }}</span></p>
-      <button class="button" @click="goToPantalla5">Ver más</button>
+      <button class="button" @click="goToPantalla5" id="Pantalla5">Ver más</button>
     </div>
 
     <!-- Tarjeta de proveedor -->
@@ -52,7 +53,7 @@ const goToPantalla5 = () => {
         <img src="/Alpina.png" alt="Alpina" class="alpina-img" />
         <div class="text-center">
           <p class="bold">Alpina</p>
-          <button class="button" @click="goToPantalla2">Pagar</button>
+          <button class="button" @click="goToPantalla2" id="Pantalla2">Pagar</button>
         </div>
       </div>
     </div>
@@ -60,21 +61,15 @@ const goToPantalla5 = () => {
 </template>
 
 <style scoped>
-body {
-  font-family: 'Verdana', sans-serif;
-  background-color: #2e008b; /* Fondo morado */
-  margin: 0;
-  padding: 0;
-}
-
 .logo-container {
   text-align: center;
   margin-top: 1rem;
 }
 
 .logo-main {
-  max-width: 200px;
+  width: 200px;
   height: auto;
+  display: inline-block;
 }
 
 .icon-left,
@@ -121,11 +116,6 @@ body {
 .bold {
   font-weight: bold;
 }
-
-.pink {
-  color: #dd3590;
-}
-
 .button {
   background-color: #dd3590;
   color: white;
@@ -145,7 +135,10 @@ body {
 .button:hover {
   background-color: #f15bab;
 }
-
+button:focus {
+  outline: none;
+  box-shadow: none;
+}
 .provider-content {
   display: flex;
   align-items: center;

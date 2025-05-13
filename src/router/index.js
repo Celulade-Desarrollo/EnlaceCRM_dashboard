@@ -51,15 +51,6 @@ const routes =[
     path: '/Pantalla9View',
     name: 'pantalla9',
     component: () => import("../views/Pantalla9View.vue") 
-  },
-  {
-    path: '/Pantalla10View',
-    name: 'pantalla10',
-    component: () => import("../views/Pantalla10View.vue") 
-  },{
-    path: '/Pantalla11View',
-    name: 'pantalla11',
-    component: () => import("../views/Pantalla11View.vue") 
   },{
     path: '/Pantalla12View',
     name: 'pantalla12',
