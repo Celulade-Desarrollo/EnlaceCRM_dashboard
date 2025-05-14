@@ -122,7 +122,7 @@ const validar = async () => {
               type="password"
               placeholder=""
             />
-            <span class="floating-label">Ingresa contraseña</span>
+            <span class="floating-label">OTP</span>
           </label>
         </div>
         <button type="submit" class="button mt-4" @click="handleSubmit">

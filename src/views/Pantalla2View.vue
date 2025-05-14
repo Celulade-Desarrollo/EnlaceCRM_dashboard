@@ -6,11 +6,12 @@ import Heading from "../components/UI/Heading.vue";
 // Variables reactivas
 const pagar = ref("");
 const errorMessage = ref("");
+const dataInfoapp = ref([{ nombre: '', saldorestante: '$0' }]);
 
 // Instancia de Vue Router
 const router = useRouter();
 
-let dataInfoapp = $.parseJSON(localStorage.getItem("data"));
+//let dataInfoapp = $.parseJSON(localStorage.getItem("data"));
 
 // Función para manejar el clic en el botón "Pagar"
 const handlePago1Click = () => {
@@ -19,13 +20,28 @@ const handlePago1Click = () => {
 
   if (!valorPago || isNaN(valorPago) || !regex.test(valorPago)) {
     errorMessage.value =
-      "Ingrese un valor válido de al menos 6 dígitos sin puntos ni comas";
+      "Ingrese un valor válido de al menos 5 dígitos sin puntos ni comas";
     return;
   }
 
   localStorage.setItem("pagarValor", valorPago); // Guarda el valor en localStorage
   window.open("/Pantalla3View", "_parent");
 };
+
+onMounted(() => {
+  const data = localStorage.getItem('data');
+  if (data) {
+    try {
+      dataInfoapp.value = JSON.parse(data);
+      const saldo = parseFloat(
+        dataInfoapp.value[0].saldorestante.replace('$', '').replace(',', '')
+      );
+      pagar.value = saldo;
+    } catch (e) {
+      console.error('Error al leer data desde localStorage:', e);
+    }
+  }
+});
 
 // Montar el event listener para el envío del formulario y clic en el botón
 onMounted(() => {
@@ -74,6 +90,7 @@ onMounted(() => {
             autocomplete="off"
             id="pagar-valor"
             aria-describedby="error-pagar"
+             :max="parseFloat(dataInfoapp[0].saldorestante.replace('$', '').replace(',', ''))"
           />
           <span class="floating-label">Ingresa el valor a pagar</span>
         </label>
