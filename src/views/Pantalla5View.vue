@@ -81,19 +81,19 @@ watch([deudaTotal, cupoTotal], updateProgressBar);
                 <div class="info-banner">
                     <div class="pago-item">
                         <picture class="logo">
-                            <img src="/public/Alpina.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
+                            <img src="/public/Nutresa.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
                         </picture>
                         <div class="text-section pago-boton">
-                            <p class="parrafo-marcas">Alpina</p>
+                            <p class="parrafo-marcas">Nutresa</p>
                             <p class="dinero-pagado">pagaste $58.000</p>
                         </div>
                     </div>
                     <div class="pago-item">
                         <picture class="logo">
-                            <img src="/public/Alpina.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
+                            <img src="/public/Nutresa.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
                         </picture>
                         <div class="text-section pago-boton">
-                            <p class="parrafo-marcas">Alpina</p>
+                            <p class="parrafo-marcas">Nutresa</p>
                             <p class="dinero-pagado">pagaste $58.000</p>
                         </div>
                     </div>
@@ -106,10 +106,10 @@ watch([deudaTotal, cupoTotal], updateProgressBar);
                 <div class="info-banner">
                     <div class="pago-item">
                         <picture class="logo">
-                            <img src="/public/Alpina.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
+                            <img src="/public/Nutresa.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
                         </picture>
                         <div class="text-section pago-boton">
-                            <p class="parrafo-marcas">Alpina</p>
+                            <p class="parrafo-marcas">Nutresa</p>
                             <p class="dinero-pagado">pagaste $58.000</p>
                         </div>
                     </div>
@@ -122,10 +122,10 @@ watch([deudaTotal, cupoTotal], updateProgressBar);
                 <div class="info-banner">
                     <div class="pago-item">
                         <picture class="logo">
-                            <img src="/public/Alpina.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
+                            <img src="/public/Nutresa.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
                         </picture>
                         <div class="text-section pago-boton">
-                            <p class="parrafo-marcas">Alpina</p>
+                            <p class="parrafo-marcas">Nutresa</p>
                             <p class="dinero-pagado">pagaste $58.000</p>
                         </div>
                     </div>
@@ -150,6 +150,7 @@ watch([deudaTotal, cupoTotal], updateProgressBar);
   height: auto;
   display: inline-block;
 }
+
 .banner1,
 .banner2 {
     background-color: #ffffff;
@@ -160,12 +161,15 @@ watch([deudaTotal, cupoTotal], updateProgressBar);
 }
 
 .img-fluid {
-    height: 50%;
-    width: 50%;
+    height: 80px;
+    width: 70px;
+    object-fit: contain;
+    
 }
 
 .text-section {
-    margin-left: 20px;
+    margin-left: 15px;
+    flex-grow: 1;
 }
 
 .proveedores {
@@ -235,40 +239,21 @@ button:focus {
 }
 
 .pago-boton {
-        margin-left: 10px;
-        margin-top: 10px;
-        background-color: #2e008b;
-        color: #ffffff;
-        padding: 10px 10px;
-        border-radius: 10px;
-        width: 200px;
-    }
+    background-color: #2e008b;
+    color: #ffffff;
+    padding: 10px;
+    border-radius: 10px;
+    width: 200px;
+}
 
 .pago-item {
     display: flex;
     align-items: center;
     margin-top: 1rem;
+    flex-wrap: wrap;
 }
 
-@media (max-width: 900px) {
-    .img-fluid {
-        margin-top: 90px;
-        width: 50%;
-    }
-
-    .text-section {
-        margin-left: 10px;
-        margin-top: 10px;
-        background-color: #2e008b;
-        color: #ffffff;
-        padding: 10px 10px;
-        border-radius: 10px;
-        width: 200px;
-    }
-
-    .dinero-pagado {
-        text-align: left;
-        border-radius: 10px;
-    }
+.logo {
+    flex-shrink: 0;
 }
 </style>
