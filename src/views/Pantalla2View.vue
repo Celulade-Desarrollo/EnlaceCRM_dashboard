@@ -16,12 +16,16 @@ const router = useRouter();
 // Función para manejar el clic en el botón "Pagar"
 const handlePago1Click = () => {
   const valorPago = pagar.value;
-  const regex = /^\d{5,}$/; // Mínimo 6 dígitos, solo números
-
+  const regex = /^\d{5,}$/; // Mínimo 5 dígitos, solo números
+const saldoTotal = parseFloat(dataInfoapp.value[0].saldorestante.replace('$', '').replace(',', ''));
   if (!valorPago || isNaN(valorPago) || !regex.test(valorPago)) {
     errorMessage.value =
       "Ingrese un valor válido de al menos 5 dígitos sin puntos ni comas";
     return;
+  } if (valorPago > saldoTotal){
+    errorMessage.value =
+      "No puede ingresar un valor mayor a la deuda";
+      return;
   }
 
   localStorage.setItem("pagarValor", valorPago); // Guarda el valor en localStorage
@@ -90,7 +94,7 @@ onMounted(() => {
             autocomplete="off"
             id="pagar-valor"
             aria-describedby="error-pagar"
-             :max="parseFloat(dataInfoapp[0].saldorestante.replace('$', '').replace(',', ''))"
+            :max="parseFloat(dataInfoapp[0].saldorestante.replace('$', '').replace(',', ''))"
           />
           <span class="floating-label">Ingresa el valor a pagar</span>
         </label>
