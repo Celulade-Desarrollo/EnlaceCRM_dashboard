@@ -50,21 +50,12 @@ const goToPantalla5 = () => {
     <div class="card">
       <h3 class="card-header">Proveedores disponibles para recibir pago</h3>
       <div class="provider-content">
-        <img src="/Nutresa.png" alt="Nutresa" class="nutresa-img" />
-        <div class="text-center">
-          <p class="bold">Nutresa</p>
-          <button class="button" @click="goToPantalla2" id="Pantalla2">Pagar</button>
-        </div>
-      </div>
-
-        <div class="provider-content">
         <img src="/Alpina.png" alt="Alpina" class="alpina-img" />
         <div class="text-center">
           <p class="bold">Alpina</p>
           <button class="button" @click="goToPantalla2" id="Pantalla2">Pagar</button>
         </div>
       </div>
-      
     </div>
   </section>
 </template>
@@ -156,15 +147,9 @@ button:focus {
   flex-wrap: wrap;
 }
 
-.nutresa-img {
-  width: 120px;
-  height: auto;
-}
-
 .alpina-img {
   width: 140px;
   height: auto;
-  margin-top: 20px;
 }
 
 .text-center {

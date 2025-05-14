@@ -79,22 +79,26 @@ watch([deudaTotal, cupoTotal], updateProgressBar);
             <div class="banner2 mb-4">
                 <h2 class="proveedores mb-1">Hoy</h2>
                 <div class="info-banner">
-                    <div class="pago-item">
-                        <picture class="logo">
-                            <img src="/public/Nutresa.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
-                        </picture>
-                        <div class="text-section pago-boton">
-                            <p class="parrafo-marcas">Nutresa</p>
-                            <p class="dinero-pagado">pagaste $58.000</p>
+                    <div class="card-pago">
+                        <div class="pago-item">
+                            <picture class="logo">
+                                <img src="/public/Alpina.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
+                            </picture>
+                            <div class="text-section pago-boton">
+                                <p class="parrafo-marcas"></p>
+                                <p class="dinero-pagado">pagaste $58.000</p>
+                            </div>
                         </div>
                     </div>
-                    <div class="pago-item">
-                        <picture class="logo">
-                            <img src="/public/Nutresa.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
-                        </picture>
-                        <div class="text-section pago-boton">
-                            <p class="parrafo-marcas">Nutresa</p>
-                            <p class="dinero-pagado">pagaste $58.000</p>
+                    <div class="card-pago">
+                        <div class="pago-item">
+                            <picture class="logo">
+                                <img src="/public/Alpina.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
+                            </picture>
+                            <div class="text-section pago-boton">
+                                <p class="parrafo-marcas"></p>
+                                <p class="dinero-pagado">pagaste $58.000</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -104,13 +108,15 @@ watch([deudaTotal, cupoTotal], updateProgressBar);
             <div class="banner2 mb-4">
                 <h2 class="proveedores mb-1">Ayer</h2>
                 <div class="info-banner">
-                    <div class="pago-item">
-                        <picture class="logo">
-                            <img src="/public/Nutresa.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
-                        </picture>
-                        <div class="text-section pago-boton">
-                            <p class="parrafo-marcas">Nutresa</p>
-                            <p class="dinero-pagado">pagaste $58.000</p>
+                    <div class="card-pago">
+                        <div class="pago-item">
+                            <picture class="logo">
+                                <img src="/public/Alpina.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
+                            </picture>
+                            <div class="text-section pago-boton">
+                                <p class="parrafo-marcas"></p>
+                                <p class="dinero-pagado">pagaste $58.000</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -120,13 +126,15 @@ watch([deudaTotal, cupoTotal], updateProgressBar);
             <div class="banner2 mb-4">
                 <h2 class="proveedores mb-1">Ago 10</h2>
                 <div class="info-banner">
-                    <div class="pago-item">
-                        <picture class="logo">
-                            <img src="/public/Nutresa.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
-                        </picture>
-                        <div class="text-section pago-boton">
-                            <p class="parrafo-marcas">Nutresa</p>
-                            <p class="dinero-pagado">pagaste $58.000</p>
+                    <div class="card-pago">
+                        <div class="pago-item">
+                            <picture class="logo">
+                                <img src="/public/Alpina.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
+                            </picture>
+                            <div class="text-section pago-boton">
+                                <p class="parrafo-marcas"></p>
+                                <p class="dinero-pagado">pagaste $58.000</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -137,8 +145,9 @@ watch([deudaTotal, cupoTotal], updateProgressBar);
 
 <style scoped>
 .banners {
-    background-color: #2e008b;
+    background-color: #ffffff;
     min-height: 100vh;
+    border-radius: 10px;
 }
 .logo-container {
   text-align: center;
@@ -154,6 +163,7 @@ watch([deudaTotal, cupoTotal], updateProgressBar);
 .banner1,
 .banner2 {
     background-color: #ffffff;
+    border: 2px solid #2b008b;
     border-radius: 15px;
     padding: 20px;
     width: 100%;
@@ -161,10 +171,10 @@ watch([deudaTotal, cupoTotal], updateProgressBar);
 }
 
 .img-fluid {
-    height: 80px;
-    width: 70px;
+    height: 60px;
+    width: 60px;
     object-fit: contain;
-    
+    margin-bottom: 0;
 }
 
 .text-section {
@@ -183,7 +193,7 @@ watch([deudaTotal, cupoTotal], updateProgressBar);
 
 .dinero-pagado {
     font-size: small;
-    text-align: right;
+    text-align: center;
 }
 
 .progress {
@@ -239,8 +249,8 @@ button:focus {
 }
 
 .pago-boton {
-    background-color: #2e008b;
-    color: #ffffff;
+    background-color: #ffffff;
+    color: #2b008b;
     padding: 10px;
     border-radius: 10px;
     width: 200px;
@@ -249,11 +259,18 @@ button:focus {
 .pago-item {
     display: flex;
     align-items: center;
-    margin-top: 1rem;
     flex-wrap: wrap;
 }
 
 .logo {
     flex-shrink: 0;
+}
+
+.card-pago {
+    border: 2px solid #2b008b;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #ffffff;
 }
 </style>
