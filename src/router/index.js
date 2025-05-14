@@ -5,7 +5,7 @@ const routes = [
   {
     path: "/",
     name: "inicio",
-    component: InicioView,
+    component: () => import("../views/PantallaLoader.vue"),
   },
   {
     path: "/Pantalla1View",
@@ -73,7 +73,7 @@ const router = createRouter({
 });
 
 // Comentar si es necesario para desactivar temporalmente las protección de las rutas.
-
+/*
 router.beforeEach((to, from, next) => {
   const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
 
@@ -83,5 +83,7 @@ router.beforeEach((to, from, next) => {
     next();
   }
 });
+
+*/
 
 export default router;
