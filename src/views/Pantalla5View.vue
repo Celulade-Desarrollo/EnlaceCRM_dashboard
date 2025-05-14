@@ -86,7 +86,7 @@ watch([deudaTotal, cupoTotal], updateProgressBar);
                             </picture>
                             <div class="text-section pago-boton">
                                 <p class="parrafo-marcas"></p>
-                                <p class="dinero-pagado">pagaste $58.000</p>
+                                <p class="dinero-pagado">Pagaste $58.000</p>
                             </div>
                         </div>
                     </div>
@@ -97,7 +97,7 @@ watch([deudaTotal, cupoTotal], updateProgressBar);
                             </picture>
                             <div class="text-section pago-boton">
                                 <p class="parrafo-marcas"></p>
-                                <p class="dinero-pagado">pagaste $58.000</p>
+                                <p class="dinero-pagado">Pagaste $58.000</p>
                             </div>
                         </div>
                     </div>
@@ -115,7 +115,7 @@ watch([deudaTotal, cupoTotal], updateProgressBar);
                             </picture>
                             <div class="text-section pago-boton">
                                 <p class="parrafo-marcas"></p>
-                                <p class="dinero-pagado">pagaste $58.000</p>
+                                <p class="dinero-pagado">Pagaste $58.000</p>
                             </div>
                         </div>
                     </div>
@@ -133,7 +133,7 @@ watch([deudaTotal, cupoTotal], updateProgressBar);
                             </picture>
                             <div class="text-section pago-boton">
                                 <p class="parrafo-marcas"></p>
-                                <p class="dinero-pagado">pagaste $58.000</p>
+                                <p class="dinero-pagado">Pagaste $58.000</p>
                             </div>
                         </div>
                     </div>
