@@ -1,78 +1,108 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import axios from 'axios';
-import { useRouter } from 'vue-router'; // Importa useRouter para navegar entre vistas
-import RouterLink from "../components/UI/Routerlink.vue"; 
+import { ref, onMounted } from "vue";
+import axios from "axios";
+import { useRouter } from "vue-router"; // Importa useRouter para navegar entre vistas
+import RouterLink from "../components/UI/Routerlink.vue";
 import Heading from "../components/UI/Heading.vue";
+import { fadeInUp } from "../motion/pageAnimation";
+import { motion } from "motion-v";
 
 // Variables reactivas
-const celular = ref('');
+const celular = ref("");
 const data = ref(null);
-const error = ref('');
+const error = ref("");
 
 // Instancia de router
 const router = useRouter();
 
-let dataInfoapp = JSON.parse(localStorage.getItem('data'));
+let dataInfoapp = JSON.parse(localStorage.getItem("data"));
 
 // Función para manejar el clic en el botón "Pantalla2"
 const handlePantalla7Click = () => {
   window.open("/Pantalla7View", "_parent");
 };
 
-
 // Montar el event listener para el envío del formulario
 onMounted(() => {
-  const Pantalla7Button = document.getElementById('Pantalla7');
+  const Pantalla7Button = document.getElementById("Pantalla7");
   if (Pantalla7Button) {
-    Pantalla7Button.addEventListener('click', handlePantalla7Click); // Agrega el event listener al botón
+    Pantalla7Button.addEventListener("click", handlePantalla7Click); // Agrega el event listener al botón
   }
 });
-
 </script>
 <template>
+  <motion.div v-bind="fadeInUp">
     <section class="logo-container">
-        <img src="/public/enlaceFiado.png" alt="logo Enlace CRM" class="logo-main" />
+      <img
+        src="/public/enlaceFiado.png"
+        alt="logo Enlace CRM"
+        class="logo-main"
+      />
     </section>
 
-  <Heading :mensaje="'Hola, ' + (dataInfoapp && dataInfoapp.length > 0 ? dataInfoapp[0].nombre : 'Usuario')" />
+    <Heading
+      :mensaje="
+        'Hola, ' +
+        (dataInfoapp && dataInfoapp.length > 0
+          ? dataInfoapp[0].nombre
+          : 'Usuario')
+      "
+    />
 
-  <section class="content">
-    <div class="card">
+    <section class="content">
+      <div class="card">
         <div class="header-container">
-         <strong><h1 class="proveedores">¿Cuánto quieres pagar?</h1></strong><br>
+          <strong><h1 class="proveedores">¿Cuánto quieres pagar?</h1></strong
+          ><br />
           <div class="info-banner-main mb-4">
-            <strong><p class="deuda-total mb-2" id="deuda-total"> Fecha limite de pago: {{dataInfoapp[0].fecha}}</p></strong>
-            <strong><p class="fecha-pago ml-5 mb-2" id="fecha-pago">a pagar: {{dataInfoapp[0].pagoMinimo}}</p></strong>
-            <strong><p class="cupo-disponible mb-2" id="cupo-disponible">Referencia de pago:<span class="cupo-disponible-dinero"> xys123</span></p></strong>
+            <strong
+              ><p class="deuda-total mb-2" id="deuda-total">
+                Fecha limite de pago: {{ dataInfoapp[0].fecha }}
+              </p></strong
+            >
+            <strong
+              ><p class="fecha-pago ml-5 mb-2" id="fecha-pago">
+                a pagar: {{ dataInfoapp[0].pagoMinimo }}
+              </p></strong
+            >
+            <strong
+              ><p class="cupo-disponible mb-2" id="cupo-disponible">
+                Referencia de pago:<span class="cupo-disponible-dinero">
+                  xys123</span
+                >
+              </p></strong
+            >
           </div>
         </div>
-         <strong><h2 class="proveedores-pedidos">Pago minimo</h2> </strong>
-          <div class="info-banner-pedidos">
-            <strong><p class="precio-pedido mb-2" id="precioPedido1">${{dataInfoapp[0].pagoMinimo}}</p></strong>
-            <div class="button-banner-pedidos">
-              <button type="button" class="button" id="Pantalla7">
-                Pagar
-              </button>
-            </div>
+        <strong><h2 class="proveedores-pedidos">Pago minimo</h2> </strong>
+        <div class="info-banner-pedidos">
+          <strong
+            ><p class="precio-pedido mb-2" id="precioPedido1">
+              ${{ dataInfoapp[0].pagoMinimo }}
+            </p></strong
+          >
+          <div class="button-banner-pedidos">
+            <button type="button" class="button" id="Pantalla7">Pagar</button>
           </div>
-    </div>  
-    <div class="card">
-      <h2 class="abonar">Abonar a la deuda total</h2>
-       <div class="provider-content">
-        <p class="precio-pedido mb-2" id="precioPedido1">Abona tu deuda a tu medida</p>
-        <div class="button-banner-pedidos">
-          <button type="button" class="button" id="boton-pago">
-            Pagar
-          </button>
         </div>
       </div>
-    </div>
-  </section>
+      <div class="card">
+        <h2 class="abonar">Abonar a la deuda total</h2>
+        <div class="provider-content">
+          <p class="precio-pedido mb-2" id="precioPedido1">
+            Abona tu deuda a tu medida
+          </p>
+          <div class="button-banner-pedidos">
+            <button type="button" class="button" id="boton-pago">Pagar</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </motion.div>
 </template>
 
 <style scoped>
-.cupo-disponible-dinero{
+.cupo-disponible-dinero {
   color: #f15bab;
 }
 .proveedores {
@@ -157,7 +187,7 @@ onMounted(() => {
   display: block;
   text-align: center;
 }
-.abonar{
+.abonar {
   font-weight: bold;
   text-align: center;
   font-size: 25px;

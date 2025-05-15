@@ -1,146 +1,176 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import axios from 'axios';
-import { useRouter } from 'vue-router'; // Importa useRouter para navegar entre vistas
-import RouterLink from "../components/UI/Routerlink.vue"; 
+import { ref, onMounted } from "vue";
+import axios from "axios";
+import { useRouter } from "vue-router"; // Importa useRouter para navegar entre vistas
+import RouterLink from "../components/UI/Routerlink.vue";
 import Heading from "../components/UI/Heading.vue";
+import { fadeInUp } from "../motion/pageAnimation";
+import { motion } from "motion-v";
 
 // Variables reactivas
-const celular = ref('');
+const celular = ref("");
 const data = ref(null);
-const error = ref('');
+const error = ref("");
 
 // Instancia de router
 const router = useRouter();
 
-let dataInfoapp = JSON.parse(localStorage.getItem('data'));
+let dataInfoapp = JSON.parse(localStorage.getItem("data"));
 
 // Función para manejar el clic en el botón "Pantalla2"
 const handlePantalla8Click = () => {
-    window.open("/Pantalla8View", "_parent");
+  window.open("/Pantalla8View", "_parent");
 };
 const handlePantalla2Click = () => {
-    window.open("/Pantalla2View", "_parent");
+  window.open("/Pantalla2View", "_parent");
 };
 
 // Montar el event listener para el envío del formulario
 onMounted(() => {
-  const Pantalla8Button = document.getElementById('Pantalla8');
-  const Pantalla2Button = document.querySelectorAll('.pantalla2');
+  const Pantalla8Button = document.getElementById("Pantalla8");
+  const Pantalla2Button = document.querySelectorAll(".pantalla2");
 
   if (Pantalla8Button) {
-    Pantalla8Button.addEventListener('click', handlePantalla8Click); // Agrega el event listener al botón
+    Pantalla8Button.addEventListener("click", handlePantalla8Click); // Agrega el event listener al botón
   }
-  Pantalla2Button.forEach(btn => {
-    btn.addEventListener('click', handlePantalla2Click);
+  Pantalla2Button.forEach((btn) => {
+    btn.addEventListener("click", handlePantalla2Click);
   });
 });
-
 </script>
 
 <template>
-  <section class="logo-container">
-    <img src="/public/enlaceFiado.png" alt="logo Enlace CRM" class="logo-main" />
-  </section>
+  <motion.div v-bind="fadeInUp">
+    <section class="logo-container">
+      <img
+        src="/public/enlaceFiado.png"
+        alt="logo Enlace CRM"
+        class="logo-main"
+      />
+    </section>
 
-  <Heading :mensaje="'Hola, ' + (dataInfoapp && dataInfoapp.length > 0 ? dataInfoapp[0].nombre : 'Usuario')" />
+    <Heading
+      :mensaje="
+        'Hola, ' +
+        (dataInfoapp && dataInfoapp.length > 0
+          ? dataInfoapp[0].nombre
+          : 'Usuario')
+      "
+    />
 
-  <h2 class="proveedores">¿Como quieres pagar?</h2>
-  <h2 class="valor">${{dataInfoapp[0].pagoMinimo}}</h2>
-  <section class="container banners">
-    <div class="card banner1">
-      <div class="info-banner">
-        <p>Desde tu billeteraW</p>
-        <div class="d-flex align-items-center">
-          <div class="image-section">
-            <picture class="logo">
-              <img src="/public/billeteraW.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
-            </picture>
-          </div>
-          <div class="text-section ml-3">
-            <div class="button-banner">
-              <button type="submit" class="button pantalla2">
-                Pagar
-              </button>
+    <h2 class="proveedores">¿Como quieres pagar?</h2>
+    <h2 class="valor">${{ dataInfoapp[0].pagoMinimo }}</h2>
+    <section class="container banners">
+      <div class="card banner1">
+        <div class="info-banner">
+          <p>Desde tu billeteraW</p>
+          <div class="d-flex align-items-center">
+            <div class="image-section">
+              <picture class="logo">
+                <img
+                  src="/public/billeteraW.png"
+                  alt="logo"
+                  class="img-fluid"
+                  loading="lazy"
+                  title="logo"
+                />
+              </picture>
             </div>
-         </div>
+            <div class="text-section ml-3">
+              <div class="button-banner">
+                <button type="submit" class="button pantalla2">Pagar</button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="card banner2">
-      <div class="info-banner">
-        <p>Desde PSE</p>
-        <div class="d-flex align-items-center">
-          <div class="image-section">
-            <picture class="logo">
-              <img src="/public/PSELOGO.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
-            </picture>
-          </div>
-          <div class="text-section ml-3">
-            <div class="button-banner">
-              <button type="submit" class="button pantalla2">
-                Pagar
-              </button>
+      <div class="card banner2">
+        <div class="info-banner">
+          <p>Desde PSE</p>
+          <div class="d-flex align-items-center">
+            <div class="image-section">
+              <picture class="logo">
+                <img
+                  src="/public/PSELOGO.png"
+                  alt="logo"
+                  class="img-fluid"
+                  loading="lazy"
+                  title="logo"
+                />
+              </picture>
+            </div>
+            <div class="text-section ml-3">
+              <div class="button-banner">
+                <button type="submit" class="button pantalla2">Pagar</button>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="card banner3">
-      <div class="info-banner">
-        <p>Desde tu cuenta nequi</p>
-        <div class="d-flex align-items-center">
-          <div class="image-section">
-            <picture class="logo">
-              <img src="/public/Nequi.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
-            </picture>
-          </div>
-          <div class="text-section ml-3">
-            <div class="button-banner">
-              <button type="submit" class="button pantalla2">
-                Pagar
-              </button>
+      <div class="card banner3">
+        <div class="info-banner">
+          <p>Desde tu cuenta nequi</p>
+          <div class="d-flex align-items-center">
+            <div class="image-section">
+              <picture class="logo">
+                <img
+                  src="/public/Nequi.png"
+                  alt="logo"
+                  class="img-fluid"
+                  loading="lazy"
+                  title="logo"
+                />
+              </picture>
+            </div>
+            <div class="text-section ml-3">
+              <div class="button-banner">
+                <button type="submit" class="button pantalla2">Pagar</button>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="card banner4">
-      <div class="info-banner">
-        <p>Desde tu cuenta daviplata</p>
-        <div class="d-flex align-items-center">
-          <div class="image-section">
-            <picture class="logo">
-              <img src="/public/Daviplata.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
-            </picture>
-          </div>
-          <div class="text-section ml-3">
-            <div class="button-banner">
-              <button type="submit" class="button pantalla2">
-                Pagar
-              </button>
+      <div class="card banner4">
+        <div class="info-banner">
+          <p>Desde tu cuenta daviplata</p>
+          <div class="d-flex align-items-center">
+            <div class="image-section">
+              <picture class="logo">
+                <img
+                  src="/public/Daviplata.png"
+                  alt="logo"
+                  class="img-fluid"
+                  loading="lazy"
+                  title="logo"
+                />
+              </picture>
+            </div>
+            <div class="text-section ml-3">
+              <div class="button-banner">
+                <button type="submit" class="button pantalla2">Pagar</button>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="card banner5">
-      <div class="info-banner">
-        <p>Paga en efectivo</p>
-        <div class="d-flex align-items-center">
-          <p>Abona a tu dueda a tu medida</p>
-          <div class="text-section ml-3">
-            <div class="button-banner">
-              <button type="submit" class="button" id="Pantalla8">
-                Pagar
-              </button>
+      <div class="card banner5">
+        <div class="info-banner">
+          <p>Paga en efectivo</p>
+          <div class="d-flex align-items-center">
+            <p>Abona a tu dueda a tu medida</p>
+            <div class="text-section ml-3">
+              <div class="button-banner">
+                <button type="submit" class="button" id="Pantalla8">
+                  Pagar
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+  </motion.div>
 </template>
 
 <style scoped>
@@ -164,8 +194,7 @@ onMounted(() => {
   font-size: 17px;
 }
 
-
-button { 
+button {
   padding-left: 1.25rem;
   padding-right: 1.25rem;
   border-radius: 6.25rem;
@@ -205,7 +234,6 @@ button:focus {
   width: 60%;
 }
 
-
 .info-banner {
   width: 100%;
   letter-spacing: -0.03em;
@@ -227,7 +255,6 @@ button:focus {
   display: flex;
   align-items: center;
 }
-
 
 .parrafo-marcas {
   font-weight: bold;
@@ -253,7 +280,7 @@ button:focus {
   display: flex;
   justify-content: center;
 }
-.valor{
+.valor {
   font-weight: bold;
   color: white;
   width: 100%;
@@ -261,7 +288,7 @@ button:focus {
   padding: 24px;
   display: flex;
   justify-content: center;
-  margin-top: -22px
+  margin-top: -22px;
 }
 .banners {
   display: flex;

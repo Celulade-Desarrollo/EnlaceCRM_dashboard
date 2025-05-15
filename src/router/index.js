@@ -5,7 +5,7 @@ const routes = [
   {
     path: "/",
     name: "inicio",
-    component: () => import("../views/InicioView.vue"),
+    component: () => import("../views/PantallaLoader.vue"),
   },
   {
     path: "/Pantalla1View",

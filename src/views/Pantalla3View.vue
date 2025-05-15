@@ -1,17 +1,18 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import Heading from "../components/UI/Heading.vue";
+import { fadeInUp } from "../motion/pageAnimation";
+import { motion } from "motion-v";
 
 // Variables reactivas
-const valorPago = ref('');
+const valorPago = ref("");
 
 // Instancia de Vue Router
 const router = useRouter();
 
-let dataInfoapp = $.parseJSON(localStorage.getItem('data'))
-let pagarValor = localStorage.getItem('pagarValor');
-
+let dataInfoapp = $.parseJSON(localStorage.getItem("data"));
+let pagarValor = localStorage.getItem("pagarValor");
 
 // Función para manejar el clic en el botón "codigoPedido1"
 const handlePago1Click = () => {
@@ -22,62 +23,75 @@ const handlePagina2Click = () => {
 };
 
 // Montar el event listener para el envío del formulario y clic en el botón
-onMounted(() => {;
-  const pago1Button = document.getElementById('boton-pago');
+onMounted(() => {
+  const pago1Button = document.getElementById("boton-pago");
   if (pago1Button) {
-    pago1Button.addEventListener('click', handlePago1Click);
+    pago1Button.addEventListener("click", handlePago1Click);
   }
-    const atras = document.getElementById('boton-atras');
+  const atras = document.getElementById("boton-atras");
   if (atras) {
-    atras.addEventListener('click', handlePagina2Click);
+    atras.addEventListener("click", handlePagina2Click);
   }
 });
 </script>
 
 <template>
+  <motion.div v-bind="fadeInUp">
     <section class="logo-container">
-        <img src="/public/enlaceFiado.png" alt="logo Enlace CRM" class="logo-main" />
+      <img
+        src="/public/enlaceFiado.png"
+        alt="logo Enlace CRM"
+        class="logo-main"
+      />
     </section>
 
-  <Heading :mensaje="'Hola, ' + (dataInfoapp && dataInfoapp.length > 0 ? dataInfoapp[0].nombre : 'Usuario')" />
+    <Heading
+      :mensaje="
+        'Hola, ' +
+        (dataInfoapp && dataInfoapp.length > 0
+          ? dataInfoapp[0].nombre
+          : 'Usuario')
+      "
+    />
 
-   <section class="content">
-    <div class="card">
-      <div class="header-container">
-        <img src="/Alpina.png" alt="Alpina" class="alpina-logo-outside" />
-      </div>
-      <h2 class="proveedores">¿Está seguro que desea pagar?</h2>
-      <h1 class="proveedores mb-4" id="cantidad-pagar"><span>${{ pagarValor }}</span> a Alpina</h1>
+    <section class="content">
+      <div class="card">
+        <div class="header-container">
+          <img src="/Alpina.png" alt="Alpina" class="alpina-logo-outside" />
+        </div>
+        <h2 class="proveedores">¿Está seguro que desea pagar?</h2>
+        <h1 class="proveedores mb-4" id="cantidad-pagar">
+          <span>${{ pagarValor }}</span> a Alpina
+        </h1>
 
-       <div class="form-group">
-        <label for="pagar" id="label-pagar" class="input-label">
-          <input
-            class="form-control text-center mb-4"
-            aria-required="true"
-            aria-invalid="false"
-            aria-labelledby="label-pagar"
-            name="numeroTransportista"
-            v-model="numeroTransportista"
-            type="number"
-            placeholder=""
-            autocomplete="off"
-            id="numeroTransportista"
-            required
-            aria-describedby="error-pagar"
-          />
-          <span class="floating-label">Ingresa el teléfono del transportista</span>
-        </label>
-    </div>
-      <div class="button-banner-pedidos">
-        <button type="button" id="boton-pago" class="boton">
-          Pagar
-        </button>
-        <button type="button" id="boton-atras" class="boton">
-          Atrás
-        </button>
+        <div class="form-group">
+          <label for="pagar" id="label-pagar" class="input-label">
+            <input
+              class="form-control text-center mb-4"
+              aria-required="true"
+              aria-invalid="false"
+              aria-labelledby="label-pagar"
+              name="numeroTransportista"
+              v-model="numeroTransportista"
+              type="number"
+              placeholder=""
+              autocomplete="off"
+              id="numeroTransportista"
+              required
+              aria-describedby="error-pagar"
+            />
+            <span class="floating-label"
+              >Ingresa el teléfono del transportista</span
+            >
+          </label>
+        </div>
+        <div class="button-banner-pedidos">
+          <button type="button" id="boton-pago" class="boton">Pagar</button>
+          <button type="button" id="boton-atras" class="boton">Atrás</button>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
+  </motion.div>
 </template>
 
 <style scoped>
@@ -197,7 +211,7 @@ button:focus {
   color: white;
   padding: 0.75rem 1rem;
   border-radius: 10px;
-  margin: 0; 
+  margin: 0;
 }
 
 .alpina-logo-outside {
@@ -211,7 +225,6 @@ button:focus {
 }
 .boton:hover {
   background-color: #f15bab;
-
 }
 /* Proveedor */
 .provider-content {

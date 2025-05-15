@@ -1,50 +1,50 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue';
-import { useRouter } from 'vue-router'; // Importa useRouter para navegar entre vistas
-import RouterLink from "../components/UI/Routerlink.vue"; 
+import { ref, onMounted, watch } from "vue";
+import { useRouter } from "vue-router"; // Importa useRouter para navegar entre vistas
+import RouterLink from "../components/UI/Routerlink.vue";
 import Heading from "../components/UI/Heading.vue";
 
 // Variables reactivas
-const celular = ref('');
+const celular = ref("");
 const data = ref(null);
-const error = ref('');
+const error = ref("");
 
 const deudaTotal = ref(0);
 const cupoTotal = ref(0);
 
 // Instancia de router
 const router = useRouter();
-let pagarValor = localStorage.getItem('pagarValor');
-let dataInfoapp = JSON.parse(localStorage.getItem('data'));
+let pagarValor = localStorage.getItem("pagarValor");
+let dataInfoapp = JSON.parse(localStorage.getItem("data"));
 
-deudaTotal.value = parseFloat(dataInfoapp[0].saldorestante.replace(/[$,]/g, ''));
-cupoTotal.value = parseFloat(dataInfoapp[0].saldoabonado.replace(/[$,]/g, ''));
-
+deudaTotal.value = parseFloat(
+  dataInfoapp[0].saldorestante.replace(/[$,]/g, "")
+);
+cupoTotal.value = parseFloat(dataInfoapp[0].saldoabonado.replace(/[$,]/g, ""));
 
 const handlePago1Click = () => {
   window.open("/Pantalla1View", "_parent");
 };
 
-
 // Función para calcular y ajustar la barra de progreso
 const updateProgressBar = () => {
-    const total = deudaTotal.value + cupoTotal.value;
-    const deudaPercentage = (deudaTotal.value / total) * 100;
-    const cupoPercentage = (cupoTotal.value / total) * 100;
+  const total = deudaTotal.value + cupoTotal.value;
+  const deudaPercentage = (deudaTotal.value / total) * 100;
+  const cupoPercentage = (cupoTotal.value / total) * 100;
 
-    document.getElementById('deuda-bar').style.width = `${deudaPercentage}%`;
-    document.getElementById('cupo-bar').style.width = `${cupoPercentage}%`;
+  document.getElementById("deuda-bar").style.width = `${deudaPercentage}%`;
+  document.getElementById("cupo-bar").style.width = `${cupoPercentage}%`;
 };
 
 // Montar el event listener para el envío del formulario
 onMounted(() => {
-    const Pantalla5Button = document.getElementById('Pantalla6');
-    if (Pantalla5Button) {
-        Pantalla5Button.addEventListener('click', handlePantalla6Click); // Agrega el event listener al botón
-    }
-    
-    // Actualizar la barra de progreso al montar el componente
-    updateProgressBar();
+  const Pantalla5Button = document.getElementById("Pantalla6");
+  if (Pantalla5Button) {
+    Pantalla5Button.addEventListener("click", handlePantalla6Click); // Agrega el event listener al botón
+  }
+
+  // Actualizar la barra de progreso al montar el componente
+  updateProgressBar();
 });
 
 // Observar cambios en los valores para actualizar la barra de progreso
@@ -53,22 +53,44 @@ watch([deudaTotal, cupoTotal], updateProgressBar);
 
 <template>
   <section class="logo-container">
-      <img src="/public/enlaceFiado.png" alt="logo Enlace CRM" class="logo-main" />
-    </section>
+    <img
+      src="/public/enlaceFiado.png"
+      alt="logo Enlace CRM"
+      class="logo-main"
+    />
+  </section>
 
-  <Heading :mensaje="'Hola, ' + (dataInfoapp && dataInfoapp.length > 0 ? dataInfoapp[0].nombre : 'Usuario')" /> 
+  <Heading
+    :mensaje="
+      'Hola, ' +
+      (dataInfoapp && dataInfoapp.length > 0
+        ? dataInfoapp[0].nombre
+        : 'Usuario')
+    "
+  />
 
   <section class="content">
     <div class="card">
-        <div class="header-container">
-            <picture class="logo">
-              <img src="/public/Alpina.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
-            </picture>
-          <h2 class="proveedores mb-4" id="pagado">Su pago por <span>${{ pagarValor }}</span> para Alpina <br>ha sido recibido</h2>
-          <h1 class="proveedores mb-4" id="cantidad-pagar"><strong>¡Muchas gracias!</strong></h1>
+      <div class="header-container">
+        <picture class="logo">
+          <img
+            src="/public/Alpina.png"
+            alt="logo"
+            class="img-fluid"
+            loading="lazy"
+            title="logo"
+          />
+        </picture>
+        <h2 class="proveedores mb-4" id="pagado">
+          Su pago por <span>${{ pagarValor }}</span> para Alpina <br />ha sido
+          recibido
+        </h2>
+        <h1 class="proveedores mb-4" id="cantidad-pagar">
+          <strong>¡Muchas gracias!</strong>
+        </h1>
       </div>
-         <div class="button-inicio" @click="handlePago1Click">
-        <button type="button"  class="button">Inicio</button>
+      <div class="button-inicio" @click="handlePago1Click">
+        <button type="button" class="button">Inicio</button>
       </div>
     </div>
   </section>
@@ -138,7 +160,6 @@ watch([deudaTotal, cupoTotal], updateProgressBar);
   cursor: pointer;
   width: 200px;
   margin-left: auto;
-
 }
 
 .button:hover {
@@ -205,4 +226,3 @@ button:focus {
   }
 }
 </style>
-

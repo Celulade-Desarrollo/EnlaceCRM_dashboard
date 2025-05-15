@@ -1,13 +1,17 @@
 <template>
-  <div class="loader-container">
-    <img src="/enlaceFiado.png" alt="" class="h-[10%] w-[80%]" />
-    <div class="spinner"></div>
-  </div>
+  <motion.div v-bind="fadeInUp">
+    <div class="loader-container">
+      <img src="/enlaceFiado.png" alt="" class="h-[60px] w-[250px]" />
+      <div class="spinner"></div>
+    </div>
+  </motion.div>
 </template>
 
 <script setup>
 import { onMounted } from "vue";
 import { useRouter } from "vue-router";
+import { fadeInUp } from "../motion/pageAnimation";
+import { motion } from "motion-v";
 
 const router = useRouter();
 

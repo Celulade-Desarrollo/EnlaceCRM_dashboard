@@ -1,63 +1,79 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import Heading from "../components/UI/Heading.vue";
 const router = useRouter();
-const dataInfoapp = ref([{ nombre: 'Juan', saldorestante: '$0', saldoabonado: '$0' }]);
+const dataInfoapp = ref([
+  { nombre: "Juan", saldorestante: "$0", saldoabonado: "$0" },
+]);
+import { fadeInUp } from "../motion/pageAnimation";
+import { motion } from "motion-v";
 
 onMounted(() => {
   // Establece fondo morado al cargar esta pantalla
-  document.body.style.backgroundColor = '#2e008b';
+  document.body.style.backgroundColor = "#2e008b";
 
-  const data = localStorage.getItem('data');
+  const data = localStorage.getItem("data");
   if (data) {
     try {
       dataInfoapp.value = JSON.parse(data);
     } catch (e) {
-      console.error('Error al parsear data desde localStorage:', e);
+      console.error("Error al parsear data desde localStorage:", e);
     }
   }
 });
 
 const goToPantalla2 = () => {
-  router.push('/Pantalla2View');
+  router.push("/Pantalla2View");
 };
 
 const goToPantalla5 = () => {
-  router.push('/Pantalla5View');
+  router.push("/Pantalla5View");
 };
 </script>
 
-
 <template>
-<section class="logo-container">
-  <img src="/public/enlaceFiado.png" alt="logo Enlace CRM" class="logo-main" />
-</section>
-   <!-- Encabezado -->
-    <Heading :mensaje="'Hola, ' + dataInfoapp[0].nombre" />
-    
-  <section class="content">
-    <!-- Tarjeta de deuda -->
-    <div class="card">
-      <h2>Deuda total</h2>
-      <p class="bold">{{ dataInfoapp[0]?.saldorestante }}</p>
-      <p><span class="bold pink">Fecha siguiente abono:</span></p>
-      <p>Cupo disponible: <span class="pink bold">{{ dataInfoapp[0]?.saldoabonado }}</span></p>
-      <button class="button" @click="goToPantalla5" id="Pantalla5">Ver más</button>
-    </div>
+  <section class="logo-container">
+    <img
+      src="/public/enlaceFiado.png"
+      alt="logo Enlace CRM"
+      class="logo-main"
+    />
+  </section>
+  <!-- Encabezado -->
+  <Heading :mensaje="'Hola, ' + dataInfoapp[0].nombre" />
 
-    <!-- Tarjeta de proveedor -->
-    <div class="card">
-      <h3 class="card-header">Proveedores disponibles para recibir pago</h3>
-      <div class="provider-content">
-        <img src="/Alpina.png" alt="Alpina" class="alpina-img" />
-        <div class="text-center">
-          <p class="bold">Alpina</p>
-          <button class="button" @click="goToPantalla2" id="Pantalla2">Pagar</button>
+  <motion.div v-bind="fadeInUp">
+    <section class="content">
+      <!-- Tarjeta de deuda -->
+      <div class="card">
+        <h2>Deuda total</h2>
+        <p class="bold">{{ dataInfoapp[0]?.saldorestante }}</p>
+        <p><span class="bold pink">Fecha siguiente abono:</span></p>
+        <p>
+          Cupo disponible:
+          <span class="pink bold">{{ dataInfoapp[0]?.saldoabonado }}</span>
+        </p>
+        <button class="button" @click="goToPantalla5" id="Pantalla5">
+          Ver más
+        </button>
+      </div>
+
+      <!-- Tarjeta de proveedor -->
+      <div class="card">
+        <h3 class="card-header">Proveedores disponibles para recibir pago</h3>
+        <div class="provider-content">
+          <img src="/Alpina.png" alt="Alpina" class="alpina-img" />
+          <div class="text-center">
+            <p class="bold">Alpina</p>
+            <button class="button" @click="goToPantalla2" id="Pantalla2">
+              Pagar
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+  </motion.div>
 </template>
 
 <style scoped>
@@ -130,7 +146,6 @@ const goToPantalla5 = () => {
   display: block;
   text-align: center;
 }
-
 
 .button:hover {
   background-color: #f15bab;

@@ -3,6 +3,8 @@ import { ref, reactive } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
 const router = useRouter();
+import { fadeInUp } from "../motion/pageAnimation";
+import { motion } from "motion-v";
 
 // Referencias para los campos del formulario
 const telefono = ref("");
@@ -81,67 +83,70 @@ const validar = async () => {
 </script>
 
 <template>
-  <section class="logo-container">
-    <picture class="logo">
-      <img
-        src="/public/enlaceFiado.png"
-        alt="logo"
-        class="img-fluid"
-        loading="lazy"
-        title="logo"
-      />
-    </picture>
-  </section>
+  <motion.div v-bind="fadeInUp">
+    <section class="logo-container">
+      <picture class="logo">
+        <img
+          src="/public/enlaceFiado.png"
+          alt="logo"
+          class="img-fluid"
+          loading="lazy"
+          title="logo"
+        />
+      </picture>
+    </section>
 
-  <!-- Contenido de login centrado -->
-  <h3 class="titulo-login">Ingresa a tu cuenta</h3>
-  <section class="login-container">
-    <div class="login-card">
-      <form id="myForm" class="myForm" @submit.prevent="validar">
-        <div class="form-group">
-          <label
-            for="telefono"
-            class="input-label flex text-center justify-center items-center"
-          >
-            <input
-              class="form-control"
-              v-model="telefono"
-              type="tel"
-              placeholder=""
-              @input="soloNumeros"
-              maxlength="10"
-            />
-            <span class="floating-label">Ingresa tu teléfono</span>
-          </label>
-        </div>
-        <div class="form-group">
-          <label for="password" class="input-label">
-            <input
-              class="form-control"
-              v-model="password"
-              type="password"
-              placeholder=""
-            />
-            <span class="floating-label">OTP</span>
-          </label>
-        </div>
-        <button type="submit" class="button mt-4" @click="handleSubmit">
-          Ingresar
-        </button>
-        <p v-if="errorMessage.value" class="text-danger mt-2">
-          {{ errorMessage.value }}
+    <!-- Contenido de login centrado -->
+    <h3 class="titulo-login">Ingresa a tu cuenta</h3>
+    <section class="login-container">
+      <div class="login-card">
+        <form id="myForm" class="myForm" @submit.prevent="validar">
+          <div class="form-group">
+            <label
+              for="telefono"
+              class="input-label flex text-center justify-center items-center"
+            >
+              <input
+                class="form-control"
+                v-model="telefono"
+                type="tel"
+                placeholder=""
+                @input="soloNumeros"
+                maxlength="10"
+              />
+              <span class="floating-label">Ingresa tu teléfono</span>
+            </label>
+          </div>
+          <div class="form-group">
+            <label for="password" class="input-label">
+              <input
+                class="form-control"
+                v-model="password"
+                type="password"
+                placeholder=""
+              />
+              <span class="floating-label">OTP</span>
+            </label>
+          </div>
+          <button type="submit" class="button mt-4" @click="handleSubmit">
+            Ingresar
+          </button>
+          <p v-if="errorMessage.value" class="text-danger mt-2">
+            {{ errorMessage.value }}
+          </p>
+        </form>
+        <p class="subtitulo mt-4">
+          ¿No estás registrado?<br />
+          Regístrate
+          <a href="https://fiado.enlacecrm.com/"><span>AQUÍ</span></a>
         </p>
-      </form>
-      <p class="subtitulo mt-4">
-        ¿No estás registrado?<br />
-        Regístrate <a href="https://fiado.enlacecrm.com/"><span>AQUÍ</span></a>
-      </p>
-      <p class="fpassword mt-4" @click="goToPantalla9">
-        ¿Olvidaste tu contraseña?<br />
-        Haz click <span>AQUÍ</span>
-      </p>
-    </div>
-  </section>
+        <p class="fpassword mt-4" @click="goToPantalla9">
+          ¿Olvidaste tu contraseña?<br />
+          Haz click <span>AQUÍ</span>
+        </p>
+      </div>
+    </section>
+  </motion.div>
 </template>
 
 <style scoped>
@@ -179,7 +184,6 @@ const validar = async () => {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 
 /* Animación al enfocar o escribir */
 .form-control:focus + .floating-label,
@@ -317,5 +321,4 @@ button:focus {
     margin-bottom: 15px;
   }
 }
-
 </style>

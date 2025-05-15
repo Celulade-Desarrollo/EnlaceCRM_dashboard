@@ -1,12 +1,14 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue';
-import axios from 'axios';
+import { ref, onMounted, watch } from "vue";
+import axios from "axios";
 import RouterLink from "../components/UI/Routerlink.vue";
 import Heading from "../components/UI/Heading.vue";
+import { fadeInUp } from "../motion/pageAnimation";
+import { motion } from "motion-v";
 
-const email = ref('');
-const emailErrorMessage = ref('');
-const mensajeError = ref('');
+const email = ref("");
+const emailErrorMessage = ref("");
+const mensajeError = ref("");
 
 // Regex para validar formato de email
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -16,7 +18,8 @@ watch(email, (newEmail) => {
   if (!newEmail) {
     emailErrorMessage.value = "";
   } else if (!emailRegex.test(newEmail)) {
-    emailErrorMessage.value = "Por favor, ingresa un correo electrónico válido.";
+    emailErrorMessage.value =
+      "Por favor, ingresa un correo electrónico válido.";
   } else {
     emailErrorMessage.value = "";
   }
@@ -24,65 +27,77 @@ watch(email, (newEmail) => {
 
 // Redirigir a la pantalla de recuperación de contraseña
 const goToPantallaInicio = () => {
-    window.open("/", "_parent");
+  window.open("/", "_parent");
 };
 
 // Manejar el envío del formulario
 const handleSubmit = async (event) => {
-    event.preventDefault();
-    await fetchData();
+  event.preventDefault();
+  await fetchData();
 };
 
 // Asignar el evento al montar el componente
 onMounted(() => {
-    const form = document.getElementById('myForm');
-    if (form) {
-        form.addEventListener('submit', handleSubmit);
-    }
+  const form = document.getElementById("myForm");
+  if (form) {
+    form.addEventListener("submit", handleSubmit);
+  }
 });
 </script>
 
-
 <template>
   <!-- Contenido de login centrado -->
+  <motion.div v-bind="fadeInUp">
     <section class="logo-container">
-      <img src="/public/enlaceFiado.png" alt="logo Enlace CRM" class="logo-main" /><br><br>
+      <img
+        src="/public/enlaceFiado.png"
+        alt="logo Enlace CRM"
+        class="logo-main"
+      /><br /><br />
     </section>
 
-   <h4 class="titulo-login">¿Olvidaste tu contraseña?</h4>
-  <section class="login-container">
-    <div class="login-card">
-      <form id="myForm" class="myForm">
-        <p class="subtitulo mt-4">Ingresa tu correo electrónico registrado y te enviaremos instrucciones para restablecer tu contraseña.</p>
-        <div class="form-group">
-          <label for="email" class="input-label">
-            <input
-              class="form-control"
-              aria-required="true"
-              aria-invalid="false"
-              aria-labelledby="label-email"
-              name="email"
-              v-model="email"
-              type="email"
-              placeholder=""
-              autocomplete="off"
-              aria-describedby="error-email"
-            />
-             <span class="floating-label">Ingresa tu correo</span>
-          </label>
-        </div>
+    <h4 class="titulo-login">¿Olvidaste tu contraseña?</h4>
+    <section class="login-container">
+      <div class="login-card">
+        <form id="myForm" class="myForm">
+          <p class="subtitulo mt-4">
+            Ingresa tu correo electrónico registrado y te enviaremos
+            instrucciones para restablecer tu contraseña.
+          </p>
+          <div class="form-group">
+            <label for="email" class="input-label">
+              <input
+                class="form-control"
+                aria-required="true"
+                aria-invalid="false"
+                aria-labelledby="label-email"
+                name="email"
+                v-model="email"
+                type="email"
+                placeholder=""
+                autocomplete="off"
+                aria-describedby="error-email"
+              />
+              <span class="floating-label">Ingresa tu correo</span>
+            </label>
+          </div>
 
-        <div class="button-container mt-4">
+          <div class="button-container mt-4">
             <button type="submit" class="button mt-4">
               Enviar Instrucciones
             </button>
-            <button type="submit" class="button mt-4" @click="goToPantallaInicio">
+            <button
+              type="submit"
+              class="button mt-4"
+              @click="goToPantallaInicio"
+            >
               Volver a la pagina principal
-            </button> 
-        </div>
-      </form>
-    </div>
-  </section>
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+  </motion.div>
 </template>
 
 <style scoped>
@@ -235,7 +250,6 @@ button:focus {
   align-items: center;
 }
 
-
 /* Tablets y pantallas medianas */
 @media (max-width: 768px) {
   .login-card {
@@ -282,4 +296,3 @@ button:focus {
   }
 }
 </style>
-

@@ -2,11 +2,13 @@
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import Heading from "../components/UI/Heading.vue";
+import { fadeInUp } from "../motion/pageAnimation";
+import { motion } from "motion-v";
 
 // Variables reactivas
 const pagar = ref("");
 const errorMessage = ref("");
-const dataInfoapp = ref([{ nombre: '', saldorestante: '$0' }]);
+const dataInfoapp = ref([{ nombre: "", saldorestante: "$0" }]);
 
 // Instancia de Vue Router
 const router = useRouter();
@@ -17,15 +19,17 @@ const router = useRouter();
 const handlePago1Click = () => {
   const valorPago = pagar.value;
   const regex = /^\d{5,}$/; // Mínimo 5 dígitos, solo números
-const saldoTotal = parseFloat(dataInfoapp.value[0].saldorestante.replace('$', '').replace(',', ''));
+  const saldoTotal = parseFloat(
+    dataInfoapp.value[0].saldorestante.replace("$", "").replace(",", "")
+  );
   if (!valorPago || isNaN(valorPago) || !regex.test(valorPago)) {
     errorMessage.value =
       "Ingrese un valor válido de al menos 5 dígitos sin puntos ni comas";
     return;
-  } if (valorPago > saldoTotal){
-    errorMessage.value =
-      "No puede ingresar un valor mayor a la deuda";
-      return;
+  }
+  if (valorPago > saldoTotal) {
+    errorMessage.value = "No puede ingresar un valor mayor a la deuda";
+    return;
   }
 
   localStorage.setItem("pagarValor", valorPago); // Guarda el valor en localStorage
@@ -33,16 +37,16 @@ const saldoTotal = parseFloat(dataInfoapp.value[0].saldorestante.replace('$', ''
 };
 
 onMounted(() => {
-  const data = localStorage.getItem('data');
+  const data = localStorage.getItem("data");
   if (data) {
     try {
       dataInfoapp.value = JSON.parse(data);
       const saldo = parseFloat(
-        dataInfoapp.value[0].saldorestante.replace('$', '').replace(',', '')
+        dataInfoapp.value[0].saldorestante.replace("$", "").replace(",", "")
       );
       pagar.value = saldo;
     } catch (e) {
-      console.error('Error al leer data desde localStorage:', e);
+      console.error("Error al leer data desde localStorage:", e);
     }
   }
 });
@@ -57,56 +61,62 @@ onMounted(() => {
 </script>
 
 <template>
-  <section class="logo-container">
-    <img
-      src="/public/enlaceFiado.png"
-      alt="logo Enlace CRM"
-      class="logo-main"
+  <motion.div v-bind="fadeInUp">
+    <section class="logo-container">
+      <img
+        src="/public/enlaceFiado.png"
+        alt="logo Enlace CRM"
+        class="logo-main"
+      />
+    </section>
+
+    <Heading
+      :mensaje="
+        'Hola, ' +
+        (dataInfoapp && dataInfoapp.length > 0
+          ? dataInfoapp[0].nombre
+          : 'Usuario')
+      "
     />
-  </section>
 
-  <Heading
-    :mensaje="
-      'Hola, ' +
-      (dataInfoapp && dataInfoapp.length > 0
-        ? dataInfoapp[0].nombre
-        : 'Usuario')
-    "
-  />
-
-  <section class="content">
-    <div class="card">
-      <div class="header-container">
-        <h3 class="card-header-text">Pago a proveedor Alpina</h3>
-        <img src="/Alpina.png" alt="Alpina" class="alpina-logo-outside" />
+    <section class="content">
+      <div class="card">
+        <div class="header-container">
+          <h3 class="card-header-text">Pago a proveedor Alpina</h3>
+          <img src="/Alpina.png" alt="Alpina" class="alpina-logo-outside" />
+        </div>
+        <div class="form-group">
+          <label for="valor" class="input-label">
+            <input
+              class="form-control text-center"
+              aria-required="true"
+              aria-invalid="false"
+              aria-labelledby="label-pagar"
+              name="pagar"
+              v-model.number="pagar"
+              type="number"
+              placeholder=""
+              autocomplete="off"
+              id="pagar-valor"
+              aria-describedby="error-pagar"
+              :max="
+                parseFloat(
+                  dataInfoapp[0].saldorestante.replace('$', '').replace(',', '')
+                )
+              "
+            />
+            <span class="floating-label">Ingresa el valor a pagar</span>
+          </label>
+        </div>
+        <div class="button-banner">
+          <button type="button" id="boton-pago">Pagar</button>
+          <p v-if="errorMessage" id="error-email" class="text-danger mt-1">
+            {{ errorMessage }}
+          </p>
+        </div>
       </div>
-      <div class="form-group">
-        <label for="valor" class="input-label">
-          <input
-            class="form-control text-center"
-            aria-required="true"
-            aria-invalid="false"
-            aria-labelledby="label-pagar"
-            name="pagar"
-            v-model.number="pagar"
-            type="number"
-            placeholder=""
-            autocomplete="off"
-            id="pagar-valor"
-            aria-describedby="error-pagar"
-            :max="parseFloat(dataInfoapp[0].saldorestante.replace('$', '').replace(',', ''))"
-          />
-          <span class="floating-label">Ingresa el valor a pagar</span>
-        </label>
-      </div>
-      <div class="button-banner">
-        <button type="button" id="boton-pago">Pagar</button>
-        <p v-if="errorMessage" id="error-email" class="text-danger mt-1">
-          {{ errorMessage }}
-        </p>
-      </div>
-    </div>
-  </section>
+    </section>
+  </motion.div>
 </template>
 
 <style scoped>
