@@ -174,7 +174,12 @@ const validar = async () => {
   pointer-events: none;
   transition: 0.3s ease all;
   font-family: sans-serif;
+  white-space: nowrap;
+  max-width: 90%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
+
 
 /* Animación al enfocar o escribir */
 .form-control:focus + .floating-label,
@@ -281,4 +286,36 @@ button:focus {
   font-size: smaller;
   color: black;
 }
+@media (max-width: 600px) {
+  .login-card {
+    width: 90%;
+    padding: 16px;
+    margin-top: 10px;
+    border-radius: 12px;
+  }
+
+  .titulo-login {
+    font-size: 1.5rem;
+  }
+
+  .form-control {
+    font-size: 14px;
+  }
+
+  .floating-label {
+    font-size: 14px;
+  }
+
+  button {
+    font-size: 14px;
+    height: 2.5rem;
+  }
+
+  .logo .img-fluid {
+    max-width: 200px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+  }
+}
+
 </style>
