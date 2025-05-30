@@ -47,10 +47,7 @@ const handleNoClick = () => {
   emit('noAprobado', props.data.cedula);
 };
 
-const handleDownloadClick = () => {
-  // Emitimos solo la cédula para saber de qué card se desea descargar
-  emit('descargar', props.data.cedula);
-};
+
 </script>
 
 <template>
@@ -168,7 +165,6 @@ const handleDownloadClick = () => {
         <button type="button" class="btn-si" @click="handleSiClick">Aprobado</button>
         <button type="button" class="btn-no" @click="handleNoClick">No aprobado</button>
       </div>
-      <button type="button" class="btn-download" @click="handleDownloadClick">Descargar</button>
     </div>
   </div>
 </template>
@@ -325,7 +321,8 @@ const handleDownloadClick = () => {
 /* Grupo de botones inferior */
 .button-group {
   display: flex;
-  justify-content: space-between; /* Para separar 'Aprobado/No Aprobado' de 'Descargar' */
+  justify-content: center;
+  align-items: center;
   gap: 20px;
   margin-top: 30px;
   flex-wrap: wrap;

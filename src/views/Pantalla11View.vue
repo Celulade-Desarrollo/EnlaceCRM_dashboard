@@ -6,10 +6,17 @@ import { motion } from "motion-v";
 const scoring = ref("");
 const cupo = ref("");
 
+const campo1 = ref("Texto  1");
+const campo2 = ref("Texto 2");
+const campo3 = ref("Texto 3");
+
 const enviarAlBanco = () => {
   console.log("Enviando al banco:", {
+    campo1: campo1.value,
+    campo2: campo2.value,
+    campo3: campo3.value,
     scoring: scoring.value,
-    cupo: cupo.value
+    cupo: cupo.value,
   });
 };
 </script>
@@ -33,6 +40,13 @@ const enviarAlBanco = () => {
       <strong>flujo de enlace</strong>
     </div>
 
+    <!-- Campos mostrados como tarjetas estáticas -->
+    <div class="campos-tarjetas">
+      <div class="tarjeta-campo">{{ campo1 }}</div>
+      <div class="tarjeta-campo">{{ campo2 }}</div>
+      <div class="tarjeta-campo">{{ campo3 }}</div>
+    </div>
+
     <motion.div
       class="tabla-contenedor"
       v-motion="{
@@ -49,8 +63,22 @@ const enviarAlBanco = () => {
         </thead>
         <tbody>
           <tr>
-            <td><input v-model="scoring" class="tabla-input" type="number" placeholder="Ej: 720" /></td>
-            <td><input v-model="cupo" class="tabla-input" type="number" placeholder="Ej: 2500000" /></td>
+            <td>
+              <input
+                v-model="scoring"
+                class="tabla-input"
+                type="number"
+                placeholder="Ej: 720"
+              />
+            </td>
+            <td>
+              <input
+                v-model="cupo"
+                class="tabla-input"
+                type="number"
+                placeholder="Ej: 2500000"
+              />
+            </td>
           </tr>
         </tbody>
       </table>
@@ -63,15 +91,13 @@ const enviarAlBanco = () => {
 </template>
 
 <style scoped>
-
-
 .logo-container {
   text-align: center;
   margin-block: 1.5rem;
 }
 
 .logo-main {
-  width: min(180px, 70%);
+  width: min(180px, 80%);
   height: auto;
   display: inline;
 }
@@ -112,6 +138,27 @@ const enviarAlBanco = () => {
   color: #333;
 }
 
+.campos-tarjetas {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.tarjeta-campo {
+  flex: 1;
+  min-width: 150px;
+  padding: 10px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  border: 2px solid #251886;
+  border-radius: 10px;
+  background-color: #fafafa;
+  text-align: center;
+  user-select: none; /* para que no puedan copiar texto si quieres */
+}
+
 .tabla-contenedor {
   overflow-x: auto;
   margin-bottom: 1.5rem;
@@ -141,18 +188,12 @@ const enviarAlBanco = () => {
   color: #f0f0f0;
 }
 
-.tabla .null {
-  color: #9ca3af;
-  font-style: italic;
-}
-
-
 .tabla-input {
   width: 100%;
   padding: 0.4rem;
   font-size: 0.95rem;
-  border:2px solid#1012a3;
-  border-radius:6px;
+  border: 2px solid #1012a3;
+  border-radius: 6px;
   text-align: center;
   outline: none;
   background-color: #fff;
@@ -199,7 +240,9 @@ const enviarAlBanco = () => {
   .tarjeta {
     padding: 2rem;
   }
-  .campo, .cedula {
+
+  .campo,
+  .cedula {
     font-size: 1.05rem;
   }
 }

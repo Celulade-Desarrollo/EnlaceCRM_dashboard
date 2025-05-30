@@ -61,6 +61,11 @@ const routes = [
     component: () => import("../views/Pantalla9View.vue"),
   },
 
+   {
+    path: "/Pantalla10view",
+    name: "pantalla10",
+    component: () => import("../views/Pantalla10view.vue"),
+  },
   {
     path: "/Pantalla11View",
     name: "pantalla11",
