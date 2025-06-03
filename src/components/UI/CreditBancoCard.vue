@@ -3,18 +3,17 @@ import { ref } from "vue";
 
 // Define las props que este componente recibirá
 const props = defineProps({
+  
   // 'data' contendrá la información específica de cada persona/registro
   data: {
     type: Object,
     required: true,
     default: () => ({
-      cedula: "N/A",
-      scoring: "N/A", // Asegúrate de que tus datos tengan estas propiedades
-      cupo: "N/A",    // Asegúrate de que tus datos tengan estas propiedades
-      nombre: "Usuario", // Si quieres mostrar el nombre dentro de la card
+      cedula: "", 
     }),
   },
 });
+console.log("Data recibida en Card:", props.data.Cedula_Cliente);
 
 // Variables reactivas para los inputs dentro de CADA INSTANCIA de la card
 // Son locales a cada card para que no interfieran entre sí
@@ -69,12 +68,12 @@ const handleNoClick = () => {
       </div>
 
       <div class="cedula-display-text">
-        Cédula: {{ data.cedula }}
+        Cédula: {{ data.Cedula_Cliente }}
       </div>
     </div>
 
     <div class="form-inputs-container">
-      <label :for="'banco-listas-' + data.cedula" class="input-label main-input">
+      <label :for="'banco-listas-' + data.Cedula_Cliente" class="input-label main-input">
         <input
           class="form-control text-center"
           aria-required="true"
@@ -83,12 +82,12 @@ const handleNoClick = () => {
           type="text"
           placeholder=""
           autocomplete="off"
-          :id="'banco-listas-' + data.cedula"
+          :id="'banco-listas-' + data.Cedula_Cliente"
           v-model="bancoListas"
         />
         <span class="floating-label">Banco listas</span>
       </label>
-      <label :for="'aprobacion-cupo-1-' + data.cedula" class="input-label main-input">
+      <label :for="'aprobacion-cupo-1-' + data.Cedula_Cliente" class="input-label main-input">
         <input
           class="form-control text-center"
           aria-required="true"
@@ -97,12 +96,12 @@ const handleNoClick = () => {
           type="text"
           placeholder=""
           autocomplete="off"
-          :id="'aprobacion-cupo-1-' + data.cedula"
+          :id="'aprobacion-cupo-1-' + data.Cedula_Cliente"
           v-model="aprobacionCupo1"
         />
         <span class="floating-label">Aprobacion cupo sugerido</span>
       </label>
-      <label :for="'aprobacion-cupo-2-' + data.cedula" class="input-label main-input">
+      <label :for="'aprobacion-cupo-2-' + data.Cedula_Cliente" class="input-label main-input">
         <input
           class="form-control text-center"
           aria-required="true"
@@ -111,12 +110,12 @@ const handleNoClick = () => {
           type="text"
           placeholder=""
           autocomplete="off"
-          :id="'aprobacion-cupo-2-' + data.cedula"
+          :id="'aprobacion-cupo-2-' + data.Cedula_Cliente"
           v-model="aprobacionCupo2"
         />
         <span class="floating-label">Pagare digital firmado</span>
       </label>
-      <label :for="'aprobacion-cupo-3-' + data.cedula" class="input-label main-input">
+      <label :for="'aprobacion-cupo-3-' + data.Cedula_Cliente" class="input-label main-input">
         <input
           class="form-control text-center"
           aria-required="true"
@@ -125,12 +124,12 @@ const handleNoClick = () => {
           type="text"
           placeholder=""
           autocomplete="off"
-          :id="'aprobacion-cupo-3-' + data.cedula"
+          :id="'aprobacion-cupo-3-' + data.Cedula_Cliente"
           v-model="aprobacionCupo3"
         />
         <span class="floating-label">Creacion core bancario</span>
       </label>
-      <label :for="'aprobacion-cupo-4-' + data.cedula" class="input-label main-input">
+      <label :for="'aprobacion-cupo-4-' + data.Cedula_Cliente" class="input-label main-input">
         <input
           class="form-control text-center"
           aria-required="true"
@@ -139,12 +138,12 @@ const handleNoClick = () => {
           type="text"
           placeholder=""
           autocomplete="off"
-          :id="'aprobacion-cupo-4-' + data.cedula"
+          :id="'aprobacion-cupo-4-' + data.Cedula_Cliente"
           v-model="aprobacionCupo4"
         />
         <span class="floating-label">Usuario aprobado</span>
       </label>
-      <label :for="'aprobacion-cupo-5-' + data.cedula" class="input-label main-input">
+      <label :for="'aprobacion-cupo-5-' + data.Cedula_Cliente" class="input-label main-input">
         <input
           class="form-control text-center"
           aria-required="true"
@@ -153,7 +152,7 @@ const handleNoClick = () => {
           type="number"
           placeholder=""
           autocomplete="off"
-          :id="'aprobacion-cupo-5-' + data.cedula"
+          :id="'aprobacion-cupo-5-' + data.Cedula_Cliente"
           v-model="aprobacionCupo5"
         />
         <span class="floating-label">Cupo final</span>

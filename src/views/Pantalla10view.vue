@@ -5,56 +5,19 @@ import Heading from "../components/UI/Heading.vue";
 import { fadeInUp } from "../motion/pageAnimation";
 import { motion } from "motion-v";
 import CreditBancoCard from "../components/UI/CreditBancoCard.vue";
+import axios from "axios";
 
-const creditDataRecords = ref([]);
+const creditDataRecords = ref([])
 const router = useRouter();
 
-onMounted(() => {
-  const storedData = localStorage.getItem("data");
-  if (storedData) {
-    try {
-      const parsedData = JSON.parse(storedData);
-      creditDataRecords.value = parsedData.map((item, index) => ({
-        id: item.cedula || `default-${index}-${Date.now()}`,
-        cedula: item.cedula,
-        scoring: item.scoring || "N/A",
-        cupo: item.cupo || "N/A",
-        nombre: item.nombre || "Usuario",
-      }));
-    } catch (e) {
-      console.error("Error al leer data desde localStorage:", e);
-      initializeDefaultData();
-    }
-  } else {
-    initializeDefaultData();
+onMounted(async () => {
+  try {
+    const response = await axios.get('http://localhost:8080/api/flujoRegistroEnlace/estado/pendiente')
+    creditDataRecords.value = response.data
+  } catch (error) {
+    console.error('Error cargando datos:', error)
   }
-});
-
-function initializeDefaultData() {
-  creditDataRecords.value = [
-    {
-      id: "1000000001",
-      cedula: "1000000001",
-      scoring: "750",
-      cupo: "5,000,000",
-      nombre: "Juan Pérez",
-    },
-    {
-      id: "1000000002",
-      cedula: "1000000002",
-      scoring: "620",
-      cupo: "1,500,000",
-      nombre: "María López",
-    },
-    {
-      id: "1000000003",
-      cedula: "1000000003",
-      scoring: "810",
-      cupo: "10,000,000",
-      nombre: "Carlos Gómez",
-    },
-  ];
-}
+})
 
 const handleCardAprobado = (data) => {
   console.log("Card APROBADA:", data.cedula);
@@ -79,19 +42,19 @@ const handleCardNoAprobado = (cedula) => {
     </section>
 
     <Heading
-      :mensaje="creditDataRecords?.[0]?.nombre ? `Hola, ${creditDataRecords[0].nombre}` : 'Hola, Administrador'"
+      :mensaje=" 'Hola, Administrador'"
     />
 
     <div class="descargar-container">
       <button @click="handleDescargarTodo" class="boton">
-        Descargar Exel
+        Descargar Excel
       </button>
     </div>
 
     <section class="content">
       <CreditBancoCard
-        v-for="record in creditDataRecords"
-        :key="record.id"
+         v-for="record in creditDataRecords"
+        :key="record.Cedula_Cliente"
         :data="record"
         @aprobado="handleCardAprobado"
         @noAprobado="handleCardNoAprobado"
