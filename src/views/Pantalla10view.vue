@@ -84,6 +84,7 @@ async function downloadExcel() {
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Datos');
 
     // Generar archivo Excel en buffer
+
     const excelBuffer = XLSX.write(workbook, {
       bookType: 'xlsx',
       type: 'array',
@@ -94,7 +95,7 @@ async function downloadExcel() {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     });
 
-    //Toma el Blob (archivo en memoria) que se genro antes y lo convierte en una URL temporal del navegador
+    //toma el Blob (archivo en memoria) que se genro antes y lo convierte en una URL temporal del navegador
     // que apunta a ese archivo.
     const url = window.URL.createObjectURL(blob);
 

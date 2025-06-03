@@ -11,7 +11,6 @@ const props = defineProps({
       cedula: "N/A",
       scoring: "N/A", // Asegúrate de que tus datos tengan estas propiedades
       cupo: "N/A",    // Asegúrate de que tus datos tengan estas propiedades
-      nombre: "Usuario", // Si quieres mostrar el nombre dentro de la card
     }),
   },
 });
