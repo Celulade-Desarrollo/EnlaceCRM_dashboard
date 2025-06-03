@@ -6,15 +6,8 @@ import { motion } from "motion-v";
 const scoring = ref("");
 const cupo = ref("");
 
-const campo1 = ref("Texto  1");
-const campo2 = ref("Texto 2");
-const campo3 = ref("Texto 3");
-
 const enviarAlBanco = () => {
   console.log("Enviando al banco:", {
-    campo1: campo1.value,
-    campo2: campo2.value,
-    campo3: campo3.value,
     scoring: scoring.value,
     cupo: cupo.value,
   });
@@ -40,13 +33,22 @@ const enviarAlBanco = () => {
       <strong>flujo de enlace</strong>
     </div>
 
-    <!-- Campos mostrados como tarjetas estáticas -->
-    <div class="campos-tarjetas">
-      <div class="tarjeta-campo">{{ campo1 }}</div>
-      <div class="tarjeta-campo">{{ campo2 }}</div>
-      <div class="tarjeta-campo">{{ campo3 }}</div>
+    <!-- Etapas alineadas horizontalmente -->
+    <div class="etapas-container">
+      <div class="etapa">Genero</div>
+      <div class="etapa">Estado Civil</div>
+      <div class="etapa">Nivel Educativo</div>
+      <div class="etapa">Estrato</div>
+      <div class="etapa">Declara Renta</div>
+      <div class="etapa">Esta obligado a tener RUT por tu actividad economica</div>
+      <div class="etapa">Ubicacion del Negocio-Departamento</div>
+      <div class="etapa">Ubicacion del Negocio-Ciudad</div>
+      <div class="etapa">Numero de neveras que tiene la tienda</div>
+      <div class="etapa">Registrado en Camara deComercio</div>
+      <div class="etapa">Rango de Ingreso</div>
     </div>
 
+    <!-- Tabla Scoring y Cupo -->
     <motion.div
       class="tabla-contenedor"
       v-motion="{
@@ -91,80 +93,74 @@ const enviarAlBanco = () => {
 </template>
 
 <style scoped>
+/* Logo */
 .logo-container {
   text-align: center;
   margin-block: 1.5rem;
 }
-
 .logo-main {
   width: min(180px, 80%);
   height: auto;
   display: inline;
 }
 
+/* Tarjeta general */
 .tarjeta {
-  width: min(90%, 500px);
-  margin-inline: auto;
-  margin-block: 2rem;
+  width: 1200px;
+  margin: 2rem auto;
   padding: 1.5rem;
   border: 2px solid #563e93;
   border-radius: 1rem;
   background-color: #fefefe;
   font-family: sans-serif;
 }
-
 .tarjeta-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 0.75rem;
-  flex-wrap: wrap;
 }
-
 .cedula {
   background: #f0f0f0;
   padding: 4px 8px;
   border-radius: 8px;
   font-size: 0.95rem;
   white-space: nowrap;
-  float: right;
-  margin-left: auto;
   border: 2px solid #f15bab;
 }
-
 .tarjeta-subtitulo {
   margin-block: 1rem;
   font-size: 1.1rem;
   color: #333;
+  text-align: center;
 }
 
-.campos-tarjetas {
+/* Etapas horizontal en varias filas */
+.etapas-container {
   display: flex;
-  justify-content: space-between;
   flex-wrap: wrap;
   gap: 1rem;
-  margin-bottom: 1.5rem;
+  margin: 2rem auto;
+  justify-content: flex-start;
 }
-
-.tarjeta-campo {
-  flex: 1;
-  min-width: 150px;
-  padding: 10px;
-  font-size: 0.95rem;
+.etapa {
+  font-size: 1rem;
   font-weight: 500;
-  border: 2px solid #251886;
-  border-radius: 10px;
-  background-color: #fafafa;
   text-align: center;
-  user-select: none; /* para que no puedan copiar texto si quieres */
+  padding: 0.5rem 1rem;
+  border-bottom: 3px solid #f15bab;
+  border-radius: 0 0 10px 10px;
+  background: #f9f9f9;
+  min-width: 250px;
+  flex: 1 0 auto;
 }
 
+/* Tabla Scoring/Cupo */
 .tabla-contenedor {
   overflow-x: auto;
   margin-bottom: 1.5rem;
   border-radius: 10px;
 }
-
 .tabla {
   width: 100%;
   border-collapse: collapse;
@@ -175,19 +171,16 @@ const enviarAlBanco = () => {
   border-radius: 10px;
   overflow: hidden;
 }
-
 .tabla th,
 .tabla td {
   padding: 0.75rem 1rem;
   border-bottom: 1px solid #e5e7eb;
 }
-
 .tabla th {
   background-color: #251886;
   font-weight: bold;
   color: #f0f0f0;
 }
-
 .tabla-input {
   width: 100%;
   padding: 0.4rem;
@@ -198,21 +191,18 @@ const enviarAlBanco = () => {
   outline: none;
   background-color: #fff;
 }
-
 .tabla-input:focus {
   border-color: #251886;
   box-shadow: 0 0 0 2px rgba(37, 24, 134, 0.2);
 }
 
+/* Botón enviar */
 .tarjeta-acciones {
   display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 1rem;
 }
-
 .boton-enviar {
-  width: max-content;
   padding: 10px 30px;
   font-size: 15px;
   border-radius: 8px;
@@ -222,34 +212,8 @@ const enviarAlBanco = () => {
   color: #fff;
   outline: none;
   border: none;
-  box-shadow: none;
-  margin: 0 auto;
 }
-
 .boton-enviar:hover {
   background-color: #f15bab;
-}
-
-@media (min-width: 480px) {
-  .tarjeta-contenido {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-@media (min-width: 768px) {
-  .tarjeta {
-    padding: 2rem;
-  }
-
-  .campo,
-  .cedula {
-    font-size: 1.05rem;
-  }
-}
-
-@media (min-width: 1200px) {
-  .tarjeta {
-    width: 650px;
-  }
 }
 </style>
