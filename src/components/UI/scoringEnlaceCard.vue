@@ -14,9 +14,8 @@ const props = defineProps({
 
 });
 console.log("Data recibida en Card:", props.data);
-
-
 const handleclick =async ()=> {
+const id = props.data.Id;
     const payload= {
     Scoring: localScoring.value.toString(),
     Cupo: localCupo.value.toString(),
@@ -25,16 +24,18 @@ const handleclick =async ()=> {
     Numero_Cliente: props.data.Numero_Celular.toString(),
     
 };
+const payloadput = {Estado: "completado"};
 console.log("Payload que se enviará:", payload);
 console.log(props.data.Numero_Cliente, props.data.Cedula_Cliente);
 
 
 try {
     const response = await axios.post('http://localhost:8080/api/scoring', payload);
+    const padding = await axios.put(`http://localhost:8080/api/flujoRegistroEnlace/estado/pendiente/${id}`, payloadput);
+    console.log('Datos enviados al banco:', padding.data);
   } catch (error) {
     console.error('Error al enviar al banco:', error);
   }
-
 };
 const localScoring = ref("");
 const localCupo = ref("");
