@@ -2,7 +2,6 @@
 import axios from 'axios';
 import { defineProps, defineEmits, ref, watch } from 'vue';
 
-
 const props = defineProps({
       data: {
     type: Object,
@@ -15,6 +14,15 @@ const props = defineProps({
 });
 console.log("Data recibida en Card:", props.data);
 const handleclick =async ()=> {
+   if (
+    !localScoring.value ||
+    !localCupo.value
+  ) {
+     mensajeError.value = "Por favor, completa todos los campos";
+    return;
+  }
+    mensajeError.value = "";
+
 const id = props.data.Id;
     const payload= {
     Scoring: localScoring.value.toString(),
@@ -32,6 +40,7 @@ console.log(props.data.Numero_Cliente, props.data.Cedula_Cliente);
 try {
     const response = await axios.post('http://localhost:8080/api/scoring', payload);
     const padding = await axios.put(`http://localhost:8080/api/flujoRegistroEnlace/estado/pendiente/${id}`, payloadput);
+    window.location.reload();
     console.log('Datos enviados al banco:', padding.data);
   } catch (error) {
     console.error('Error al enviar al banco:', error);
@@ -39,6 +48,7 @@ try {
 };
 const localScoring = ref("");
 const localCupo = ref("");
+const mensajeError = ref("");
 
 </script>
 
@@ -92,7 +102,9 @@ const localCupo = ref("");
         </tbody>
       </table>
     </div>
-
+    <div v-if="mensajeError" style="color: red; margin-bottom: 1rem; text-align: center;">
+      {{ mensajeError }}
+    </div>
     <div class="tarjeta-acciones">
       <button class="boton-enviar" @click="handleclick">Enviar</button>
     </div>

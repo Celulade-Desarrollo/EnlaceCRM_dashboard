@@ -23,7 +23,7 @@ const pagareDigital = ref("");
 const creacionCoreBancario = ref("");
 const usuarioAprobado = ref("");
 const cupoFinal = ref("");
-
+const mensajeError = ref("");
 // Define los eventos que este componente puede emitir al padre
 const emit = defineEmits(['descargar']);
 
@@ -32,7 +32,20 @@ const emit = defineEmits(['descargar']);
 // put estado cambia a completado 
 // 2 post creamos un usuario final
 const handleSiClick = async () => {
+    if (
+    !bancoListas.value ||
+    !aprobacionCupoSugerido.value ||
+    !pagareDigital.value ||
+    !creacionCoreBancario.value ||
+    !usuarioAprobado.value ||
+    !cupoFinal.value
+  ) {
+     mensajeError.value = "Por favor, completa todos los campos ";
+    return;
+  }
+  mensajeError.value = "";
   const id = props.data.IdFlujoRegistro;
+
   const payloadPost= {
     IdFlujoRegistro: props.data.IdFlujoRegistro,
     Validacion_Banco_listas: bancoListas.value,
@@ -53,9 +66,6 @@ const handleSiClick = async () => {
     const postInfo = await axios.post('http://localhost:8080/api/bancow', payloadPost);
     const putInfo = await axios.put(`http://localhost:8080/api/scoring/estado/update/${id}`, payloadPut)
     const postUser = await axios.post('http://localhost:8080/api/bancow/user', usuarioCupoFinal)
-    console.log("Respuesta del servidor:", postInfo.data);
-    console.log("Respuesta del servidor put:", putInfo.data);
-    console.log("Respuesta del servidor user:", postUser);
     window.location.reload();
   } catch (error) {
     console.error("Error en alguno de los pasos:", error);
@@ -65,7 +75,20 @@ const handleSiClick = async () => {
 //funcion boton no aprobado
 // put actualizamos el estado a rechazado
 const handleNoClick = async () => {
-  const id = props.data.IdFlujoRegistro;
+    if (
+    !bancoListas.value ||
+    !aprobacionCupoSugerido.value ||
+    !pagareDigital.value ||
+    !creacionCoreBancario.value ||
+    !usuarioAprobado.value ||
+    !cupoFinal.value
+  ) {
+     mensajeError.value = "Por favor, completa todos los campos";
+    return;
+  }
+   mensajeError.value = "";
+   const id = props.data.IdFlujoRegistro;
+   
    const payloadPut = {
     Estado: "rechazado",
   };
@@ -76,7 +99,6 @@ const handleNoClick = async () => {
   }catch(error){
     console.error("Error en alguno de los pasos:", error);
   }
-  
 };
 
 </script>
@@ -190,7 +212,9 @@ const handleNoClick = async () => {
         <span class="floating-label">Cupo final</span>
       </label>
     </div>
-
+    <div v-if="mensajeError" style="color: red; margin-bottom: 1rem; text-align: center;">
+      {{ mensajeError }}
+    </div>
     <div class="button-group">
       <div class="action-buttons-left">
         <button type="button" class="btn-si" @click="handleSiClick">Aprobado</button>
