@@ -12,22 +12,12 @@ const router = useRouter();
 
 onMounted(async () => {
   try {
-    const response = await axios.get('http://localhost:8080/api/flujoRegistroEnlace/estado/pendiente')
+    const response = await axios.get('http://localhost:8080/api/scoring/estado/pendiente')
     creditDataRecords.value = response.data
   } catch (error) {
     console.error('Error cargando datos:', error)
   }
 })
-
-const handleCardAprobado = (data) => {
-  console.log("Card APROBADA:", data.cedula);
-  console.log("Datos de inputs de la card:", data);
-};
-
-const handleCardNoAprobado = (cedula) => {
-  console.log("Card NO APROBADA para Cédula:", cedula);
-};
-
 
 </script>
 
@@ -42,22 +32,20 @@ const handleCardNoAprobado = (cedula) => {
     </section>
 
     <Heading
-      :mensaje=" 'Hola, Administrador'"
+       :mensaje=" 'Hola, Administrador'"
     />
 
     <div class="descargar-container">
       <button @click="handleDescargarTodo" class="boton">
-        Descargar Excel
+        Descargar Exel
       </button>
     </div>
 
     <section class="content">
       <CreditBancoCard
-         v-for="record in creditDataRecords"
-        :key="record.Cedula_Cliente"
+        v-for="record in creditDataRecords"
+        :key="record.id"
         :data="record"
-        @aprobado="handleCardAprobado"
-        @noAprobado="handleCardNoAprobado"
       />
     </section>
   </motion.div>

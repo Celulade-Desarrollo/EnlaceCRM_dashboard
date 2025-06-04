@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from "vue";
+import axios from "axios";
 
-// Define las props que este componente recibirá
 const props = defineProps({
   
   // 'data' contendrá la información específica de cada persona/registro
@@ -13,39 +13,71 @@ const props = defineProps({
     }),
   },
 });
-console.log("Data recibida en Card:", props.data.Cedula_Cliente);
+console.log("Data recibida en Card:", props.data);
 
 // Variables reactivas para los inputs dentro de CADA INSTANCIA de la card
 // Son locales a cada card para que no interfieran entre sí
 const bancoListas = ref("");
-const aprobacionCupo1 = ref("");
-const aprobacionCupo2 = ref("");
-const aprobacionCupo3 = ref("");
-const aprobacionCupo4 = ref("");
-const aprobacionCupo5 = ref(""); // Cupo final
+const aprobacionCupoSugerido = ref("");
+const pagareDigital = ref("");
+const creacionCoreBancario = ref("");
+const usuarioAprobado = ref("");
+const cupoFinal = ref("");
 
 // Define los eventos que este componente puede emitir al padre
-const emit = defineEmits(['aprobado', 'noAprobado', 'descargar']);
+const emit = defineEmits(['descargar']);
 
-// Métodos para manejar los clics de los botones
-const handleSiClick = () => {
-  // Cuando se aprueba, emitimos los datos de los inputs y la cédula de esta card
-  emit('aprobado', {
-    cedula: props.data.cedula,
-    bancoListas: bancoListas.value,
-    aprobacionCupo1: aprobacionCupo1.value,
-    aprobacionCupo2: aprobacionCupo2.value,
-    aprobacionCupo3: aprobacionCupo3.value,
-    aprobacionCupo4: aprobacionCupo4.value,
-    aprobacionCupo5: aprobacionCupo5.value,
-  });
+// funcion boton aprobado
+// 1 post enviasmos datos del banco
+// put estado cambia a completado 
+// 2 post creamos un usuario final
+const handleSiClick = async () => {
+  const id = props.data.IdFlujoRegistro;
+  const payloadPost= {
+    IdFlujoRegistro: props.data.IdFlujoRegistro,
+    Validacion_Banco_listas: bancoListas.value,
+    Aprobacion_Cupo_sugerido: aprobacionCupoSugerido.value,
+    Pagare_Digital_Firmado: pagareDigital.value,
+    Creacion_Core_Bancario: creacionCoreBancario.value,
+    UsuarioAprobado: usuarioAprobado.value,
+  };
+ const payloadPut = {
+    Estado: "completado",
+  };
+  const usuarioCupoFinal = {
+    IdFlujoRegistro: id,
+    Numero_Cliente:props.data.Numero_Cliente,
+    CupoFinal: cupoFinal.value.toString()
+  }
+  try {
+    const postInfo = await axios.post('http://localhost:8080/api/bancow', payloadPost);
+    const putInfo = await axios.put(`http://localhost:8080/api/scoring/estado/update/${id}`, payloadPut)
+    const postUser = await axios.post('http://localhost:8080/api/bancow/user', usuarioCupoFinal)
+    console.log("Respuesta del servidor:", postInfo.data);
+    console.log("Respuesta del servidor put:", putInfo.data);
+    console.log("Respuesta del servidor user:", postUser);
+    window.location.reload();
+  } catch (error) {
+    console.error("Error en alguno de los pasos:", error);
+  }
 };
 
-const handleNoClick = () => {
-  // Emitimos solo la cédula para saber qué card fue "No Aprobada"
-  emit('noAprobado', props.data.cedula);
-};
+//funcion boton no aprobado
+// put actualizamos el estado a rechazado
+const handleNoClick = async () => {
+  const id = props.data.IdFlujoRegistro;
+   const payloadPut = {
+    Estado: "rechazado",
+  };
+  try{
+    const putInfo = await axios.put(`http://localhost:8080/api/scoring/estado/update/${id}`, payloadPut)
+    window.location.reload();
 
+  }catch(error){
+    console.error("Error en alguno de los pasos:", error);
+  }
+  
+};
 
 </script>
 
@@ -58,11 +90,11 @@ const handleNoClick = () => {
         <div class="info-fields-wrapper">
           <div class="info-field">
             <span class="info-field-label">Scoring:</span>
-            <span class="info-field-value">{{ data.scoring }}</span>
+            <span class="info-field-value">{{ data.Scoring }}</span>
           </div>
           <div class="info-field">
             <span class="info-field-label">Cupo:</span>
-            <span class="info-field-value">{{ data.cupo }}</span>
+            <span class="info-field-value">{{ data.Cupo }}</span>
           </div>
         </div>
       </div>
@@ -73,7 +105,7 @@ const handleNoClick = () => {
     </div>
 
     <div class="form-inputs-container">
-      <label :for="'banco-listas-' + data.Cedula_Cliente" class="input-label main-input">
+      <label for="banco-listas" class="input-label main-input">
         <input
           class="form-control text-center"
           aria-required="true"
@@ -82,26 +114,26 @@ const handleNoClick = () => {
           type="text"
           placeholder=""
           autocomplete="off"
-          :id="'banco-listas-' + data.Cedula_Cliente"
+          id="banco-listas"
           v-model="bancoListas"
         />
         <span class="floating-label">Banco listas</span>
       </label>
-      <label :for="'aprobacion-cupo-1-' + data.Cedula_Cliente" class="input-label main-input">
+      <label for="aprobacion-cupo-sugerido" class="input-label main-input">
         <input
           class="form-control text-center"
           aria-required="true"
           aria-invalid="false"
-          name="aprobacion-cupo-1"
+          name="aprobacion-cupo-sugerido"
           type="text"
           placeholder=""
           autocomplete="off"
-          :id="'aprobacion-cupo-1-' + data.Cedula_Cliente"
-          v-model="aprobacionCupo1"
+          id="aprobacion-cupo-sugerido"
+          v-model="aprobacionCupoSugerido"
         />
         <span class="floating-label">Aprobacion cupo sugerido</span>
       </label>
-      <label :for="'aprobacion-cupo-2-' + data.Cedula_Cliente" class="input-label main-input">
+      <label for="pagare-digital" class="input-label main-input">
         <input
           class="form-control text-center"
           aria-required="true"
@@ -110,12 +142,12 @@ const handleNoClick = () => {
           type="text"
           placeholder=""
           autocomplete="off"
-          :id="'aprobacion-cupo-2-' + data.Cedula_Cliente"
-          v-model="aprobacionCupo2"
+          id="pagare-digital"
+          v-model="pagareDigital"
         />
         <span class="floating-label">Pagare digital firmado</span>
       </label>
-      <label :for="'aprobacion-cupo-3-' + data.Cedula_Cliente" class="input-label main-input">
+      <label for="creacion-core-bancario" class="input-label main-input">
         <input
           class="form-control text-center"
           aria-required="true"
@@ -124,12 +156,12 @@ const handleNoClick = () => {
           type="text"
           placeholder=""
           autocomplete="off"
-          :id="'aprobacion-cupo-3-' + data.Cedula_Cliente"
-          v-model="aprobacionCupo3"
+          id="'creacion-core-bancario"
+          v-model="creacionCoreBancario"
         />
         <span class="floating-label">Creacion core bancario</span>
       </label>
-      <label :for="'aprobacion-cupo-4-' + data.Cedula_Cliente" class="input-label main-input">
+      <label for="usuario-aprobado" class="input-label main-input">
         <input
           class="form-control text-center"
           aria-required="true"
@@ -138,12 +170,12 @@ const handleNoClick = () => {
           type="text"
           placeholder=""
           autocomplete="off"
-          :id="'aprobacion-cupo-4-' + data.Cedula_Cliente"
-          v-model="aprobacionCupo4"
+          id="usuario-aprobado"
+          v-model="usuarioAprobado"
         />
         <span class="floating-label">Usuario aprobado</span>
       </label>
-      <label :for="'aprobacion-cupo-5-' + data.Cedula_Cliente" class="input-label main-input">
+      <label for="cupo-fnal" class="input-label main-input">
         <input
           class="form-control text-center"
           aria-required="true"
@@ -152,8 +184,8 @@ const handleNoClick = () => {
           type="number"
           placeholder=""
           autocomplete="off"
-          :id="'aprobacion-cupo-5-' + data.Cedula_Cliente"
-          v-model="aprobacionCupo5"
+          id="cupoFinal"
+          v-model="cupoFinal"
         />
         <span class="floating-label">Cupo final</span>
       </label>
