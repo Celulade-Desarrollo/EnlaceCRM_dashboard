@@ -1,85 +1,64 @@
 <script setup>
-import { ref, reactive } from "vue";
+import { ref } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
-const router = useRouter();
 import { fadeInUp } from "../motion/pageAnimation";
 import { motion } from "motion-v";
 
-// Referencias para los campos del formulario
+const router = useRouter();
 const telefono = ref("");
-const password = ref("");
 const errorMessage = ref("");
 const telefonoRegex = /^[0-9]{10}$/;
 
-// Función para obtener datos
-const fetchData = async () => {
-  try {
-    const response = await axios.get(
-      `https://enlacecrm.com/api/get_data.php?tipo=login&&usuario=${telefono.value}&&pass=${password.value}`
-    );
-    if (response.data == "NO") {
-      errorMessage.value = "Usuario y clave incorrecto";
-      setTimeout(() => {
-        errorMessage.value = "";
-      }, 3000);
-      return;
-    } else {
-      let data = response.data;
-      data = JSON.stringify(data);
-      console.log(data);
-      localStorage.setItem("data", data);
+// Solo permite números en el input
+function soloNumeros(e) {
+  telefono.value = e.target.value.replace(/\D/g, "");
+}
 
-      let respuesta = JSON.parse(localStorage.getItem("data"));
-      localStorage.setItem("isAuthenticated", "true");
-      router.push("/Pantalla1View");
-    }
-  } catch (error) {
-    alerta.mensaje = "Error al conectarse al servidor";
-    alerta.tipo = "error";
-    setTimeout(() => {
-      alerta.mensaje = "";
-      alerta.tipo = "";
-    }, 3000);
-  }
-};
-
-const goToPantalla9 = () => {
-  window.open("/Pantalla9View", "_parent");
-};
-
-const soloNumeros = (e) => {
-  telefono.value = e.target.value.replace(/\D/g, ""); // Reemplaza todo lo que no sea dígito
-};
-
-const handleSubmit = async (event) => {
-  event.preventDefault(); // Evita el envío del formulario por defecto
-  await fetchData(); // Llama a la función fetchData para obtener datos
-};
-
-const validar = async () => {
-  if (!telefono.value || !password.value) {
+// Validación de campos
+function validarCampos() {
+  if (!telefono.value) {
     errorMessage.value = "Todos los campos son obligatorios";
-    setTimeout(() => {
-      alerta.mensaje = "";
-      alerta.tipo = "";
-    }, 3000);
-  } else if (!telefonoRegex.test(telefono.value)) {
+    return false;
+  }
+  if (!telefonoRegex.test(telefono.value)) {
     errorMessage.value = "Ingrese un número de teléfono válido";
-    setTimeout(() => {
-      errorMessage.value = "";
-    }, 3000);
-  } else if (!password.value) {
-    errorMessage.value = "La contraseña no puede estar vacía";
-    setTimeout(() => {
-      errorMessage.value = "";
-    }, 3000);
-  } else {
-    errorMessage.value = "";
-    await fetchData();
+    return false;
+  }
+  return true;
+}
+
+// Envío del formulario
+async function handleSubmit(event) {
+  event.preventDefault();
+  errorMessage.value = "";
+  if (!validarCampos()) {
+    setTimeout(() => (errorMessage.value = ""), 3000);
     return;
   }
-};
+  try {
+    const response = await axios.post(`http://localhost:8080/api/twilio/send`, {
+      phone: telefono.value,
+    });
+    // if (response.data == "NO") {
+    //   errorMessage.value = "Usuario y clave incorrecto";
+    //   setTimeout(() => (errorMessage.value = ""), 3000);
+    //   return;
+    // }
+    // localStorage.setItem("isAuthenticated", "true");
+    // router.push("/Pantalla1View");
+    // Simulación de login exitoso:
+    // localStorage.setItem("isAuthenticated", "true");
+    //  router.push("/Pantalla1View");
+  } catch (error) {
+    errorMessage.value = "Error al conectarse al servidor";
+    setTimeout(() => (errorMessage.value = ""), 3000);
+  }
+}
+
+function goToPantalla9() {
+  router.push("/Pantalla9View");
+}
 </script>
 
 <template>
@@ -100,7 +79,12 @@ const validar = async () => {
     <h3 class="titulo-login">Ingresa a tu cuenta</h3>
     <section class="login-container">
       <div class="login-card">
-        <form id="myForm" class="myForm" @submit.prevent="validar">
+        <form
+          id="myForm"
+          class="myForm"
+          @submit.prevent="handleSubmit"
+          autocomplete="off"
+        >
           <div class="form-group">
             <label
               for="telefono"
@@ -110,29 +94,19 @@ const validar = async () => {
                 class="form-control"
                 v-model="telefono"
                 type="tel"
-                placeholder=""
+                placeholder=" "
                 @input="soloNumeros"
                 maxlength="10"
+                name="telefono"
+                autocomplete="off"
+                required
               />
               <span class="floating-label">Ingresa tu teléfono</span>
             </label>
           </div>
-          <div class="form-group">
-            <label for="password" class="input-label">
-              <input
-                class="form-control"
-                v-model="password"
-                type="password"
-                placeholder=""
-              />
-              <span class="floating-label">OTP</span>
-            </label>
-          </div>
-          <button type="submit" class="button mt-4" @click="handleSubmit">
-            Ingresar
-          </button>
-          <p v-if="errorMessage.value" class="text-danger mt-2">
-            {{ errorMessage.value }}
+          <button class="button mt-4" type="submit">Ingresar</button>
+          <p v-if="errorMessage" class="text-danger mt-2">
+            {{ errorMessage }}
           </p>
         </form>
         <p class="subtitulo mt-4">
