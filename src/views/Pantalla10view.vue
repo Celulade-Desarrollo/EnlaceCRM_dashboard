@@ -12,7 +12,7 @@ const router = useRouter();
 
 async function downloadExcel() {
   try {
-    const response = await fetch('http://localhost:8080/api/flujoRegistroEnlace/estado/pendiente');
+    const response = await fetch('http://localhost:3000/api/excel');
     if (!response.ok) throw new Error('Error al obtener datos');
     const data = await response.json();
 
@@ -47,7 +47,7 @@ async function downloadExcel() {
     //Asigna la URL del blob
     link.href = url;
     //esto le dice al navegador no abras el archivo, descargalo
-    link.setAttribute('download', 'historicoUsuariosPendientes.xlsx');
+    link.setAttribute('download', 'historicoUsuarios.xlsx');
      //agrega el enlace temporalmente al DOM (al documento HTML).
     //esto es necesario para poder hacerle clic desde el script.
     document.body.appendChild(link);
