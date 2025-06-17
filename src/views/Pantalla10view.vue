@@ -8,12 +8,17 @@ import CreditBancoCard from "../components/UI/CreditBancoCard.vue";
 import axios from "axios";
 
 const creditDataRecords = ref([])
+const bancowData = ref([]);
 const router = useRouter();
 
 onMounted(async () => {
   try {
-    const response = await axios.get('http://localhost:8080/api/scoring/estado/pendiente')
-    creditDataRecords.value = response.data
+      const [pendientesRes, bancowRes] = await Promise.all([
+      axios.get('http://localhost:3000/api/scoring/estado/pendiente-aprobado'),
+      axios.get('http://localhost:3000/api/bancow')
+    ]);
+    creditDataRecords.value = pendientesRes.data;
+    bancowData.value = bancowRes.data;
   } catch (error) {
     console.error('Error cargando datos:', error)
   }
@@ -46,6 +51,7 @@ onMounted(async () => {
         v-for="record in creditDataRecords"
         :key="record.id"
         :data="record"
+        :bancowData="bancowData"
       />
     </section>
   </motion.div>

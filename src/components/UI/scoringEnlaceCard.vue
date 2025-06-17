@@ -27,19 +27,16 @@ const id = props.data.Id;
     const payload= {
     Scoring: localScoring.value.toString(),
     Cupo: localCupo.value.toString(),
-    IdFlujoRegistro: props.data.Id,
+    IdFlujoRegistro: id,
     Cedula_Cliente: props.data.Cedula_Cliente.toString(),
     Numero_Cliente: props.data.Numero_Celular.toString(),
     
 };
 const payloadput = {Estado: "completado"};
-console.log("Payload que se enviará:", payload);
-console.log(props.data.Numero_Cliente, props.data.Cedula_Cliente);
-
 
 try {
-    const response = await axios.post('http://localhost:8080/api/scoring', payload);
-    const padding = await axios.put(`http://localhost:8080/api/flujoRegistroEnlace/estado/pendiente/${id}`, payloadput);
+    const response = await axios.post('http://localhost:3000/api/scoring', payload);
+    const padding = await axios.put(`http://localhost:3000/api/flujoRegistroEnlace/estado/pendiente/${id}`, payloadput);
     window.location.reload();
     console.log('Datos enviados al banco:', padding.data);
   } catch (error) {

@@ -12,7 +12,7 @@ const router = useRouter();
 
 onMounted(async () => {
   try {
-    const response = await axios.get('http://localhost:8080/api/flujoRegistroEnlace/estado/pendiente')
+    const response = await axios.get('http://localhost:3000/api/flujoRegistroEnlace/estado/pendiente')
     creditDataRecords.value = response.data
   } catch (error) {
     console.error('Error cargando datos:', error)
