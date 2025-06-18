@@ -33,19 +33,31 @@ const id = props.data.Id;
     
 };
 const payloadput = {Estado: "completado"};
-
-try {
-    const response = await axios.post('http://localhost:3000/api/scoring', payload);
-    const padding = await axios.put(`http://localhost:3000/api/flujoRegistroEnlace/estado/pendiente/${id}`, payloadput);
-    window.location.reload();
-    console.log('Datos enviados al banco:', padding.data);
-  } catch (error) {
-    console.error('Error al enviar al banco:', error);
-  }
+ try {
+     const response = await axios.post('http://localhost:3000/api/scoring', payload);
+     const padding = await axios.put(`http://localhost:3000/api/flujoRegistroEnlace/estado/pendiente/${id}`, payloadput);
+     window.location.reload();
+   } catch (error) {
+     console.error('Error al enviar al banco:', error);
+   }
 };
 const localScoring = ref("");
 const localCupo = ref("");
 const mensajeError = ref("");
+
+function formatCurrency(event) {
+  let input = event.target;
+
+  // Eliminar todo lo que no sea número
+  let digits = input.value.replace(/\D/g, '');
+
+  // Formatear con puntos de miles
+  let formatted = digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+  // Actualizar el input visualmente
+  input.value = formatted;
+  localCupo.value = formatted;
+}
 
 </script>
 
@@ -91,8 +103,9 @@ const mensajeError = ref("");
               <input
                 v-model="localCupo"
                 class="tabla-input"
-                type="number"
+                type="text"
                 placeholder="Ej: 2500000"
+                @input="formatCurrency"
               />
             </td>
           </tr>
