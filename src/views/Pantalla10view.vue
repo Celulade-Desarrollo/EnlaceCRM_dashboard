@@ -4,6 +4,7 @@ import { useRouter } from "vue-router";
 import Heading from "../components/UI/Heading.vue";
 import { fadeInUp } from "../motion/pageAnimation";
 import { motion } from "motion-v";
+import * as XLSX from 'xlsx';
 import CreditBancoCard from "../components/UI/CreditBancoCard.vue";
 import axios from "axios";
 
@@ -24,8 +25,59 @@ onMounted(async () => {
   }
 })
 
-</script>
+async function downloadExcel() {
+  try {
+    const response = await fetch('http://localhost:3000/api/excel');
+    if (!response.ok) throw new Error('Error al obtener datos');
+    const data = await response.json();
 
+    // Si data no es un array, lo envolvemos en uno
+    const dataArray = Array.isArray(data) ? data : [data];
+
+    // se quita el campo id
+    const dataSinId = dataArray.map(({ Id,Estado, ...rest }) => rest);
+
+    // crear la hoja excel
+    const worksheet = XLSX.utils.json_to_sheet(dataSinId);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Datos');
+
+    // Generar archivo Excel en buffer
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'array',
+    });
+
+    // Crear blob para descargar
+    const blob = new Blob([excelBuffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+
+    //toma el Blob (archivo en memoria) que se genro antes y lo convierte en una URL temporal del navegador
+    // que apunta a ese archivo.
+    const url = window.URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    //Asigna la URL del blob
+    link.href = url;
+    //esto le dice al navegador no abras el archivo, descargalo
+    link.setAttribute('download', 'historicoUsuarios.xlsx');
+     //agrega el enlace temporalmente al DOM (al documento HTML).
+    //esto es necesario para poder hacerle clic desde el script.
+    document.body.appendChild(link);
+    link.click();
+    //elimina el enlace del DOM para que no se quede ahí ocupando memoria.
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+
+  } catch (error) {
+    console.error('Error al generar Excel:', error);
+    alert('No se pudo descargar el archivo');
+  }
+}
+
+</script>
 <template>
   <motion.div v-bind="fadeInUp">
     <section class="logo-container">
@@ -41,12 +93,12 @@ onMounted(async () => {
     />
 
     <div class="descargar-container">
-      <button @click="handleDescargarTodo" class="boton">
-        Descargar Exel
+      <button  @click="downloadExcel" class="boton">
+        Descargar Excel
       </button>
     </div>
 
-    <section class="content">
+     <section class="content">
       <CreditBancoCard
         v-for="record in creditDataRecords"
         :key="record.id"
