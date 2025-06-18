@@ -32,7 +32,6 @@ const mensajeError = ref("");
 
 const camposBloqueados = ref(false);
 
-
 const precargado = {
   bancoListas: ref(false),
   cupoAprobado: ref(false),
@@ -94,7 +93,7 @@ const handleSiClick = async () => {
     UsuarioAprobado: usuarioAprobado.value,
   };
  const payloadPut = {
-    Estado: "creado",
+    Estado: "cliente creado",
   };
   const usuarioCupoFinal = {
     IdFlujoRegistro: id,
@@ -103,7 +102,7 @@ const handleSiClick = async () => {
   try {
     const postInfo = await axios.put(`http://localhost:3000/api/coreBancario/${id}`, payloadPost);
     const putInfo = await axios.put(`http://localhost:3000/api/scoring/estado/update/${id}`, payloadPut)
-    const postUser = await axios.post('http://localhost:3000/api/bancow/user', usuarioCupoFinal)
+    //const postUser = await axios.post('http://localhost:3000/api/bancow/user', usuarioCupoFinal)
     window.location.reload();
     
   } catch (error) {
@@ -161,7 +160,7 @@ const handleAprobadoClick = async () => {
       console.log("Payload que se va a enviar:", payloadAprobado,);
 
   const payloadPut = {
-    Estado: "aprobado",
+    Estado: "cupo aprobado",
   }
   try{
       const postInfo = await axios.post('http://localhost:3000/api/bancow', payloadAprobado);
