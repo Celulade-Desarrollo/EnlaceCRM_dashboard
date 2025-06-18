@@ -35,10 +35,15 @@ async function downloadExcel() {
     const dataArray = Array.isArray(data) ? data : [data];
 
     // se quita el campo id
-    const dataSinId = dataArray.map(({ Id,Estado, ...rest }) => rest);
+    const dataTransformada = dataArray.map(({ Id, Estado, Estado_Scoring, ...rest }) => {
+      return {
+      ...rest,
+      Estatus: Estado_Scoring, // nuevo estatus en el Excel
+      };
+  })
 
     // crear la hoja excel
-    const worksheet = XLSX.utils.json_to_sheet(dataSinId);
+    const worksheet = XLSX.utils.json_to_sheet(dataTransformada);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Datos');
 

@@ -93,7 +93,7 @@ const handleSiClick = async () => {
     UsuarioAprobado: usuarioAprobado.value,
   };
  const payloadPut = {
-    Estado: "cliente creado",
+    Estado: "creado",
   };
   const usuarioCupoFinal = {
     IdFlujoRegistro: id,
@@ -160,7 +160,7 @@ const handleAprobadoClick = async () => {
       console.log("Payload que se va a enviar:", payloadAprobado,);
 
   const payloadPut = {
-    Estado: "cupo aprobado",
+    Estado: "aprobado",
   }
   try{
       const postInfo = await axios.post('http://localhost:3000/api/bancow', payloadAprobado);
@@ -288,25 +288,23 @@ const handleAprobadoClick = async () => {
         >
           Cupo creado
         </button>
-
-        <!-- <button type="button" class="btn-no" @click="handleNoClick">No aprobado</button> -->
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-
 .card {
   background: #fff;
   border-radius: 15px;
   padding: 1.5rem;
-  max-width: 1200px;
   width: 95%;
   text-align: left;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
-}
+  margin-left: auto;
+  margin-right: auto;
+} 
 
 .header-display-info {
   display: flex;
@@ -344,7 +342,7 @@ const handleAprobadoClick = async () => {
   border-radius: 4px;
   padding: 2px 5px;
   display: flex;
-  flex-direction: column; /* Label y valor apilados dentro de CADA CAMPO */
+  flex-direction: column;
   align-items: flex-start;
   min-width: 80px;
   white-space: nowrap;
@@ -365,7 +363,6 @@ const handleAprobadoClick = async () => {
   width: 100%;
 }
 
-/* Espacio vacío para empujar contenido */
 .empty-space-left {
   flex-grow: 1;
   order: 2; 
@@ -383,10 +380,11 @@ const handleAprobadoClick = async () => {
 
 .form-inputs-container {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: center;
   gap: 15px;
   margin-bottom: 20px;
+  width: 100%;
 }
 
 .input-label {
@@ -396,9 +394,9 @@ const handleAprobadoClick = async () => {
 }
 
 .main-input {
-  flex-basis: calc(16.66% - 15px);
-  min-width: 130px;
-  max-width: 180px;
+  flex-basis: calc(20% - 15px);
+  min-width: 150px;
+  max-width: 200px;
 }
 
 .form-control {
@@ -460,7 +458,7 @@ const handleAprobadoClick = async () => {
   gap: 20px;
   flex-wrap: wrap;
   align-items: center;
-  order: 1; /* Mantiene este grupo a la izquierda dentro del button-group */
+  order: 1;
 }
 
 .button-group button {
@@ -501,28 +499,48 @@ const handleAprobadoClick = async () => {
   white-space: nowrap;
   margin-top: 0 !important;
   margin-bottom: 0 !important;
-  order: 2; /* Mueve este botón a la derecha dentro del button-group */
+  order: 2;
 }
 
 .btn-download:hover {
   background-color: #0056b3;
 }
-
-/* Quitar spin buttons de inputs tipo number */
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-/* MEDIA QUERIES DENTRO DEL COMPONENTE CreditInfoCard.vue */
+@media (min-width: 1025px) {
+.card {
+    width: fit-content;
+    min-width: 950px;
+    max-width: unset;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.form-inputs-container {
+    flex-wrap: nowrap;
+    justify-content: center;
+}
+
+.main-input {
+    flex-basis: calc(20% - 15px);
+    min-width: 160px;
+    max-width: 220px;
+}
+}
 @media (max-width: 1024px) {
   .card {
     max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
   }
   .main-input {
     flex-basis: calc(25% - 15px);
     min-width: 150px;
+    max-width: 180px;
   }
   .main-input .floating-label {
     font-size: 14px;
@@ -533,29 +551,31 @@ input[type="number"]::-webkit-inner-spin-button {
   .card {
     max-width: 600px;
     padding: 1rem;
+    margin-left: auto;
+    margin-right: auto;
   }
   .header-display-info {
     flex-direction: column;
     align-items: center;
     gap: 20px;
   }
-  .empty-space-left { /* Ocultar el espacio vacío en móvil */
+  .empty-space-left {
     display: none;
   }
   .info-card-group,
   .cedula-display-text {
     width: 90%;
     max-width: 400px;
-    order: unset; /* Quitar el orden para que se apilen naturalmente */
+    order: unset;
   }
-  .info-card-group { /* Para la card de Scoring/Cupo en móvil */
-    flex-direction: column; /* Vuelve a apilar "Scoring" y "Cupo" en móvil */
+  .info-card-group {
+    flex-direction: column;
     align-items: center;
     gap: 10px;
     padding: 15px 10px;
   }
-  .info-fields-wrapper { /* Para los campos dentro de Scoring/Cupo en móvil */
-    flex-direction: column; /* Apilar "Scoring" y "Cupo" en móvil */
+  .info-fields-wrapper {
+    flex-direction: column;
     width: 100%;
     align-items: center;
     gap: 5px;
@@ -572,6 +592,7 @@ input[type="number"]::-webkit-inner-spin-button {
 
   .form-inputs-container {
     justify-content: center;
+    flex-wrap: wrap;
   }
   .main-input {
     flex-basis: calc(33.33% - 15px);
@@ -600,11 +621,12 @@ input[type="number"]::-webkit-inner-spin-button {
       max-width: 250px;
   }
 }
-
 @media (max-width: 480px) {
   .card {
     padding: 1rem;
     max-width: 90%;
+    margin-left: auto;
+    margin-right: auto;
   }
   .main-input {
     flex-basis: calc(50% - 15px);
@@ -624,4 +646,5 @@ input[type="number"]::-webkit-inner-spin-button {
     min-width: auto;
   }
 }
+
 </style>
