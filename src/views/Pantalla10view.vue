@@ -20,7 +20,7 @@ async function downloadExcel() {
     const dataArray = Array.isArray(data) ? data : [data];
 
     // se quita el campo id
-    const dataSinId = dataArray.map(({ Id, ...rest }) => rest);
+    const dataSinId = dataArray.map(({ Id,Estado, ...rest }) => rest);
 
     // crear la hoja excel
     const worksheet = XLSX.utils.json_to_sheet(dataSinId);
