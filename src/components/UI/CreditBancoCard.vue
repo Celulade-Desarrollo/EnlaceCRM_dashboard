@@ -29,7 +29,7 @@ const pagareDigital = ref("");
 const creacionCoreBancario = ref("");
 const usuarioAprobado = ref("");
 const mensajeError = ref("");
-
+const botonAprobado = true;
 const camposBloqueados = ref(false);
 
 const precargado = {
@@ -97,12 +97,13 @@ const handleSiClick = async () => {
   };
   const usuarioCupoFinal = {
     IdFlujoRegistro: id,
+    CupoFinal: props.data.Cupo,
     Numero_Cliente:props.data.Numero_Cliente
   }
   try {
     const postInfo = await axios.put(`http://localhost:3000/api/coreBancario/${id}`, payloadPost);
     const putInfo = await axios.put(`http://localhost:3000/api/scoring/estado/update/${id}`, payloadPut)
-    //const postUser = await axios.post('http://localhost:3000/api/bancow/user', usuarioCupoFinal)
+    const postUser = await axios.post('http://localhost:3000/api/user', usuarioCupoFinal)
     window.location.reload();
     
   } catch (error) {
@@ -115,19 +116,16 @@ const handleSiClick = async () => {
 const handleNoClick = async () => {
     if (
     !bancoListas.value ||
-    !cupoAprobado.value ||
-    !pagareDigital.value ||
-    !creacionCoreBancario.value ||
-    !usuarioAprobado.value
+    !cupoAprobado.value 
   ) {
-     mensajeError.value = "Por favor, completa los campos";
+     mensajeError.value = "Por favor, completa los campos banco listas y cupo aprobado";
     return;
   }
    mensajeError.value = "";
    const id = props.data.IdFlujoRegistro;
    
    const payloadPut = {
-    Estado: "rechazado",
+    Estado: "negado",
   };
   try{
     const putInfo = await axios.put(`http://localhost:3000/api/scoring/estado/update/${id}`, payloadPut)
@@ -194,6 +192,9 @@ const handleAprobadoClick = async () => {
 
       <div class="cedula-display-text">
         Cédula: {{ data.Cedula_Cliente }}
+      </div>
+        <div class="cedula-display-text">
+        Nombre: {{ data.Nombres }} {{ data.Primer_Apellido }}
       </div>
     </div>
 
@@ -277,6 +278,8 @@ const handleAprobadoClick = async () => {
           type="button"
           class="btn-si"
           @click="handleAprobadoClick"
+          :disabled="bancoListas === 'no' || cupoAprobado === 'no'"
+          :class="{'btn-disabled': bancoListas === 'no' || cupoAprobado === 'no'}"
         >
            Cupo aprobado
         </button>
@@ -288,12 +291,36 @@ const handleAprobadoClick = async () => {
         >
           Cupo creado
         </button>
+        <button
+          v-if="props.data.Estado === 'pendiente'"
+          type="button"
+          class="btn-no"
+           :disabled="bancoListas === 'si' && cupoAprobado === 'si'"
+           :class="{ 'btn-disabled': bancoListas === 'si' && cupoAprobado === 'si' }"
+          @click="handleNoClick"
+        >
+           Cupo negado
+        </button>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+
+.btn-no:disabled {
+  background-color: #ccc !important;
+  color: #666 !important;
+  cursor: not-allowed !important;
+  border: 1px solid #aaa !important;
+}
+.btn-si:disabled {
+  background-color: #ccc !important;
+  color: #666 !important;
+  cursor: not-allowed !important;
+  border: 1px solid #aaa !important;
+}
+
 .card {
   background: #fff;
   border-radius: 15px;
@@ -483,15 +510,13 @@ const handleAprobadoClick = async () => {
 .btn-si:hover {
   background-color: #f15bab;
 }
-
 .btn-no {
-  background: #251886;
+  background: #dd3590;
 }
 
 .btn-no:hover {
-  background-color: #3b2c9b;
+  background-color: #f15bab;
 }
-
 .btn-download {
   background-color: #007bff;
   color: white;
