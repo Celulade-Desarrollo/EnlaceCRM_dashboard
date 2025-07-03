@@ -34,7 +34,7 @@ onMounted(() => {
 
     <Heading
       :mensaje="
-        'Hola, ' +
+        'Hola, Sebastian' +
         (dataInfoapp && dataInfoapp.length > 0
           ? dataInfoapp[0].nombre
           : 'Usuario')
@@ -43,7 +43,6 @@ onMounted(() => {
 
     <section class="content w-[350px]">
       <CardAbonoCupos :cupoTotal="`200.000`" :cupoDisp="`200.000`" :fechaAbono="`10 AGO`" :deudaTotal="`200.000`"/>   
-      <CardAbonoCupos :cupoTotal="`200.000`" :cupoDisp="`200.000`" :fechaAbono="`10 AGO`" :deudaTotal="`200.000`"/>    
     </section>
   </motion.div>
 </template>
