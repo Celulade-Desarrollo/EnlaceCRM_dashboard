@@ -11,7 +11,11 @@ const pagar = ref("");
 const errorMessage = ref("");
 const dataInfoapp = ref([{ nombre: "", saldorestante: "$0" }]);
 
+const router = useRouter();
 
+function irAPantalla5() {
+  router.push("/Pantalla5View");
+}
 
 // Montar el event listener para el envío del formulario y clic en el botón
 onMounted(() => {
@@ -42,7 +46,7 @@ onMounted(() => {
     />
 
     <section class="content w-[350px]">
-      <CardAbonoCupos :cupoTotal="`200.000`" :cupoDisp="`200.000`" :fechaAbono="`10 AGO`" :deudaTotal="`200.000`"/>   
+      <CardAbonoCupos :cupoTotal="`200.000`" :cupoDisp="`200.000`" :fechaAbono="`10 AGO`" :deudaTotal="`200.000`" @abonar="irAPantalla5"/>   
     </section>
   </motion.div>
 </template>

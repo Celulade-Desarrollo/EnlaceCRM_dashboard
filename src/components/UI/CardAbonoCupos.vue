@@ -29,7 +29,7 @@ defineProps({
             <h3 class="font-bold flex text-[13px]" >Fecha del siguiente abono: <p class="font-normal">{{ fechaAbono }}</p></h3>
         </div>
         <div class="button-banner w-[60%] ">
-          <button type="button" id="boton-pago" class="w-full" >Abonar</button>
+          <button type="button" id="boton-pago" class="w-full" @click="$emit('abonar')" >Abonar</button>
         </div>
       </div>
 </template>

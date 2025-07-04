@@ -48,7 +48,7 @@ const goToPantalla5 = () => {
     <section class="content">
       <!-- Tarjeta de deuda -->
 
-      <CardAbonoCupos :cupoTotal="`200.000`" :cupoDisp="`200.000`" :fechaAbono="`10 AGO`" :deudaTotal="`200.000`"/>   
+      <CardAbonoCupos :cupoTotal="`200.000`" :cupoDisp="`200.000`" :fechaAbono="`10 AGO`" :deudaTotal="`200.000`" @abonar="goToPantalla5"/>   
 
     </section>
   </motion.div>
