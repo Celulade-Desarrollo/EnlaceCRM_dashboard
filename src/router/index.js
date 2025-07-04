@@ -78,13 +78,6 @@ const routes = [
     name: "pantalla12",
     component: () => import("../views/Pantalla12View.vue"),
     meta: { requiresAuth: true },
-  },
-
-  {
-    path: "/CupoTendero",
-    name: "CupoTendero",
-    component: () => import("../views/CupoTendero.vue"),
-    meta: { requiresAuth: true },
   }
 ];
 const router = createRouter({
