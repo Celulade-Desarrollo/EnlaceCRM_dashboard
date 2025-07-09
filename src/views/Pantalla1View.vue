@@ -28,6 +28,10 @@ const goToPantalla2 = () => {
   router.push("/Pantalla2View");
 };
 
+const goToPantallaFacturasDisponibles = () => {
+   router.push("/PantallaFacturasView");
+};
+
 const goToPantalla5 = () => {
   router.push("/Pantalla5View");
 };
@@ -46,10 +50,7 @@ const goToPantalla5 = () => {
 
   <motion.div v-bind="fadeInUp">
     <section class="content">
-      <!-- Tarjeta de deuda -->
-
       <CardAbonoCupos :cupoTotal="`200.000`" :cupoDisp="`200.000`" :fechaAbono="`10 AGO`" :deudaTotal="`200.000`" @abonar="goToPantalla5"/>   
-
     </section>
   </motion.div>
 </template>
