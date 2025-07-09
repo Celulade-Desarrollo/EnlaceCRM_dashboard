@@ -27,6 +27,10 @@ const goToPantalla2 = () => {
   router.push("/Pantalla2View");
 };
 
+const goToPantallaFacturasDisponibles = () => {
+   router.push("/PantallaFacturasView");
+};
+
 const goToPantalla5 = () => {
   router.push("/Pantalla5View");
 };
@@ -66,7 +70,7 @@ const goToPantalla5 = () => {
           <img src="/Alpina.png" alt="Alpina" class="alpina-img" />
           <div class="text-center">
             <p class="bold">Alpina</p>
-            <button class="button" @click="goToPantalla2" id="Pantalla2">
+            <button class="button" @click="goToPantallaFacturasDisponibles" id="Pantalla2">
               Pagar
             </button>
           </div>

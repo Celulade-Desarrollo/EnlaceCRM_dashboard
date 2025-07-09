@@ -72,11 +72,16 @@ const routes = [
     component: () => import("../views/Pantalla11View.vue"),
     meta: { requiresAuth: true },
   },
-
   {
     path: "/Pantalla12View",
     name: "pantalla12",
     component: () => import("../views/Pantalla12View.vue"),
+    meta: { requiresAuth: true },
+  },
+   {
+    path: "/PantallaFacturasView",
+    name: "PantallaFacturas",
+    component: () => import("../views/PantallaFacturasDView.vue"),
     meta: { requiresAuth: true },
   },
 ];
