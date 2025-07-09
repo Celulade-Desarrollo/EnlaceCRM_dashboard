@@ -7,10 +7,6 @@ import Heading from "../components/UI/Heading.vue";
 import { fadeInUp } from "../motion/pageAnimation";
 import { motion } from "motion-v";
 
-const celular = ref("");
-const data = ref(null);
-const error = ref("");
-
 const deudaTotal = ref(50000);
 const cupoTotal = ref(100000);
 const mostrarMovimientos = ref(false);
@@ -19,25 +15,25 @@ const movimientos = ref([]);
 const router = useRouter();
 
 let dataInfoapp = [];
-let clienteId = null;
+let clienteCedula = null;
+
 try {
   const raw = localStorage.getItem("data");
   dataInfoapp = raw ? JSON.parse(raw) : [];
-  clienteId = dataInfoapp?.[0]?.id;
+  clienteCedula = dataInfoapp?.[0]?.cedula;
+  console.log("📦 Cédula enviada al backend (GET):", clienteCedula);
 } catch (e) {
   console.error("Error al leer data del localStorage", e);
   dataInfoapp = [];
 }
 
-const handlePantalla6Click = async () => {
-  await cargarMovimientos();
-  mostrarMovimientos.value = true;
-};
-
 const cargarMovimientos = async () => {
   try {
-    const response = await axios.get(`http://localhost:3000/api/movimientos/${clienteId}`);
-    movimientos.value = response.data;
+    const response = await axios.get(
+      `http://localhost:3000/api/pagos/estado-cuenta?identificadorTendero=${clienteCedula}`
+    );
+    movimientos.value = response.data.movimientos || [];
+    mostrarMovimientos.value = true;
   } catch (err) {
     console.error("❌ Error al obtener movimientos:", err);
     movimientos.value = [];
@@ -73,12 +69,15 @@ const formatPesos = (valor) =>
   }).format(valor);
 
 onMounted(() => {
-  const Pantalla5Button = document.getElementById("Pantalla6");
-  if (Pantalla5Button) {
-    Pantalla5Button.addEventListener("click", handlePantalla6Click);
-  }
-
+  cargarMovimientos();
   updateProgressBar();
+
+  const botonAbonar = document.getElementById("Pantalla6");
+  if (botonAbonar) {
+    botonAbonar.addEventListener("click", () => {
+      router.push("/Pantalla6View");
+    });
+  }
 });
 
 watch([deudaTotal, cupoTotal], updateProgressBar);
@@ -94,7 +93,6 @@ watch([deudaTotal, cupoTotal], updateProgressBar);
 
     <section class="container banners py-4">
       <div class="d-flex flex-column align-items-center">
-        <!-- Banner 1 -->
         <div class="banner1 mb-4">
           <div class="info-banner">
             <div class="d-flex justify-content-between w-100">
@@ -109,25 +107,33 @@ watch([deudaTotal, cupoTotal], updateProgressBar);
             </div>
           </div>
           <div class="progress">
-            <div id="deuda-bar" class="progress-bar deuda-bar" role="progressbar"></div>
-            <div id="cupo-bar" class="progress-bar cupo-bar" role="progressbar"></div>
+            <div id="deuda-bar" class="progress-bar deuda-bar"></div>
+            <div id="cupo-bar" class="progress-bar cupo-bar"></div>
           </div>
         </div>
 
-        <!-- Botón Abonar -->
-        <div class="button-banner mb-4">
+        <!-- Botón redirección a Pantalla 6 -->
+        <div class="button-banner mb-2">
           <button type="button" class="button" id="Pantalla6">Abonar</button>
         </div>
 
-        <!-- Movimientos últimos 3 meses -->
+        <!-- Lista de movimientos -->
         <div v-if="mostrarMovimientos" class="lista-movimientos mt-4">
           <h3 class="titulo-movimientos">Movimientos</h3>
 
           <div v-for="(mov, index) in movimientos" :key="index" class="movimiento">
             <div class="info-movimiento">
               <div class="detalle">
-                <p class="fecha">{{ formatFecha(mov.FechaMovimiento) }}</p>
-                <p class="descripcion">{{ mov.Descripcion }}</p>
+                <p class="fecha"><strong>Fecha:</strong> {{ formatFecha(mov.FechaHoraMovimiento) }}</p>
+                <p class="descripcion"><strong>Descripción:</strong> {{ mov.Descripcion }}</p>
+                <p class="descripcion"><strong>Estado Movimiento:</strong> {{ mov.IdEstadoMovimiento }}</p>
+                <p class="descripcion"><strong>Fecha Programada:</strong>
+                  {{ mov.FechaPagoProgramado ? formatFecha(mov.FechaPagoProgramado) : 'No aplica' }}
+                </p>
+                <p class="descripcion"><strong>Medio de Pago:</strong> {{ mov.IdMedioPago ?? 'N/A' }}</p>
+                <p class="descripcion"><strong>Bloqueo Mora:</strong> {{ mov.BloqueoMora === 1 ? 'Sí' : 'No' }}</p>
+                <p class="descripcion"><strong>Factura Alpina:</strong> {{ mov.NroFacturaAlpina || 'No aplica' }}</p>
+                <p class="descripcion"><strong>Tel. Transportista:</strong> {{ mov.TelefonoTransportista || 'No aplica' }}</p>
               </div>
             </div>
             <p :class="['monto', mov.IdTipoMovimiento === 2 ? 'positivo' : 'negativo']">
@@ -139,7 +145,6 @@ watch([deudaTotal, cupoTotal], updateProgressBar);
     </section>
   </motion.div>
 </template>
-
 
 <style scoped>
 .banners {
