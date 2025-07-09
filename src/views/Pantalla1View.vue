@@ -8,6 +8,7 @@ const dataInfoapp = ref([
 ]);
 import { fadeInUp } from "../motion/pageAnimation";
 import { motion } from "motion-v";
+import CardAbonoCupos from "../components/UI/CardAbonoCupos.vue";
 
 onMounted(() => {
   // Establece fondo morado al cargar esta pantalla
@@ -49,33 +50,7 @@ const goToPantalla5 = () => {
 
   <motion.div v-bind="fadeInUp">
     <section class="content">
-      <!-- Tarjeta de deuda -->
-      <div class="card">
-        <h2>Deuda total</h2>
-        <p class="bold">{{ dataInfoapp[0]?.saldorestante }}</p>
-        <p><span class="bold pink">Fecha siguiente abono:</span></p>
-        <p>
-          Cupo disponible:
-          <span class="pink bold">{{ dataInfoapp[0]?.saldoabonado }}</span>
-        </p>
-        <button class="button" @click="goToPantalla5" id="Pantalla5">
-          Ver más
-        </button>
-      </div>
-
-      <!-- Tarjeta de proveedor -->
-      <div class="card">
-        <h3 class="card-header">Proveedores disponibles para recibir pago</h3>
-        <div class="provider-content">
-          <img src="/Alpina.png" alt="Alpina" class="alpina-img" />
-          <div class="text-center">
-            <p class="bold">Alpina</p>
-            <button class="button" @click="goToPantallaFacturasDisponibles" id="Pantalla2">
-              Pagar
-            </button>
-          </div>
-        </div>
-      </div>
+      <CardAbonoCupos :cupoTotal="`200.000`" :cupoDisp="`200.000`" :fechaAbono="`10 AGO`" :deudaTotal="`200.000`" @abonar="goToPantalla5"/>   
     </section>
   </motion.div>
 </template>
