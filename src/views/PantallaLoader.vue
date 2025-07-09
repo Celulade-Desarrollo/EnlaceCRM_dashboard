@@ -32,15 +32,17 @@ onMounted(async () => {
     const datosVacios = !data || (Array.isArray(data) && data.length === 0) || (typeof data === "object" && Object.keys(data).length === 0);
 
     if (datosVacios) {
-    window.location.href = `http://localhost:5174/?nbCliente=${datos.nbCliente}&nbAgenteComercial=${datos.nbAgenteComercial}`;
-
-    } else {
+        throw { response: { status: 400 } };
+      }
       router.push("/Pantalla1View");
-    }
 
   } catch (error) {
-    console.error("Error en la petición:", error);
-  }
+    if (error.response && error.response.status === 400) {
+      window.location.href = `http://localhost:5174/?nbCliente=${datos.nbCliente}&nbAgenteComercial=${datos.nbAgenteComercial}`;
+    } else {
+      console.error("Error en la petición:", error);
+    }
+  } 
 });
 </script>
 
