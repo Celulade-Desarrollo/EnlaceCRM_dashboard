@@ -2,7 +2,6 @@
 import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
-import RouterLink from "../components/UI/Routerlink.vue";
 import Heading from "../components/UI/Heading.vue";
 import { fadeInUp } from "../motion/pageAnimation";
 import { motion } from "motion-v";
