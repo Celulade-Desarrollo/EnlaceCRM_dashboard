@@ -20,30 +20,42 @@ const datos = {
   nbCliente: "8100000470",
   nbAgenteComercial: "841891",
   token:
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NTIwNzMxMzIsImV4cCI6MTc1MjA3NjczMiwianRpIjoiZjViMTk2M2EtNTM4ZS00NzcyLTkxZjMtNzk0NjIxNzFhYTI0In0.Q_cJy-6sZJCz7QRLRnjGe4vJFA2JyANKotit4XvdeT8",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NTIxODY2ODQsImV4cCI6MTc1MjE5MDI4NCwianRpIjoiYjcwNjc4MmEtNmNkMy00NjJiLWI4YTAtYTI5OTEwZDE3NzQ5In0.QUQ1smILv8q8Y06Aq082JoLp3o5Dph-ymEuPVbytCFc",
 };
 
 onMounted(async () => {
   try {
     const response = await axios.post("http://localhost:3000/api/user/login", datos);
     const data = response.data;
-
-    // Validamos si los datos están vacíos
-    const datosVacios = !data || (Array.isArray(data) && data.length === 0) || (typeof data === "object" && Object.keys(data).length === 0);
-
-    if (datosVacios) {
-        throw { response: { status: 400 } };
-      }
+    if (response.status === 200 && response.data && Object.keys(response.data).length > 0) {
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("tipo", data.tipo);
+      localStorage.setItem("idUsuario", data.idUsuario);
+      localStorage.setItem("datosCuenta", JSON.stringify(data.cuenta));
       router.push("/Pantalla1View");
+    } else {
+      redirigirAFormulario(datos);
+    }
 
   } catch (error) {
     if (error.response && error.response.status === 400) {
-      window.location.href = `http://localhost:5174/?nbCliente=${datos.nbCliente}&nbAgenteComercial=${datos.nbAgenteComercial}`;
+      redirigirAFormulario(datos);
     } else {
-      console.error("Error en la petición:", error);
+      console.error("Error inesperado en la petición:", error);
     }
-  } 
+  }
 });
+
+// Función para redirigir con los datos por query string
+function redirigirAFormulario(datos) {
+  const params = new URLSearchParams({
+    nbCliente: datos.nbCliente,
+    nbAgenteComercial: datos.nbAgenteComercial
+  }).toString();
+
+  window.location.href = `http://localhost:5174/?${params}`;
+}
+
 </script>
 
 <style scoped>

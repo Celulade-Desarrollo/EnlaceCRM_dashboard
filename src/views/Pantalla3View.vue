@@ -4,35 +4,63 @@ import { useRouter } from "vue-router";
 import Heading from "../components/UI/Heading.vue";
 import { fadeInUp } from "../motion/pageAnimation";
 import { motion } from "motion-v";
-
-// Variables reactivas
-const valorPago = ref("");
+import axios from "axios";
 
 // Instancia de Vue Router
-const router = useRouter();
+  const router = useRouter();
 
-let dataInfoapp = $.parseJSON(localStorage.getItem("data"));
-let pagarValor = localStorage.getItem("pagarValor");
+  const pagarValor = localStorage.getItem("pagarValor");
+  const datosCuenta = JSON.parse(localStorage.getItem("datosCuenta")) || {};
+  const facturas = JSON.parse(localStorage.getItem("numeroFactura")) || [];
+  const nroFacturaAlpina = facturas.join(",");
+  const numeroTransportista = ref("");
+  const token = localStorage.getItem("token");
+  
+  console.log("datosCuenta:", datosCuenta);
+  console.log("Facturas seleccionadas:", facturas);
 
-// Función para manejar el clic en el botón "codigoPedido1"
-const handlePago1Click = () => {
-  window.open("/Pantalla4View", "_parent");
-};
-const handlePagina2Click = () => {
-  window.open("/Pantalla2View", "_parent");
-};
+  // Función para manejar el clic en el botón "codigoPedido1"
 
-// Montar el event listener para el envío del formulario y clic en el botón
-onMounted(() => {
-  const pago1Button = document.getElementById("boton-pago");
-  if (pago1Button) {
-    pago1Button.addEventListener("click", handlePago1Click);
-  }
-  const atras = document.getElementById("boton-atras");
-  if (atras) {
-    atras.addEventListener("click", handlePagina2Click);
-  }
-});
+
+  const handlePagoClick = async () => {
+    const dataPagoFactura = {
+   "identificadorTendero": datosCuenta.Cedula_Cliente,
+   "monto": pagarValor,
+   "tipoMovimiento": 1,
+   "descripcion": "pago de factura",
+   //"fechaPagoProgramado": "2025-07-10",
+   "idMedioPago": 14,
+   "nroFacturaAlpina": nroFacturaAlpina,
+  "telefonoTransportista":String(numeroTransportista.value)
+}
+    console.log("datosPagoFactura:", dataPagoFactura);
+     try {
+       const pagoFacturas = await axios.post("http://localhost:3000/api/movimientos",
+         dataPagoFactura,
+          {
+        headers: {  
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      }
+       );
+     window.open("/Pantalla4View", "_parent");
+
+     } catch (error) {
+       console.error("Error al realizar el pago:", error);
+     }
+  };
+  const handlePagina2Click = () => {
+    window.open("/Pantalla2View", "_parent");
+  };
+
+  // Montar el event listener para el envío del formulario y clic en el botón
+  onMounted(() => {
+    const atras = document.getElementById("boton-atras");
+    if (atras) {
+      atras.addEventListener("click", handlePagina2Click);
+    }
+  });
 </script>
 
 <template>
@@ -47,10 +75,7 @@ onMounted(() => {
 
     <Heading
       :mensaje="
-        'Hola, ' +
-        (dataInfoapp && dataInfoapp.length > 0
-          ? dataInfoapp[0].nombre
-          : 'Usuario')
+        'Hola, ' + datosCuenta.Nombres
       "
     />
 
@@ -86,7 +111,7 @@ onMounted(() => {
           </label>
         </div>
         <div class="button-banner-pedidos">
-          <button type="button" id="boton-pago" class="boton">Pagar</button>
+          <button type="button" id="boton-pago" class="boton" @click="handlePagoClick">Pagar</button>
           <button type="button" id="boton-atras" class="boton">Atrás</button>
         </div>
       </div>

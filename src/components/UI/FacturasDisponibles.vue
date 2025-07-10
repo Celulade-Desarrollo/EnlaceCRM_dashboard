@@ -31,8 +31,9 @@ const seleccionadas = ref([]);
 
 const emitirTotal = () => {
   const total = seleccionadas.value.reduce((sum, f) => sum + f.valor, 0);
-  emit("update-total", total);
+  emit("update-total", total, seleccionadas.value); // ← también envía seleccionadas
 };
+
 </script>
 <style scoped>
 .facturas label {

@@ -9,6 +9,15 @@ const dataInfoapp = ref([
 import { fadeInUp } from "../motion/pageAnimation";
 import { motion } from "motion-v";
 
+const token = localStorage.getItem("token");
+const tipo = localStorage.getItem("tipo");
+const idUsuario = localStorage.getItem("idUsuario");
+const datosCuenta = JSON.parse(localStorage.getItem("datosCuenta")) || {};
+
+console.log("localStorage token:", token);
+console.log("localStorage tipo:", tipo);
+console.log("idUsuario",idUsuario);
+console.log("datosCuenta", datosCuenta);
 onMounted(() => {
   // Establece fondo morado al cargar esta pantalla
   document.body.style.backgroundColor = "#2e008b";
@@ -45,7 +54,7 @@ const goToPantalla5 = () => {
     />
   </section>
   <!-- Encabezado -->
-  <Heading :mensaje="'Hola, ' + dataInfoapp[0].nombre" />
+  <Heading :mensaje="'Hola, ' + datosCuenta.Nombres" />
 
   <motion.div v-bind="fadeInUp">
     <section class="content">
@@ -65,7 +74,7 @@ const goToPantalla5 = () => {
 
       <!-- Tarjeta de proveedor -->
       <div class="card">
-        <h3 class="card-header">Proveedores disponibles para recibir pago</h3>
+        <!-- <h3 class="card-header">Proveedores disponibles para recibir pago</h3> -->
         <div class="provider-content">
           <img src="/Alpina.png" alt="Alpina" class="alpina-img" />
           <div class="text-center">
