@@ -20,7 +20,7 @@ const datos = {
   nbCliente: "8100000470",
   nbAgenteComercial: "841891",
   token:
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NTIxODY2ODQsImV4cCI6MTc1MjE5MDI4NCwianRpIjoiYjcwNjc4MmEtNmNkMy00NjJiLWI4YTAtYTI5OTEwZDE3NzQ5In0.QUQ1smILv8q8Y06Aq082JoLp3o5Dph-ymEuPVbytCFc",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NTIyNDEyMTksImV4cCI6MTc1MjI0NDgxOSwianRpIjoiYTcyMGI5ODctMGEwNC00ZmUzLWE3M2ItNWYzMGM3Yzg1MWJhIn0.VFft_1wflKxVsWBMPSZOz1LLlOy_Rp1txODF9bJ8GAI",
 };
 
 onMounted(async () => {
@@ -53,7 +53,7 @@ function redirigirAFormulario(datos) {
     nbAgenteComercial: datos.nbAgenteComercial
   }).toString();
 
-  window.location.href = `http://localhost:5174/?${params}`;
+  window.location.href = `http://localhost:5173/?${params}`;
 }
 
 </script>
