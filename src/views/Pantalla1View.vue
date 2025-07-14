@@ -10,7 +10,12 @@ import { fadeInUp } from "../motion/pageAnimation";
 import { motion } from "motion-v";
 import CardAbonoCupos from "../components/UI/CardAbonoCupos.vue";
 
-onMounted(() => {
+
+onMounted(async () => {
+  const IdUsuario = localStorage.getItem("IdUsuario")
+  const response = await axios.post(`http://localhost:3000/api/user/estado-cuenta/:${IdUsuario}`, );
+  const estadoCuenta = response.data
+
   // Establece fondo morado al cargar esta pantalla
   document.body.style.backgroundColor = "#2e008b";
 
@@ -50,7 +55,7 @@ const goToPantalla5 = () => {
 
   <motion.div v-bind="fadeInUp">
     <section class="content">
-      <CardAbonoCupos :cupoTotal="`200.000`" :cupoDisp="`200.000`" :fechaAbono="`10 AGO`" :deudaTotal="`200.000`" @abonar="goToPantalla5"/>   
+      <CardAbonoCupos :cupoTotal="`${estadoCuenta.CupoFinal}`" :cupoDisp="`${estadoCuenta.CupoDisponible}`" :fechaAbono="`${estadoCuenta.FechaPagoProgramado}`" :deudaTotal="`${estadoCuenta.deudaTotal}`" @abonar="goToPantalla5"/>   
     </section>
   </motion.div>
 </template>
