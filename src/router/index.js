@@ -7,6 +7,14 @@ const routes = [
     name: "inicio",
     component: () => import("../views/PantallaLoader.vue"),
   },
+  
+    {
+    path: "/ayuda",
+    name: "ayuda",
+    component: () => import("../views/PantallaAyudaView.vue"),
+    meta: { requiresAuth: true },
+  },
+
   {
     path: "/Pantalla1View",
     name: "pantalla1",

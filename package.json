@@ -12,7 +12,7 @@
     "@formkit/themes": "^1.6.9",
     "@formkit/vue": "^1.6.5",
     "@motionone/vue": "^10.16.4",
-    "axios": "^1.9.0",
+    "axios": "^1.10.0",
     "formkit": "^1.6.9",
     "motion-v": "^1.1.0-alpha.1",
     "pinia": "^3.0.2",
