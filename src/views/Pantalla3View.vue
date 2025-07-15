@@ -21,6 +21,11 @@ import axios from "axios";
 
   // Función para manejar el clic en el botón "codigoPedido1"
 
+ const fechaActual = new Date();
+ const fechaProgramada = new Date(fechaActual);
+ fechaProgramada.setDate(fechaProgramada.getDate() + 15);
+
+ const fechaPagoProgramado = fechaProgramada.toISOString().split("T")[0];
 
   const handlePagoClick = async () => {
     const dataPagoFactura = {
@@ -28,7 +33,7 @@ import axios from "axios";
    "monto": pagarValor,
    "tipoMovimiento": 1,
    "descripcion": "pago de factura",
-   //"fechaPagoProgramado": "2025-07-10",
+   "fechaPagoProgramado": fechaPagoProgramado,
    "idMedioPago": 14,
    "nroFacturaAlpina": nroFacturaAlpina,
   "telefonoTransportista":String(numeroTransportista.value)
@@ -56,10 +61,10 @@ import axios from "axios";
 
   // Montar el event listener para el envío del formulario y clic en el botón
   onMounted(() => {
-    const atras = document.getElementById("boton-atras");
-    if (atras) {
-      atras.addEventListener("click", handlePagina2Click);
-    }
+     const atras = document.getElementById("boton-atras");
+     if (atras) {
+       atras.addEventListener("click", handlePagina2Click);
+     }
   });
 </script>
 

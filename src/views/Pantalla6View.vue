@@ -15,19 +15,22 @@ const error = ref("");
 // Instancia de router
 const router = useRouter();
 
-let dataInfoapp = JSON.parse(localStorage.getItem("data"));
+  let dataInfoapp = JSON.parse(localStorage.getItem("data"));
+
+  const datosCuenta = JSON.parse(localStorage.getItem("datosCuenta")) || {};
+  console.log("datosCuenta22:", datosCuenta );
 
 // Función para manejar el clic en el botón "Pantalla2"
-const handlePantalla7Click = () => {
-  window.open("/Pantalla7View", "_parent");
+const handlePagarClick = () => {
+  window.open("/Pantalla8View", "_parent");
 };
 
 // Montar el event listener para el envío del formulario
 onMounted(() => {
-  const Pantalla7Button = document.getElementById("Pantalla7");
-  if (Pantalla7Button) {
-    Pantalla7Button.addEventListener("click", handlePantalla7Click); // Agrega el event listener al botón
-  }
+  // const Pantalla7Button = document.getElementById("Pantalla7");
+  // if (Pantalla7Button) {
+  //   Pantalla7Button.addEventListener("click", handlePantalla7Click); // Agrega el event listener al botón
+  // }
 });
 </script>
 <template>
@@ -42,10 +45,7 @@ onMounted(() => {
 
     <Heading
       :mensaje="
-        'Hola, ' +
-        (dataInfoapp && dataInfoapp.length > 0
-          ? dataInfoapp[0].nombre
-          : 'Usuario')
+        'Hola, ' + datosCuenta.Nombres
       "
     />
 
@@ -87,13 +87,12 @@ onMounted(() => {
         </div>
       </div>
       <div class="card">
-        <h2 class="abonar">Abonar a la deuda total</h2>
         <div class="provider-content">
-          <p class="precio-pedido mb-2" id="precioPedido1">
-            Abona tu deuda a tu medida
+          <p class="pago-corresponsal mb-2" id="precioPedido1">
+            Pago en corresponsal
           </p>
           <div class="button-banner-pedidos">
-            <button type="button" class="button" id="boton-pago">Pagar</button>
+            <button type="button" class="button" id="boton-pago" @click="handlePagarClick">Pagar</button>
           </div>
         </div>
       </div>
@@ -102,6 +101,11 @@ onMounted(() => {
 </template>
 
 <style scoped>
+.pago-corresponsal{
+   font-size: 19px;
+  font-weight: bold;
+  color: #251886;
+}
 .cupo-disponible-dinero {
   color: #f15bab;
 }
@@ -187,12 +191,7 @@ onMounted(() => {
   display: block;
   text-align: center;
 }
-.abonar {
-  font-weight: bold;
-  text-align: center;
-  font-size: 25px;
-  color: #251886;
-}
+
 
 .button:hover {
   background-color: #f15bab;

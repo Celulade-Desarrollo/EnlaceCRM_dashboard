@@ -20,9 +20,10 @@ const router = useRouter();
 
 const token = localStorage.getItem("token");
 const datosCuenta = JSON.parse(localStorage.getItem("datosCuenta")) || {};
-//let dataInfoapp = $.parseJSON(localStorage.getItem("data"));
 console.log("datosCuenta", datosCuenta);
 console.log("facturasDisponibles", facturasDisponibles.value.factura);
+const isLoading = ref(true);
+
 // Función para manejar el clic en el botón "Pagar"
 const handleContinuarClick = () => {
   const valorPago = pagar.value;
@@ -85,23 +86,9 @@ onMounted(async () => {
 
   } catch (error) {
     console.error("Error al cargar facturas:", error);
+  }finally {
+    isLoading.value = false;
   }
-  // try {
-  //   const CupoResponse = await axios.get(`http://localhost:3000/api/scoring/${datosCuenta.IdFlujoRegistro}`,
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //           "Content-Type": "application/json"
-  //         }
-  //       }
-  //     );
-  //   dataScoring.value = CupoResponse.data;
-  //   console.log("cupo data:", dataScoring.value);
-  //   console.log("cupo", dataScoring.value.Cupo);
-    
-  // } catch (error) {
-  //   console.error("Error al cargar el cupo:", error);
-  // }
 
 });
 </script>
@@ -116,11 +103,7 @@ onMounted(async () => {
       />
     </section>
 
-    <Heading
-      :mensaje="
-        'Hola, ' +  datosCuenta.Nombres
-      "
-    />
+    <Heading :mensaje="'Hola, ' + datosCuenta.Nombres" />
 
     <section class="content">
       <div class="card">
@@ -128,36 +111,46 @@ onMounted(async () => {
           <h3 class="card-header-text">Facturas disponibles para pago</h3>
           <img src="/Alpina.png" alt="Alpina" class="alpina-logo-outside" />
         </div>
-          <div class="header-container">
-          <h3 class="card-header-text">Cupo disponible</h3>
-          <h3 class="card-header-text">Cupo total</h3>
+        <div class="header-container">
+          <h3 class="card-header-text">Cupo disponible: ${{ datosCuenta.CupoDisponible }}</h3>
         </div>
-      <FacturasDisponibles :facturas="facturasDisponibles" @update-total="actualizarTotal" />
 
-        <div class="form-group">
-          <label for="valor" class="input-label">
-            <input
-              class="form-control text-center"
-              aria-required="true"
-              aria-invalid="false"
-              aria-labelledby="label-pagar"
-              name="pagar"
-              v-model.number="pagar"
-              type="number"
-              placeholder=""
-              autocomplete="off"
-              id="pagar-valor"
-              aria-describedby="error-pagar"
-               :max="totalFacturasSeleccionadas"
-            />
-            <span class="floating-label">Monto a pagar</span>
-          </label>
+        <!-- Loader mientras se cargan las facturas -->
+        <div v-if="isLoading" class="loader-container">
+          <div class="loader"></div>
+          <p>Cargando facturas...</p>
         </div>
-        <div class="button-banner">
-          <button type="button" id="boton-pago" @click="handleContinuarClick">Continuar</button>
-          <p v-if="errorMessage" id="error-email" class="text-danger mt-1">
-            {{ errorMessage }}
-          </p>
+
+        <!-- Mostrar el resto del contenido solo cuando isLoading sea falso -->
+        <div v-else>
+          <FacturasDisponibles :facturas="facturasDisponibles" @update-total="actualizarTotal" />
+
+          <div class="form-group">
+            <label for="valor" class="input-label">
+              <input
+                class="form-control text-center"
+                aria-required="true"
+                aria-invalid="false"
+                aria-labelledby="label-pagar"
+                name="pagar"
+                v-model.number="pagar"
+                type="number"
+                placeholder=""
+                autocomplete="off"
+                id="pagar-valor"
+                aria-describedby="error-pagar"
+                :max="totalFacturasSeleccionadas"
+              />
+              <span class="floating-label">Monto a pagar</span>
+            </label>
+          </div>
+
+          <div class="button-banner">
+            <button type="button" id="boton-pago" @click="handleContinuarClick">Continuar</button>
+            <p v-if="errorMessage" id="error-email" class="text-danger mt-1">
+              {{ errorMessage }}
+            </p>
+          </div>
         </div>
       </div>
     </section>
@@ -165,6 +158,27 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+.loader-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 2rem 0;
+}
+
+.loader {
+  border: 5px solid #5708eb;
+  border-top: 5px solid #ff00f2;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 .facturas label {
     display: flex; /* Para alinear el checkbox visual con el texto */
     align-items: center; /* Centrar verticalmente */

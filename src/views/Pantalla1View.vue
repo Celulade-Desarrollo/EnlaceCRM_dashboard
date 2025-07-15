@@ -18,6 +18,7 @@ console.log("localStorage token:", token);
 console.log("localStorage tipo:", tipo);
 console.log("idUsuario",idUsuario);
 console.log("datosCuenta", datosCuenta);
+
 onMounted(() => {
   // Establece fondo morado al cargar esta pantalla
   document.body.style.backgroundColor = "#2e008b";
@@ -78,7 +79,6 @@ const goToPantalla5 = () => {
         <div class="provider-content">
           <img src="/Alpina.png" alt="Alpina" class="alpina-img" />
           <div class="text-center">
-            <p class="bold">Alpina</p>
             <button class="button" @click="goToPantallaFacturasDisponibles" id="Pantalla2">
               Pagar
             </button>
