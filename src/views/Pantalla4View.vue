@@ -1,147 +1,228 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import Heading from '../components/UI/Heading.vue';
+import { ref, onMounted, watch } from "vue";
+import { useRouter } from "vue-router"; // Importa useRouter para navegar entre vistas
+import RouterLink from "../components/UI/Routerlink.vue";
+import Heading from "../components/UI/Heading.vue";
 
 // Variables reactivas
-const pagar = ref('');
+const celular = ref("");
+const data = ref(null);
+const error = ref("");
+
+const deudaTotal = ref(0);
+const cupoTotal = ref(0);
+
+// Instancia de router
 const router = useRouter();
+let pagarValor = localStorage.getItem("pagarValor");
+let dataInfoapp = JSON.parse(localStorage.getItem("data"));
 
-let dataInfoapp = $.parseJSON(localStorage.getItem('data'))
-let pagarValor = localStorage.getItem('pagarValor');
+deudaTotal.value = parseFloat(
+  dataInfoapp[0].saldorestante.replace(/[$,]/g, "")
+);
+cupoTotal.value = parseFloat(dataInfoapp[0].saldoabonado.replace(/[$,]/g, ""));
 
-// Función para manejar el clic en el botón "codigoPedido1"
 const handlePago1Click = () => {
   window.open("/Pantalla1View", "_parent");
 };
 
-// Montar el event listener para el envío del formulario y clic en el botón
+// Función para calcular y ajustar la barra de progreso
+const updateProgressBar = () => {
+  const total = deudaTotal.value + cupoTotal.value;
+  const deudaPercentage = (deudaTotal.value / total) * 100;
+  const cupoPercentage = (cupoTotal.value / total) * 100;
+
+  document.getElementById("deuda-bar").style.width = `${deudaPercentage}%`;
+  document.getElementById("cupo-bar").style.width = `${cupoPercentage}%`;
+};
+
+// Montar el event listener para el envío del formulario
 onMounted(() => {
-  const pago1Button = document.getElementById('codigoPedido1');
-  if (pago1Button) {
-    pago1Button.addEventListener('click', handlePago1Click);
+  const Pantalla5Button = document.getElementById("Pantalla6");
+  if (Pantalla5Button) {
+    Pantalla5Button.addEventListener("click", handlePantalla6Click); // Agrega el event listener al botón
   }
+
+  // Actualizar la barra de progreso al montar el componente
+  updateProgressBar();
 });
+
+// Observar cambios en los valores para actualizar la barra de progreso
+watch([deudaTotal, cupoTotal], updateProgressBar);
 </script>
 
 <template>
-     <header class="header">
-    <div class="header-icons">
-      <!-- Ícono de ayuda a la izquierda -->
-      <span class="icon-left">
-        <i class="fas fa-user"></i>
-      </span>
-      
-      <!-- Ícono de usuario a la derecha -->
-      <span class="icon-right">
-        <i class="fas fa-question-circle"></i>
-      </span>
-    </div>
-    
-    <!-- Mensaje de saludo -->
-    <div class="header-text">
-      <p>Hola, {{dataInfoapp[0].nombre}}</p>
-    </div>
-  </header>
-
-  <section class="container banners">
-    <div class="info-banner">
-    
-      <h2 class="proveedores mb-4" id="pagado">Su pago por <span>${{ pagarValor }}</span> para Alpina <br>ha sido recibido</h2>
-      <picture class="logo">
-        <img src="/public/Alpina.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
-      </picture>
-      <h1 class="proveedores mb-4" id="cantidad-pagar">¡Muchas gracias!</h1>
-    </div>
-    
+  <section class="logo-container">
+    <img
+      src="/public/enlaceFiado.png"
+      alt="logo Enlace CRM"
+      class="logo-main"
+    />
   </section>
-  <div class="button-inicio" @click="handlePago1Click">
-      <button>Inicio</button>
+
+  <Heading
+    :mensaje="
+      'Hola, ' +
+      (dataInfoapp && dataInfoapp.length > 0
+        ? dataInfoapp[0].nombre
+        : 'Usuario')
+    "
+  />
+
+  <section class="content">
+    <div class="card">
+      <div class="header-container">
+        <picture class="logo">
+          <img
+            src="/public/Alpina.png"
+            alt="logo"
+            class="img-fluid"
+            loading="lazy"
+            title="logo"
+          />
+        </picture>
+        <h2 class="proveedores mb-4" id="pagado">
+          Su pago por <span>${{ pagarValor }}</span> para Alpina <br />ha sido
+          recibido
+        </h2>
+        <h1 class="proveedores mb-4" id="cantidad-pagar">
+          <strong>¡Muchas gracias!</strong>
+        </h1>
+      </div>
+      <div class="button-inicio" @click="handlePago1Click">
+        <button type="button" class="button">Inicio</button>
+      </div>
     </div>
+  </section>
 </template>
 
-<style>
-body {
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
-  background-color: white;
-}
-.button-inicio{
-  padding-right: 20px;
-  padding-left: 20px;
-  margin-top: -200px;
-  margin-bottom: 50px;
-}
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: start;
-  padding: 16px;
-  background-color: #251886;
-  min-height: 80px;
-  width: 100%;
+<style scoped>
+.logo-container {
+  text-align: center;
+  margin-top: 1rem;
 }
 
-.header-icons {
-  display: flex;
-  width: 100%;
+.logo-main {
+  width: 200px;
+  height: auto;
+  display: inline-block;
 }
 
-.icon-left,
-.icon-right {
-  font-size: 24px;
+/* Contenido */
+.content {
+  padding: 1rem;
   display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
   align-items: center;
 }
 
-.header-text {
-  flex-grow: 1;
-  text-align: start;
-  font-size: 18px;
-  color: #fff;
+.card {
+  background: #fff;
+  border-radius: 15px;
+  padding: 1.5rem;
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+  font-size: 17px;
 }
 
-.container {
+.header-container {
   display: flex;
-  justify-content: center; /* Centra el contenedor en la página */
-  align-items: center; /* Centra el contenedor verticalmente */
-  height: 100vh; /* Asegura que el contenedor ocupe toda la altura de la pantalla */
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1rem;
+  justify-content: center;
 }
 
-.info-banner {
-  display: flex;
-  flex-direction: column; /* Alinea los elementos verticalmente */
-  align-items: center; /* Centra los elementos horizontalmente */
-  text-align: center; /* Centra el texto */
-  padding: 24px;
-  margin-top: -55px;
+.logo {
+  margin-bottom: 1rem; /* Espacio debajo del logo */
+  margin-top: 0px;
 }
 
-.logo{
-  margin-top: -30px;
+.alpina-logo-outside {
+  width: 80px;
+  height: auto;
+  margin-left: rem;
 }
 
-.img-fluid {
-  height: 60%;
-  width: 60%;
-  margin: 0 auto; /* Centra la imagen horizontalmente */
-  display: block; /* Asegura que la imagen se comporte como un bloque */
-}
-
-.proveedores {
+.bold {
   font-weight: bold;
-  color: black;
-  margin-top: 20px; /* Espacio entre la imagen y el texto */
 }
-
-.button-banner-pedidos button {
+.button {
   background-color: #dd3590;
   color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 25px;
+  font-weight: bold;
+  margin-top: 1rem;
+  cursor: pointer;
+  width: 200px;
+  margin-left: auto;
+}
+
+.button:hover {
+  background-color: #f15bab;
+}
+
+button:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.provider-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.alpina-img {
+  width: 140px;
+  height: auto;
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* Formulario de pago */
+.form-group {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.form-group h2.proveedores {
+  margin: 0;
+  white-space: nowrap;
   width: auto;
 }
 
-@media (max-width: 767px) {
-  .img-fluid {
-    margin-top: -90px;
+/* Responsive */
+@media (max-width: 600px) {
+  .header-container {
+    flex-direction: column; /* Asegurar que siga siendo columna en responsive */
+    align-items: center;
+    text-align: center;
+  }
+
+  .alpina-logo-outside {
+    margin-left: 0;
+    margin-top: 0.5rem;
+  }
+
+  .provider-content {
+    flex-direction: column;
+  }
+
+  .form-group {
+    flex-direction: column;
+    align-items: stretch;
   }
 }
 </style>

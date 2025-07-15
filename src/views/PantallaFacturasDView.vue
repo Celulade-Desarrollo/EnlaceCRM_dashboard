@@ -1,62 +1,108 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch  } from "vue";
 import { useRouter } from "vue-router";
 import Heading from "../components/UI/Heading.vue";
 import { fadeInUp } from "../motion/pageAnimation";
 import { motion } from "motion-v";
+import FacturasDisponibles from '../components/UI/FacturasDisponibles.vue';
+import axios from 'axios';
 
 // Variables reactivas
 const pagar = ref("");
+const facturasDisponibles = ref([]);
 const errorMessage = ref("");
-const dataInfoapp = ref([{ nombre: "", saldorestante: "$0" }]);
+const totalFacturasSeleccionadas = ref(0);
+const facturasSeleccionadas = ref([]);
 
+const dataInfoapp = ref([{ nombre: "", saldorestante: "$0" }]);
 // Instancia de Vue Router
 const router = useRouter();
 
+const token = localStorage.getItem("token");
+const datosCuenta = JSON.parse(localStorage.getItem("datosCuenta")) || {};
 //let dataInfoapp = $.parseJSON(localStorage.getItem("data"));
-
+console.log("datosCuenta", datosCuenta);
+console.log("facturasDisponibles", facturasDisponibles.value.factura);
 // Función para manejar el clic en el botón "Pagar"
-const handlePago1Click = () => {
+const handleContinuarClick = () => {
   const valorPago = pagar.value;
-  const regex = /^\d{5,}$/; // Mínimo 5 dígitos, solo números
-  const saldoTotal = parseFloat(
-    dataInfoapp.value[0].saldorestante.replace("$", "").replace(",", "")
-  );
-  if (!valorPago || isNaN(valorPago) || !regex.test(valorPago)) {
-    errorMessage.value =
-      "Ingrese un valor válido de al menos 5 dígitos sin puntos ni comas";
-    return;
-  }
-  if (valorPago > saldoTotal) {
-    errorMessage.value = "No puede ingresar un valor mayor a la deuda";
-    return;
-  }
 
+  console.log("valor a pagar", valorPago);
+
+  const regex = /^\d{5,}$/; // Mínimo 5 dígitos, solo números
+   if (!valorPago || isNaN(valorPago) || !regex.test(valorPago)) {
+     errorMessage.value =
+       "Ingrese un valor válido de al menos 5 dígitos sin puntos ni comas";
+     return;
+   }else {
+     errorMessage.value = "";
+   }
+     if (totalFacturasSeleccionadas.value === 0) {
+    errorMessage.value = "Debe seleccionar al menos una factura antes de continuar";
+    return;
+  }
+   if (valorPago > totalFacturasSeleccionadas.value) {
+    errorMessage.value =
+      "No puede ingresar un valor mayor al total de las facturas seleccionadas";
+    return;
+  }
+   if (valorPago > datosCuenta.CupoDisponible || valorPago > datosCuenta.CupoFinal) {
+    errorMessage.value =
+      "No puede ingresar un valor mayor al total del cupo disponible o cupo total";
+    return;
+  }
+  errorMessage.value = "";
   localStorage.setItem("pagarValor", valorPago); // Guarda el valor en localStorage
+  localStorage.setItem("datosCuenta", JSON.stringify(datosCuenta));
+  localStorage.setItem("token", token);
+  const numerosFacturas = facturasSeleccionadas.value.map(f => f.factura);
+  localStorage.setItem("numeroFactura", JSON.stringify(numerosFacturas));
+
   window.open("/Pantalla3View", "_parent");
 };
+  watch(totalFacturasSeleccionadas, (nuevoTotal) => {
+    pagar.value = nuevoTotal;
+  });
 
-onMounted(() => {
-  const data = localStorage.getItem("data");
-  if (data) {
-    try {
-      dataInfoapp.value = JSON.parse(data);
-      const saldo = parseFloat(
-        dataInfoapp.value[0].saldorestante.replace("$", "").replace(",", "")
-      );
-      pagar.value = saldo;
-    } catch (e) {
-      console.error("Error al leer data desde localStorage:", e);
-    }
-  }
-});
+const actualizarTotal = (total, seleccionadas) => {
+  totalFacturasSeleccionadas.value = total;
+  facturasSeleccionadas.value = seleccionadas;
+};
+onMounted(async () => {
+  try {
+    const facturasResponse = await axios.post("http://localhost:3000/api/pagos/facturas-pendientes",
+      { identificadorTendero: datosCuenta.Cedula_Cliente }, 
+      {
+        headers: {  
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      }
+    );
+    
+    facturasDisponibles.value = facturasResponse.data;
+    console.log("Facturas:", facturasResponse.data);
 
-// Montar el event listener para el envío del formulario y clic en el botón
-onMounted(() => {
-  const pago1Button = document.getElementById("boton-pago");
-  if (pago1Button) {
-    pago1Button.addEventListener("click", handlePago1Click);
+  } catch (error) {
+    console.error("Error al cargar facturas:", error);
   }
+  // try {
+  //   const CupoResponse = await axios.get(`http://localhost:3000/api/scoring/${datosCuenta.IdFlujoRegistro}`,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //           "Content-Type": "application/json"
+  //         }
+  //       }
+  //     );
+  //   dataScoring.value = CupoResponse.data;
+  //   console.log("cupo data:", dataScoring.value);
+  //   console.log("cupo", dataScoring.value.Cupo);
+    
+  // } catch (error) {
+  //   console.error("Error al cargar el cupo:", error);
+  // }
+
 });
 </script>
 
@@ -72,19 +118,22 @@ onMounted(() => {
 
     <Heading
       :mensaje="
-        'Hola, ' +
-        (dataInfoapp && dataInfoapp.length > 0
-          ? dataInfoapp[0].nombre
-          : 'Usuario')
+        'Hola, ' +  datosCuenta.Nombres
       "
     />
 
     <section class="content">
       <div class="card">
         <div class="header-container">
-          <h3 class="card-header-text">Pago a proveedor Alpina</h3>
+          <h3 class="card-header-text">Facturas disponibles para pago</h3>
           <img src="/Alpina.png" alt="Alpina" class="alpina-logo-outside" />
         </div>
+          <div class="header-container">
+          <h3 class="card-header-text">Cupo disponible</h3>
+          <h3 class="card-header-text">Cupo total</h3>
+        </div>
+      <FacturasDisponibles :facturas="facturasDisponibles" @update-total="actualizarTotal" />
+
         <div class="form-group">
           <label for="valor" class="input-label">
             <input
@@ -99,17 +148,13 @@ onMounted(() => {
               autocomplete="off"
               id="pagar-valor"
               aria-describedby="error-pagar"
-              :max="
-                parseFloat(
-                  dataInfoapp[0].saldorestante.replace('$', '').replace(',', '')
-                )
-              "
+               :max="totalFacturasSeleccionadas"
             />
-            <span class="floating-label">Ingresa el valor a pagar</span>
+            <span class="floating-label">Monto a pagar</span>
           </label>
         </div>
         <div class="button-banner">
-          <button type="button" id="boton-pago">Pagar</button>
+          <button type="button" id="boton-pago" @click="handleContinuarClick">Continuar</button>
           <p v-if="errorMessage" id="error-email" class="text-danger mt-1">
             {{ errorMessage }}
           </p>
@@ -120,6 +165,47 @@ onMounted(() => {
 </template>
 
 <style scoped>
+.facturas label {
+    display: flex; /* Para alinear el checkbox visual con el texto */
+    align-items: center; /* Centrar verticalmente */
+    cursor: pointer; /* Indica que es un elemento interactivo */
+    margin-bottom: 10px; /* Espacio entre las facturas */
+}
+
+.facturas input[type="checkbox"] {
+    /* Oculta el checkbox nativo */
+    display: none;
+}
+
+.checkbox-visual {
+    width: 28px;          /* Aumenta el ancho */
+    height: 28px;         /* Aumenta el alto */
+    border: 2px solid #09008be1;
+    background-color: transparent;
+    margin-right: 10px;
+    display: inline-block;
+    position: relative;
+    border-radius: 4px;
+}
+
+/* Estilo cuando el checkbox está marcado */
+.facturas input[type="checkbox"]:checked + .checkbox-visual {
+    background-color: #ff00f2;
+}
+
+/* El checkmark más grande */
+.facturas input[type="checkbox"]:checked + .checkbox-visual::after {
+    content: '';
+    position: absolute;
+    left: 7px;
+    top: 4px;
+    width: 8px;           /* Ancho del checkmark */
+    height: 16px;         /* Alto del checkmark */
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    transform: rotate(45deg);
+}
+
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;

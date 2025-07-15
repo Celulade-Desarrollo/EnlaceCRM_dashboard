@@ -1,9 +1,10 @@
 <script setup>
-  import { RouterView } from "vue-router";
+import { RouterView } from "vue-router";
+import { AnimatePresence } from "motion-v";
 </script>
 
 <template>
-  
-    <RouterView/>
-
+  <AnimatePresence>
+    <RouterView />
+  </AnimatePresence>
 </template>

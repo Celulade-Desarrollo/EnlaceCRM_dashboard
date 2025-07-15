@@ -1,336 +1,330 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import axios from 'axios';
-import { useRouter } from 'vue-router'; // Importa useRouter para navegar entre vistas
-import RouterLink from "../components/UI/Routerlink.vue"; 
+import { ref, onMounted } from "vue";
+import axios from "axios";
+import { useRouter } from "vue-router"; // Importa useRouter para navegar entre vistas
+import RouterLink from "../components/UI/Routerlink.vue";
 import Heading from "../components/UI/Heading.vue";
+import { fadeInUp } from "../motion/pageAnimation";
+import { motion } from "motion-v";
 
 // Variables reactivas
-const celular = ref('');
+const celular = ref("");
 const data = ref(null);
-const error = ref('');
+const error = ref("");
 
 // Instancia de router
 const router = useRouter();
 
-let dataInfoapp = JSON.parse(localStorage.getItem('data'));
-
+let dataInfoapp = JSON.parse(localStorage.getItem("data"));
 
 // Función para manejar el clic en el botón "Pantalla2"
 const handlePantalla8Click = () => {
-    window.open("/Pantalla8View", "_parent");
+  window.open("/Pantalla8View", "_parent");
+};
+const handlePantalla2Click = () => {
+  window.open("/Pantalla2View", "_parent");
 };
 
 // Montar el event listener para el envío del formulario
 onMounted(() => {
-  const Pantalla8Button = document.getElementById('Pantalla8');
+  const Pantalla8Button = document.getElementById("Pantalla8");
+  const Pantalla2Button = document.querySelectorAll(".pantalla2");
+
   if (Pantalla8Button) {
-    Pantalla8Button.addEventListener('click', handlePantalla8Click); // Agrega el event listener al botón
+    Pantalla8Button.addEventListener("click", handlePantalla8Click); // Agrega el event listener al botón
   }
-
+  Pantalla2Button.forEach((btn) => {
+    btn.addEventListener("click", handlePantalla2Click);
+  });
 });
-
 </script>
 
 <template>
-     <header class="header">
-    <div class="header-icons">
-      <!-- Ícono de ayuda a la izquierda -->
-      <span class="icon-left">
-        <i class="fas fa-user"></i>
-      </span>
-      
-      <!-- Ícono de usuario a la derecha -->
-      <span class="icon-right">
-        <i class="fas fa-question-circle"></i>
-      </span>
-    </div>
-    
-    <!-- Mensaje de saludo -->
-    <div class="header-text">
-      <p>Hola, {{dataInfoapp[0].nombre}}</p>
-    </div>
-  </header>
+  <motion.div v-bind="fadeInUp">
+    <section class="logo-container">
+      <img
+        src="/public/enlaceFiado.png"
+        alt="logo Enlace CRM"
+        class="logo-main"
+      />
+    </section>
 
-  <section class="container banners">
-    <div class="row">
-          <!-- Banner 1 -->
-          <div class="col-md-4 mb-4 banner2">
-            <h2 class="proveedores">¿Como quieres pagar?<br>${{dataInfoapp[0].pagoMinimo}}</h2>
+    <Heading
+      :mensaje="
+        'Hola, ' +
+        (dataInfoapp && dataInfoapp.length > 0
+          ? dataInfoapp[0].nombre
+          : 'Usuario')
+      "
+    />
+
+    <h2 class="proveedores">¿Como quieres pagar?</h2>
+    <h2 class="valor">${{ dataInfoapp[0].pagoMinimo }}</h2>
+    <section class="container banners">
+      <div class="card banner1">
         <div class="info-banner">
-          <p class="mt-5">Desde tu billeteraW</p>
-            <div class="d-flex align-items-center">
+          <p>Desde tu billeteraW</p>
+          <div class="d-flex align-items-center">
             <div class="image-section">
-                <picture class="logo">
-                    <img src="/public/billeteraW.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
-                </picture>
+              <picture class="logo">
+                <img
+                  src="/public/billeteraW.png"
+                  alt="logo"
+                  class="img-fluid"
+                  loading="lazy"
+                  title="logo"
+                />
+              </picture>
             </div>
             <div class="text-section ml-3">
-                <div class="button-banner">
-                    <button type="submit" class="btn btn-primary mt-2 btn-size" id="Pantalla2">
-                        Pagar
-                    </button>
-                </div>
+              <div class="button-banner">
+                <button type="submit" class="button pantalla2">Pagar</button>
+              </div>
             </div>
-        </div>          
+          </div>
+        </div>
       </div>
-      </div>
-      <!-- Línea separadora -->
-      <div class="separator"></div>
-      <!-- Banner 2 -->
-      <div class="col-md-4 mb-4 banner2">
+
+      <div class="card banner2">
         <div class="info-banner">
           <p>Desde PSE</p>
-            <div class="d-flex align-items-center">
+          <div class="d-flex align-items-center">
             <div class="image-section">
-                <picture class="logo">
-                    <img src="/public/PSELOGO.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
-                </picture>
+              <picture class="logo">
+                <img
+                  src="/public/PSELOGO.png"
+                  alt="logo"
+                  class="img-fluid"
+                  loading="lazy"
+                  title="logo"
+                />
+              </picture>
             </div>
             <div class="text-section ml-3">
-                <div class="button-banner">
-                    <button type="submit" class="btn btn-primary mt-2 btn-size" id="Pantalla2">
-                        Pagar
-                    </button>
-                </div>
+              <div class="button-banner">
+                <button type="submit" class="button pantalla2">Pagar</button>
+              </div>
             </div>
-        </div>          
+          </div>
+        </div>
       </div>
-      </div>
-    <!-- Línea separadora -->
-    <div class="separator"></div>
-      <!-- Banner 3 -->
-      <div class="col-md-4 mb-4 banner2">
+      <div class="card banner3">
         <div class="info-banner">
           <p>Desde tu cuenta nequi</p>
-            <div class="d-flex align-items-center">
+          <div class="d-flex align-items-center">
             <div class="image-section">
-                <picture class="logo">
-                    <img src="/public/Nequi.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
-                </picture>
+              <picture class="logo">
+                <img
+                  src="/public/Nequi.png"
+                  alt="logo"
+                  class="img-fluid"
+                  loading="lazy"
+                  title="logo"
+                />
+              </picture>
             </div>
             <div class="text-section ml-3">
-                <div class="button-banner">
-                    <button type="submit" class="btn btn-primary mt-2 btn-size" id="Pantalla2">
-                        Pagar
-                    </button>
-                </div>
+              <div class="button-banner">
+                <button type="submit" class="button pantalla2">Pagar</button>
+              </div>
             </div>
-        </div>          
+          </div>
+        </div>
       </div>
-      </div>
-          <!-- Línea separadora -->
-    <div class="separator"></div>
-          <!-- Banner 4 -->
-          <div class="col-md-4 mb-4 banner2">
+      <div class="card banner4">
         <div class="info-banner">
           <p>Desde tu cuenta daviplata</p>
-            <div class="d-flex align-items-center">
+          <div class="d-flex align-items-center">
             <div class="image-section">
-                <picture class="logo">
-                    <img src="/public/Daviplata.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
-                </picture>
+              <picture class="logo">
+                <img
+                  src="/public/Daviplata.png"
+                  alt="logo"
+                  class="img-fluid"
+                  loading="lazy"
+                  title="logo"
+                />
+              </picture>
             </div>
             <div class="text-section ml-3">
-                <div class="button-banner">
-                    <button type="submit" class="btn btn-primary mt-2 btn-size" id="Pantalla2">
-                        Pagar
-                    </button>
-                </div>
+              <div class="button-banner">
+                <button type="submit" class="button pantalla2">Pagar</button>
+              </div>
             </div>
-        </div>          
+          </div>
+        </div>
       </div>
-      </div>
-          <!-- Línea separadora -->
-    <div class="separator"></div>
-    <!-- Banner 5 -->
-    <div class="col-md-4 mb-4 banner2">
+      <div class="card banner5">
         <div class="info-banner">
           <p>Paga en efectivo</p>
-            <div class="d-flex align-items-center">
-              <p>Abona a tu dueda a tu medida</p>
+          <div class="d-flex align-items-center">
+            <p>Abona a tu dueda a tu medida</p>
             <div class="text-section ml-3">
-                <div class="button-banner">
-                    <button type="submit" class="btn btn-primary mt-2 btn-size" id="Pantalla8">
-                        Pagar
-                    </button>
-                </div>
+              <div class="button-banner">
+                <button type="submit" class="button" id="Pantalla8">
+                  Pagar
+                </button>
+              </div>
             </div>
-        </div>          
+          </div>
+        </div>
       </div>
-      </div>
-    </div>
-  </section>
+    </section>
+  </motion.div>
 </template>
 
-<style>
-body {
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-    background-color: white;
+<style scoped>
+.logo-container {
+  text-align: center;
+  margin-top: 1rem;
 }
 
-.formkit-wrapper {
-    align-items: center;
-    width: 100%;
+.logo-main {
+  width: 200px;
+  height: auto;
+  display: inline-block;
+}
+.card {
+  background: #fff;
+  border-radius: 15px;
+  padding: 1.5rem;
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+  font-size: 17px;
 }
 
-.formkit-input {
-    text-align: center;
+button {
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+  border-radius: 6.25rem;
+  background: #dd3590;
+  color: white;
+  height: 3rem;
+  width: 100%;
+  margin-top: 20px;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  align-items: center;
+}
+.button:hover {
+  background-color: #f15bab;
 }
 
-.formkit-help {
-    margin-left: 50px;
+button:focus {
+  outline: none;
+  box-shadow: none;
 }
-
 .form-group input {
-    background-color: transparent;
-    border-width: 0 0 1px;
-    border-bottom: solid 1px rgba(17, 17, 17, 0.2);
-    color: rgb(17, 17, 17);
-    padding: 8px 0;
-    width: 100%;
-    outline: none;
+  background-color: transparent;
+  border-width: 0 0 1px;
+  border-bottom: solid 1px rgba(17, 17, 17, 0.2);
+  color: rgb(17, 17, 17);
+  padding: 8px 0;
+  width: 100%;
+  outline: none;
 }
+
 .logo .img-fluid {
-    margin-top: 20px;
-    margin-bottom: 30px;
-    max-width: 300px;
-    height: 60%;
-    width: 60%;
-}
-.container button {
-    padding: 0.5rem 1rem;
-    border-radius: 6.25rem;
-    background: #dd3590;
-    color: #fff;
-    display: flex;
-    margin-bottom: 1rem;
-    cursor: pointer;
-    border: none;
-    align-items: center;
-    position: relative;
-    font-size: 1rem;
-    justify-content: center;
-    width: auto;
-}
-
-.container button svg {
-    margin-left: 8px;
-}
-
-.parrafo {
-    margin: 20px 0;
-    font-size: medium;
+  margin-top: 20px;
+  margin-bottom: 30px;
+  max-width: 300px;
+  height: 60%;
+  width: 60%;
 }
 
 .info-banner {
-    width: 100%;
-    letter-spacing: -0.03em;
-    line-height: 1.2;
-    background-color: #fff;
-    color: black;
-    padding: 24px;
-    display: flex;
-    align-items: center;
+  width: 100%;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  background-color: #fff;
+  color: black;
+  padding: 24px;
+  display: flex;
+  align-items: center;
 }
+
 .info-banner3 {
-    width: 100%;
-    letter-spacing: -0.03em;
-    line-height: 1.2;
-    background-color: #fff;
-    color: black;
-    padding: 24px;
-    display: flex;
-    align-items: center;
-}
-.titulo-1 {
-    font-weight: bold;
+  width: 100%;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  background-color: #fff;
+  color: black;
+  padding: 24px;
+  display: flex;
+  align-items: center;
 }
 
-.titulo {
-    margin: 0 0 16px;
-    color: inherit;
-    font-weight: bold;
-    letter-spacing: -0.03em;
-    font-size: 1.875rem;
-    line-height: 1.2;
+.parrafo-marcas {
+  font-weight: bold;
+  text-align: center;
 }
 
-.subtitulo {
-    color: black;
-}
-
-.button-banner button {
-    background-color: #dd3590;
-    color: white;
-}
-
-.deuda-total {
-    font-weight: bold;
-}
-
-.fecha-pago {
-    font-weight: bold;
-}
-
-.cupo-disponible-dinero {
-    font-weight: bold;
-}
-
-.separator {
-    width: 100%;
-    background-color: #b3b0b0;
-    height: 1px;
-    margin: 0 auto;
-}
-
-.parrafo-marcas{
-    font-weight: bold;
-    text-align: center;
-}
-
-.img-fluid{
-    height: 80%;
-    width: 80%;
+.img-fluid {
+  height: 80%;
+  width: 80%;
 }
 
 .text-section {
-    flex-grow: 1;
-    margin-left: 20px;
+  flex-grow: 1;
+  margin-left: 20px;
 }
 
-.proveedores{
-    font-weight: bold;
-    color: black;
-    width: 100%;
-    letter-spacing: -0.03em;
-    line-height: 1.2;
+.proveedores {
+  font-weight: bold;
+  color: white;
+  width: 100%;
+  letter-spacing: -0.03em;
+  padding: 24px;
+  display: flex;
+  justify-content: center;
+}
+.valor {
+  font-weight: bold;
+  color: white;
+  width: 100%;
+  letter-spacing: -0.03em;
+  padding: 24px;
+  display: flex;
+  justify-content: center;
+  margin-top: -22px;
+}
+.banners {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.banners .card {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 767px) {
+  .img-fluid {
+    margin-top: -90px;
+  }
+
+  .tarjeta {
     background-color: #fff;
     padding: 24px;
-    display: flex;
-    align-items: center;
-    margin-bottom: -40px;
-}
-@media (max-width: 767px) {
-    .img-fluid {
-        margin-top: -90px;
-    }
+    border-radius: 16px;
+    width: 100%;
+  }
 
-    .tarjeta {
-        background-color: #fff;
-        padding: 24px;
-        border-radius: 16px;
-        width: 100%;
-    }
+  .info-banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 
-    .info-banner {
-        flex-direction: column;
-        align-items: flex-start;
-    }
+  .text-section {
+    margin-left: 0;
+    margin-top: 10px;
+  }
 
-    .text-section {
-        margin-left: 0;
-        margin-top: 10px;
-    }
+  .banners .card {
+    width: 100%;
+  }
 }
 </style>
