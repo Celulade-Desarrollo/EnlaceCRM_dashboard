@@ -2,6 +2,7 @@
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import Heading from "../components/UI/Heading.vue";
+import axios from "axios";
 const router = useRouter();
 const dataInfoapp = ref([
   { nombre: "Juan", saldorestante: "$0", saldoabonado: "$0" },
@@ -10,11 +11,31 @@ import { fadeInUp } from "../motion/pageAnimation";
 import { motion } from "motion-v";
 import CardAbonoCupos from "../components/UI/CardAbonoCupos.vue";
 
+const estadoCuenta = ref({
+  CupoFinal: '',
+  CupoDisponible: '',
+  FechaPagoProgramado: '',
+  deudaTotal: ''
+});
 
 onMounted(async () => {
-  const IdUsuario = localStorage.getItem("IdUsuario")
-  const response = await axios.post(`http://localhost:3000/api/user/estado-cuenta/:${IdUsuario}`, );
-  const estadoCuenta = response.data
+  const IdUsuario = localStorage.getItem("idUsuario");
+  // Obtener el token del localStorage
+  const token = localStorage.getItem("token");
+  try {
+    const response = await axios.get(
+      `http://localhost:3000/api/user/estado-cuenta/${IdUsuario}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    estadoCuenta.value = response.data;
+    console.log(estadoCuenta.value);
+  } catch (error) {
+    console.error("Error al obtener el estado de cuenta:", error);
+  }
 
   // Establece fondo morado al cargar esta pantalla
   document.body.style.backgroundColor = "#2e008b";
@@ -55,7 +76,24 @@ const goToPantalla5 = () => {
 
   <motion.div v-bind="fadeInUp">
     <section class="content">
-      <CardAbonoCupos :cupoTotal="`${estadoCuenta.CupoFinal}`" :cupoDisp="`${estadoCuenta.CupoDisponible}`" :fechaAbono="`${estadoCuenta.FechaPagoProgramado}`" :deudaTotal="`${estadoCuenta.deudaTotal}`" @abonar="goToPantalla5"/>   
+      <CardAbonoCupos
+        :cupoTotal="estadoCuenta.CupoFinal"
+        :cupoDisp="estadoCuenta.CupoDisponible"
+        :fechaAbono="estadoCuenta.FechaPagoProgramado"
+        :deudaTotal="estadoCuenta.deudaTotal"
+        @abonar="goToPantalla5"
+      />
+      <div class="bg-white w-full h-40 rounded-xl flex flex-col items-center relative justify-start pt-3">
+        <h2 class="w-full text-center font-bold mb-2">¿Cómo quieres pagar?</h2>
+        <a href="https://portalpagos.payty.com/PortalPagosPayty/WEB/?codigoConvenio=112878"
+          class=" no-underline flex items-center justify-between bg-gray-100 rounded-lg shadow w-72 h-20 px-4 mt-4"
+        >
+          <span class=" no-underline flex flex-col text-left font-bold text-gray-700 text-lg leading-tight">
+            Pago<br />Digital via PSE
+          </span>
+          <img src="../../public/PSELOGO.png" class="w-16 h-16" />
+        </a>
+      </div>
     </section>
   </motion.div>
 </template>
