@@ -2,6 +2,7 @@
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import Heading from "../components/UI/Heading.vue";
+import axios from "axios";
 const router = useRouter();
 const dataInfoapp = ref([
   { nombre: "Juan", saldorestante: "$0", saldoabonado: "$0" },
@@ -10,11 +11,31 @@ import { fadeInUp } from "../motion/pageAnimation";
 import { motion } from "motion-v";
 import CardAbonoCupos from "../components/UI/CardAbonoCupos.vue";
 
+const estadoCuenta = ref({
+  CupoFinal: '',
+  CupoDisponible: '',
+  FechaPagoProgramado: '',
+  deudaTotal: ''
+});
 
 onMounted(async () => {
-  const IdUsuario = localStorage.getItem("IdUsuario")
-  const response = await axios.post(`http://localhost:3000/api/user/estado-cuenta/:${IdUsuario}`, );
-  const estadoCuenta = response.data
+  const IdUsuario = localStorage.getItem("idUsuario");
+  // Obtener el token del localStorage
+  const token = localStorage.getItem("token");
+  try {
+    const response = await axios.get(
+      `http://localhost:3000/api/user/estado-cuenta/${IdUsuario}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    estadoCuenta.value = response.data;
+    console.log(estadoCuenta.value);
+  } catch (error) {
+    console.error("Error al obtener el estado de cuenta:", error);
+  }
 
   // Establece fondo morado al cargar esta pantalla
   document.body.style.backgroundColor = "#2e008b";
@@ -55,7 +76,15 @@ const goToPantalla5 = () => {
 
   <motion.div v-bind="fadeInUp">
     <section class="content">
-      <CardAbonoCupos :cupoTotal="`${estadoCuenta.CupoFinal}`" :cupoDisp="`${estadoCuenta.CupoDisponible}`" :fechaAbono="`${estadoCuenta.FechaPagoProgramado}`" :deudaTotal="`${estadoCuenta.deudaTotal}`" @abonar="goToPantalla5"/>   
+      <CardAbonoCupos
+        :cupoTotal="estadoCuenta.CupoFinal"
+        :cupoDisp="estadoCuenta.CupoDisponible"
+        :fechaAbono="estadoCuenta.FechaPagoProgramado"
+        :deudaTotal="estadoCuenta.deudaTotal"
+        @abonar="goToPantalla5"
+      />
+      <div>
+      </div>
     </section>
   </motion.div>
 </template>
