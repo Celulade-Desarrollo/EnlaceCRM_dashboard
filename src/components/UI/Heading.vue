@@ -1,48 +1,73 @@
 <template>
   <header class="header">
-    <span class="icon-left icon-circle"><i class="fas fa-user"></i></span>
-    <p>{{ mensaje }}</p>
-    <span class="icon-right icon-circle"><i class="fas fa-question-circle"></i></span>
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-      />
+    <div class="header-icons">
+      <!-- Ícono de ayuda a la izquierda -->
+      <span class="icon-left">
+        <i class="fas fa-user"></i>
+      </span>
+      
+      <!-- Ícono de usuario a la derecha -->
+      <span class="icon-right">
+        <i class="fas fa-question-circle"></i>
+      </span>
+    </div>
+    
+    <!-- Mensaje de saludo -->
+    <div class="header-text">
+      <p>Hola, </p>
+    </div>
   </header>
 </template>
 
-<script setup>
-defineProps({
-  mensaje: {
-    type: String,
-    required: true
-  }
-});
-</script>
+<style >
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
 
-<style scoped>
-.header {
-  background-color: #021066;
-  color: rgb(255, 255, 255);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem 1.5rem;
-  border-radius: 16px;
-  margin: 1rem auto;
-  width: 90%;
-  font-size: 1.1rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+body {
+    margin: 0;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    background-color: #251886;
+    color: white;
+}
+
+.header {   
+    width: 100%;
+    height:120px;
+    padding: 10px 20px;
+    background-color: #251886;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.header-icons {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
 }
 
 .icon-left,
 .icon-right {
-  font-size: 1.2rem;
-  background-color: white;
-  color: #2b008b;
-  padding: 0.5rem;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: white;
 }
+
+.icon-left{
+  background-color: #463c8d;
+  border-radius: 50%;
+  padding: 7px;
+}
+
+.header-text {
+    text-align: center;
+}
+
+.header-text p {
+    margin: 0;
+    font-size: 1.2rem;
+}
+
 </style>

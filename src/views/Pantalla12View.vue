@@ -1,203 +1,156 @@
 <script setup>
-import { ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+import { useRouter } from 'vue-router';
 import RouterLink from "../components/UI/Routerlink.vue";
 import Heading from "../components/UI/Heading.vue";
-import { fadeInUp } from "../motion/pageAnimation";
-import { motion } from "motion-v";
 
-const celular = ref("");
+// Variables reactivas
+const celular = ref('');
 const data = ref(null);
-const error = ref("");
+const error = ref('');
 const dropdownsVisible = ref({
   ruta1: false,
   ruta2: false,
   ruta3: false,
-  ruta4: false,
+  ruta4: false
 });
 
+// Instancia de router
 const router = useRouter();
-let dataInfoapp = JSON.parse(localStorage.getItem("data"));
+let dataInfoapp = JSON.parse(localStorage.getItem('data'));
 
+// Alterna la visibilidad de los dropdowns
 const toggleDropdown = (ruta) => {
-  Object.keys(dropdownsVisible.value).forEach((key) => {
-    dropdownsVisible.value[key] =
-      key === ruta ? !dropdownsVisible.value[key] : false;
+  // Cierra todos los dropdowns excepto el seleccionado
+  Object.keys(dropdownsVisible.value).forEach(key => {
+    dropdownsVisible.value[key] = key === ruta ? !dropdownsVisible.value[key] : false;
   });
 };
 
+// Redirecciones
 const handlePantalla2Click = () => window.open("/Pantalla2View", "_parent");
 const handlePantalla5Click = () => window.open("/Pantalla5View", "_parent");
 
+// Configura eventos en botones al montar
 onMounted(() => {
-  const Pantalla5Button = document.getElementById("Pantalla5");
+  const Pantalla5Button = document.getElementById('Pantalla5');
   if (Pantalla5Button) {
-    Pantalla5Button.addEventListener("click", handlePantalla5Click);
+    Pantalla5Button.addEventListener('click', handlePantalla5Click);
   }
-  const Pantalla2Button = document.getElementById("Pantalla2");
+  const Pantalla2Button = document.getElementById('Pantalla2');
   if (Pantalla2Button) {
-    Pantalla2Button.addEventListener("click", handlePantalla2Click);
+    Pantalla2Button.addEventListener('click', handlePantalla2Click);
   }
 });
 </script>
 
 <template>
-  <motion.div v-bind="fadeInUp">
-    <section class="logo-container">
-      <img
-        src="/public/enlaceFiado.png"
-        alt="logo Enlace CRM"
-        class="logo-main"
-      />
-    </section>
+  <header class="header">
+    <div class="header-icons">
+      <span class="icon-left"><i class="fas fa-user"></i></span>
+      <span class="icon-right"><i class="fas fa-question-circle"></i></span>
+    </div>
+    <div class="header-text">
+      <p>Hola, {{ dataInfoapp[0].nombre }}</p>
+    </div>
+  </header>
 
-    <Heading :mensaje="'Hola, ' + dataInfoapp[0].nombre" />
-
-    <section class="banners-container">
-      <!-- Banner principal -->
-      <div class="banner">
+  <section class="container banners">
+    <div class="row">
+      <!-- Banner 1 -->
+      <div class="col-md-4 banner1">
         <div class="info-banner">
-          <div class="banner-header">
-            <h2>Total de recaudo del día:</h2>
-            <input type="date" class="date-input" />
+          <div class="d-flex align-items-center justify-content-between">
+            <h2 class="text-black mt-4">Total de recaudo del día:</h2>
+            <input type="date" class="form-control ml-3" style="max-width: 150px;">
           </div>
-          <p class="deuda-total" id="ruta-total">
-            {{ dataInfoapp[0].saldorestante }}
-          </p>
-          <div class="boton-container-inside">
-            <button class="boton" id="Pantalla5">Ver más</button>
+          <p class="deuda-total mb-2 text-black" id="ruta-total">{{ dataInfoapp[0].saldorestante }}</p>
+          <div class="button-banner">
+            <button class="btn btn-primary mt-2 btn-size" id="Pantalla5">Ver más</button>
           </div>
         </div>
       </div>
 
-      <!-- Banners de rutas -->
+      <div class="separator"></div>
+
+      <!-- Dropdown banners -->
       <template v-for="(ruta, index) in 4" :key="index">
-        <div class="banner">
+        <div class="col-md-4 mb-4 banner2">
           <div class="info-banner">
             <h2 class="proveedores">Rutas:</h2>
-            <h1 class="ruta-header" @click="toggleDropdown(`ruta${index + 1}`)">
-              Ruta {{ index + 1 }} - $100.00
-              <span class="ver-aqui">Detalle</span>
-            </h1>
-            <div
-              v-if="dropdownsVisible[`ruta${index + 1}`]"
-              class="dropdown-content"
-            >
-              <div class="dropdown-row">
-                <div class="column">Número de Factura</div>
-                <div class="column">Monto de la Factura</div>
-              </div>
-              <div class="dropdown-row">
-                <div class="column">FE{{ 1000 + index * 1234 }}</div>
-                <div class="column">$100.00</div>
+            <div class="dropdown">
+              <h1 @click="toggleDropdown(`ruta${index + 1}`)" class="ruta-header">
+                Ruta {{ index + 1 }} - $100.00
+              </h1>
+              <div v-if="dropdownsVisible[`ruta${index + 1}`]" class="dropdown-content">
+                <div class="dropdown-row">
+                  <div class="column">Número de Factura</div>
+                  <div class="column">Monto de la Factura</div>
+                </div>
+                <div class="dropdown-row">
+                  <div class="column">FE{{ 1000 + index * 1234 }}</div>
+                  <div class="column">$100.00</div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </template>
-    </section>
-  </motion.div>
+    </div>
+  </section>
 </template>
 
-<style scoped>
-.banners-container {
-  display: flex;
-  flex-direction: column;
-  padding: 1rem;
-  gap: 1rem;
-  width: 100%;
-  max-width: 800px;
-  margin: 0 auto;
+<style>
+body {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  background-color: white;
 }
 
-.banner {
-  width: 100%;
-  background-color: #f5f5f5;
-  border-radius: 12px;
-  padding: 1rem;
-}
-
-.logo-container {
-  text-align: center;
-  margin-top: 1rem;
-}
-
-.logo-main {
-  width: 200px;
-  height: auto;
-  display: inline-block;
-}
-
-.banner-header {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-@media (min-width: 600px) {
-  .banner-header {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-  }
-}
-
-.date-input {
-  max-width: 150px;
-  padding: 6px;
-  border: 1px solid #251886;
-  border-radius: 6px;
-}
-
-.boton-container-inside {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 1rem;
-}
-
-.boton {
-  padding: 0.5rem 1rem;
-  border-radius: 25px;
-  background: #dd3590;
-  color: #fff;
-  cursor: pointer;
+.form-group input {
+  background-color: transparent;
   border: none;
-  font-size: 1rem;
-  width: fit-content;
-  min-width: 200px;
+  border-bottom: 1px solid rgba(17, 17, 17, 0.2);
+  color: #111;
+  padding: 8px 0;
+  width: 100%;
   outline: none;
 }
 
-.boton:hover {
-  background-color: #f15bab;
+.form-control {
+  border: 1px solid #ddd;
+  padding: 6px 12px;
+  border-radius: 4px;
+}
+
+.container button {
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  background: #dd3590;
+  color: #fff;
+  display: flex;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  border: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
 }
 
 .ruta-header {
   font-size: 1rem;
   font-weight: bold;
-  margin-top: 1rem;
+  margin-bottom: 10px;
   color: #000;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-}
-
-.ver-aqui {
-  color: #dd3590;
-  font-weight: bold;
-  margin-left: 1rem;
-  text-decoration: underline;
-  text-decoration-color: blue; /* línea subrayada azul */
-  cursor: pointer;
-  font-size: 1.1rem;
 }
 
 .dropdown-content {
-  background-color: #251886;
-  color: #fff;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  color: #000;
   padding: 10px;
   margin-top: 10px;
-  border-radius: 10px;
 }
 
 .dropdown-row {
@@ -211,19 +164,28 @@ onMounted(() => {
   font-weight: bold;
 }
 
-.proveedores {
-  background-color: #251886;
-  color: #fff;
-  border-radius: 25px;
-  width: 100px;
-  height: 30px;
-  text-align: center;
-  padding-top: 5px;
+.separator {
+  width: 100%;
+  background-color: #b3b0b0;
+  height: 1px;
+  margin: 0 auto;
 }
 
 .deuda-total {
   font-weight: bold;
-  color: #000;
-  margin-top: 1rem;
+}
+
+@media (max-width: 767px) {
+  .tarjeta {
+    background-color: #fff;
+    padding: 24px;
+    border-radius: 16px;
+    width: 100%;
+  }
+
+  .info-banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 </style>

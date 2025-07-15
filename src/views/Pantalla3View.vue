@@ -1,96 +1,61 @@
 <script setup>
-import { ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import Heading from "../components/UI/Heading.vue";
-import { fadeInUp } from "../motion/pageAnimation";
-import { motion } from "motion-v";
-import axios from "axios";
+
+// Variables reactivas
+const valorPago = ref('');
 
 // Instancia de Vue Router
-  const router = useRouter();
+const router = useRouter();
 
-  const pagarValor = localStorage.getItem("pagarValor");
-  const datosCuenta = JSON.parse(localStorage.getItem("datosCuenta")) || {};
-  const facturas = JSON.parse(localStorage.getItem("numeroFactura")) || [];
-  const nroFacturaAlpina = facturas.join(",");
-  const numeroTransportista = ref("");
-  const token = localStorage.getItem("token");
-  
-  console.log("datosCuenta:", datosCuenta);
-  console.log("Facturas seleccionadas:", facturas);
-
-  // Función para manejar el clic en el botón "codigoPedido1"
+let dataInfoapp = $.parseJSON(localStorage.getItem('data'))
+let pagarValor = localStorage.getItem('pagarValor');
 
 
-  const handlePagoClick = async () => {
-    const dataPagoFactura = {
-   "identificadorTendero": datosCuenta.Cedula_Cliente,
-   "monto": pagarValor,
-   "tipoMovimiento": 1,
-   "descripcion": "pago de factura",
-   //"fechaPagoProgramado": "2025-07-10",
-   "idMedioPago": 14,
-   "nroFacturaAlpina": nroFacturaAlpina,
-  "telefonoTransportista":String(numeroTransportista.value)
-}
-    console.log("datosPagoFactura:", dataPagoFactura);
-     try {
-       const pagoFacturas = await axios.post("http://localhost:3000/api/movimientos",
-         dataPagoFactura,
-          {
-        headers: {  
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json"
-        }
-      }
-       );
-     window.open("/Pantalla4View", "_parent");
+// Función para manejar el clic en el botón "codigoPedido1"
+const handlePago1Click = () => {
+  window.open("/Pantalla4View", "_parent");
+};
 
-     } catch (error) {
-       console.error("Error al realizar el pago:", error);
-     }
-  };
-  const handlePagina2Click = () => {
-    window.open("/Pantalla2View", "_parent");
-  };
-
-  // Montar el event listener para el envío del formulario y clic en el botón
-  onMounted(() => {
-    const atras = document.getElementById("boton-atras");
-    if (atras) {
-      atras.addEventListener("click", handlePagina2Click);
-    }
-  });
+// Montar el event listener para el envío del formulario y clic en el botón
+onMounted(() => {;
+  const pago1Button = document.getElementById('boton-pago');
+  if (pago1Button) {
+    pago1Button.addEventListener('click', handlePago1Click);
+  }
+});
 </script>
 
 <template>
-  <motion.div v-bind="fadeInUp">
-    <section class="logo-container">
-      <img
-        src="/public/enlaceFiado.png"
-        alt="logo Enlace CRM"
-        class="logo-main"
-      />
-    </section>
+     <header class="header">
+    <div class="header-icons">
+      <!-- Ícono de ayuda a la izquierda -->
+      <span class="icon-left">
+        <i class="fas fa-user"></i>
+      </span>
+      
+      <!-- Ícono de usuario a la derecha -->
+      <span class="icon-right">
+        <i class="fas fa-question-circle"></i>
+      </span>
+    </div>
+    
+    <!-- Mensaje de saludo -->
+    <div class="header-text">
+      <p>Hola, {{dataInfoapp[0].nombre}}</p>
+    </div>
+  </header>
 
-    <Heading
-      :mensaje="
-        'Hola, ' + datosCuenta.Nombres
-      "
-    />
-
-    <section class="content">
-      <div class="card">
-        <div class="header-container">
-          <img src="/Alpina.png" alt="Alpina" class="alpina-logo-outside" />
-        </div>
-        <h2 class="proveedores">¿Está seguro que desea pagar?</h2>
-        <h1 class="proveedores mb-4" id="cantidad-pagar">
-          <span>${{ pagarValor }}</span> a Alpina
-        </h1>
-
-        <div class="form-group">
-          <label for="pagar" id="label-pagar" class="input-label">
+  <section class="container banners">
+    <div class="info-banner">
+      <picture class="logo">
+        <img src="/public/Alpina.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
+      </picture>
+      <h2 class="proveedores">¿Está seguro que desea pagar?</h2>
+      <h1 class="proveedores mb-4" id="cantidad-pagar"><span>${{ pagarValor }}</span> a Alpina</h1>
+      <h1 class="proveedores mb-4">Ingresa el número de teléfono del transportista</h1>
+      <label for="pagar" id="label-pagar" class="input-pagar">
             <input
               class="form-control text-center mb-4"
               aria-required="true"
@@ -105,205 +70,79 @@ import axios from "axios";
               required
               aria-describedby="error-pagar"
             />
-            <span class="floating-label"
-              >Ingresa el teléfono del transportista</span
-            >
           </label>
-        </div>
-        <div class="button-banner-pedidos">
-          <button type="button" id="boton-pago" class="boton" @click="handlePagoClick">Pagar</button>
-          <button type="button" id="boton-atras" class="boton">Atrás</button>
-        </div>
+      <div class="button-banner-pedidos">
+        <button type="button" id="boton-pago">
+          Pagar
+        </button>
+        <button type="button" id="atras">
+          Atrás
+        </button>
       </div>
-    </section>
-  </motion.div>
+    </div>
+  </section>
 </template>
 
-<style scoped>
-input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-.input-label {
-  position: relative;
-  display: block;
-  width: 100%;
-  margin-top: 24px;
-}
-button {
-  padding-left: 1.25rem;
-  padding-right: 1.25rem;
-  border-radius: 6.25rem;
-  background: #dd3590;
-  color: white;
-  height: 3rem;
-  width: 100%;
-  margin-top: 20px;
-  cursor: pointer;
-  border: none;
-  outline: none;
-  align-items: center;
-}
-.button:hover {
-  background-color: #f15bab;
+<style>
+body {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  background-color: white;
 }
 
-button:focus {
-  outline: none;
-  box-shadow: none;
-}
-.form-control {
-  width: 100%;
-  padding: 10px 0;
-  font-size: 16px;
-  border: none;
-  border-bottom: 2px solid #09008be1;
-  background: transparent;
-  font-family: sans-serif;
-  outline: none;
-  transition: border-color 0.3s ease;
-}
-
-.floating-label {
-  position: absolute;
-  left: 0;
-  top: 0px;
-  color: black;
-  font-size: 16px;
-  pointer-events: none;
-  transition: 0.3s ease all;
-  font-family: sans-serif;
-}
-
-/* Animación al enfocar o escribir */
-.form-control:focus + .floating-label,
-.form-control:not(:placeholder-shown) + .floating-label {
-  top: -15px;
-  font-size: 12px;
-  color: black;
-}
-
-.input-label:hover .form-control {
-  border-bottom-color: #ff00f2;
-}
-
-.form-control:focus {
-  border-bottom-color: #0064e6cc;
-  outline: none;
-  box-shadow: none;
-}
-
-.logo-container {
-  text-align: center;
-  margin-top: 1rem;
-}
-
-.logo-main {
-  width: 200px;
-  height: auto;
-  display: inline-block;
-}
-
-/* Contenido */
-.content {
-  padding: 1rem;
+.container {
   display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  align-items: center;
+  justify-content: center; /* Centra el contenedor en la página */
+  align-items: center; /* Centra el contenedor verticalmente */
+  height: 100vh; /* Asegura que el contenedor ocupe toda la altura de la pantalla */
 }
-
-.card {
-  background: #fff;
-  border-radius: 15px;
-  padding: 1.5rem;
-  max-width: 500px;
-  width: 100%;
-  text-align: center;
-  font-size: 20px;
+.input-pagar input {
+    background-color: transparent;
+    border-width: 0 0 1px;
+    border-bottom: solid 1px rgba(17, 17, 17, .2);
+    color: #111;
+    padding: 8px 0;
+    width: auto;
+    outline: none;
 }
-
-.header-container {
+.info-banner {
   display: flex;
-  align-items: center;
-  margin-bottom: 1rem;
-  justify-content: center;
+  flex-direction: column; /* Alinea los elementos verticalmente */
+  align-items: center; /* Centra los elementos horizontalmente */
+  text-align: center; /* Centra el texto */
+  padding: 24px;
+
 }
 
-.card-header-text {
-  background-color: #251886;
-  color: white;
-  padding: 0.75rem 1rem;
-  border-radius: 10px;
-  margin: 0;
+.img-fluid {
+  height: 30%;
+  width: 30%;
+  margin: 0 auto; /* Centra la imagen horizontalmente */
+  display: block; /* Asegura que la imagen se comporte como un bloque */
 }
 
-.alpina-logo-outside {
-  width: 80px;
-  height: auto;
-  margin-left: 1rem;
-}
-
-.bold {
+.proveedores {
   font-weight: bold;
-}
-.boton:hover {
-  background-color: #f15bab;
-}
-/* Proveedor */
-.provider-content {
-  display: flex;
+  color: black;
+  margin-top: 20px; /* Espacio entre la imagen y el texto */
   align-items: center;
-  gap: 1rem;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-bottom: 1rem;
 }
 
-.alpina-img {
-  width: 140px;
-  height: auto;
-}
-
-.text-center {
-  text-align: center;
-}
-
-/* Formulario de pago */
-.form-group {
+.button-banner-pedidos {
   display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  justify-content: center; /* Centra los botones */
+  gap: 20px; /* Espacio entre los botones */
+  margin-top: 20px; /* Espacio entre el texto y los botones */
 }
 
-.form-group h2.proveedores {
-  margin: 0;
-  white-space: nowrap;
-  width: auto;
+.button-banner-pedidos button {
+  background-color: #dd3590;
+  color: white;
+  width: 100px;
 }
 
-/* Responsive */
-@media (max-width: 600px) {
-  .header-container {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-
-  .alpina-logo-outside {
-    margin-left: 0;
-    margin-top: 0.5rem;
-  }
-
-  .provider-content {
-    flex-direction: column;
-  }
-
-  .form-group {
-    flex-direction: column;
-    align-items: stretch;
+@media (max-width: 767px) {
+  .img-fluid {
+    margin-top: -90px;
   }
 }
 </style>

@@ -1,192 +1,271 @@
 <script setup>
-import { ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+import { useRouter } from 'vue-router'; // Importa useRouter para navegar entre vistas
+import RouterLink from "../components/UI/Routerlink.vue"; 
 import Heading from "../components/UI/Heading.vue";
+
+// Variables reactivas
+const celular = ref('');
+const data = ref(null);
+const error = ref('');
+
+// Instancia de router
 const router = useRouter();
-const dataInfoapp = ref([
-  { nombre: "Juan", saldorestante: "$0", saldoabonado: "$0" },
-]);
-import { fadeInUp } from "../motion/pageAnimation";
-import { motion } from "motion-v";
 
-const token = localStorage.getItem("token");
-const tipo = localStorage.getItem("tipo");
-const idUsuario = localStorage.getItem("idUsuario");
-const datosCuenta = JSON.parse(localStorage.getItem("datosCuenta")) || {};
+let dataInfoapp = $.parseJSON(localStorage.getItem('data'))
 
-console.log("localStorage token:", token);
-console.log("localStorage tipo:", tipo);
-console.log("idUsuario",idUsuario);
-console.log("datosCuenta", datosCuenta);
+// Función para manejar el clic en el botón "Pantalla2"
+const handlePantalla2Click = () => {
+    window.open("/Pantalla2View", "_parent");
+};
+const handlePantalla5Click = () => {
+    window.open("/Pantalla5View", "_parent");
+};
+
+// Montar el event listener para el envío del formulario
 onMounted(() => {
-  // Establece fondo morado al cargar esta pantalla
-  document.body.style.backgroundColor = "#2e008b";
-
-  const data = localStorage.getItem("data");
-  if (data) {
-    try {
-      dataInfoapp.value = JSON.parse(data);
-    } catch (e) {
-      console.error("Error al parsear data desde localStorage:", e);
-    }
+  const Pantalla5Button = document.getElementById('Pantalla5');
+  if (Pantalla5Button) {
+    Pantalla5Button.addEventListener('click', handlePantalla5Click); // Agrega el event listener al botón
+  }
+  const Pantalla2Button = document.getElementById('Pantalla2');
+  if (Pantalla2Button) {
+    Pantalla2Button.addEventListener('click', handlePantalla2Click); // Agrega el event listener al botón
   }
 });
 
-const goToPantalla2 = () => {
-  router.push("/Pantalla2View");
-};
-
-const goToPantallaFacturasDisponibles = () => {
-   router.push("/PantallaFacturasView");
-};
-
-const goToPantalla5 = () => {
-  router.push("/Pantalla5View");
-};
 </script>
 
 <template>
-  <section class="logo-container">
-    <img
-      src="/public/enlaceFiado.png"
-      alt="logo Enlace CRM"
-      class="logo-main"
-    />
-  </section>
-  <!-- Encabezado -->
-  <Heading :mensaje="'Hola, ' + datosCuenta.Nombres" />
+   <header class="header">
+    <div class="header-icons">
+      <!-- Ícono de ayuda a la izquierda -->
+      <span class="icon-left">
+        <i class="fas fa-user"></i>
+      </span>
+      
+      <!-- Ícono de usuario a la derecha -->
+      <span class="icon-right">
+        <i class="fas fa-question-circle"></i>
+      </span>
+    </div>
+    
+    <!-- Mensaje de saludo -->
+    <div class="header-text">
+      <p>Hola, {{dataInfoapp[0].nombre}}</p>
+    </div>
+  </header>
 
-  <motion.div v-bind="fadeInUp">
-    <section class="content">
-      <!-- Tarjeta de deuda -->
-      <div class="card">
-        <h2>Deuda total</h2>
-        <p class="bold">{{ dataInfoapp[0]?.saldorestante }}</p>
-        <p><span class="bold pink">Fecha siguiente abono:</span></p>
-        <p>
-          Cupo disponible:
-          <span class="pink bold">{{ dataInfoapp[0]?.saldoabonado }}</span>
-        </p>
-        <button class="button" @click="goToPantalla5" id="Pantalla5">
-          Ver más
-        </button>
-      </div>
-
-      <!-- Tarjeta de proveedor -->
-      <div class="card">
-        <!-- <h3 class="card-header">Proveedores disponibles para recibir pago</h3> -->
-        <div class="provider-content">
-          <img src="/Alpina.png" alt="Alpina" class="alpina-img" />
-          <div class="text-center">
-            <p class="bold">Alpina</p>
-            <button class="button" @click="goToPantallaFacturasDisponibles" id="Pantalla2">
-              Pagar
+  <section class="container banners">
+    <div class="row">
+      <!-- Banner 1 -->
+      <div class="col-md-4 banner1">
+        <div class="info-banner">
+          <h2>Deuda total</h2>
+          <p class="deuda-total mb-2" id="deuda-total">{{dataInfoapp[0].saldorestante}}</p>
+          <p class="fecha-pago mb-2" id="fecha-pago">Fecha siguiente abono:  </p>
+          <p class="cupo-disponible mb-2" id="cupo-disponible">Cupo disponible: <span class="cupo-disponible-dinero">{{dataInfoapp[0].saldoabonado}}</span></p>
+          <div class="button-banner">
+            <button type="submit" class="btn btn-primary mt-2 btn-size" id="Pantalla5">
+              Ver más
             </button>
           </div>
         </div>
       </div>
-    </section>
-  </motion.div>
+      
+      <!-- Línea separadora -->
+      <div class="separator"></div>
+      
+      <!-- Banner 2  v-for = "(item,index) in dataInfoapp"-->
+      <div class="col-md-4 mb-4 banner2" >
+        <div class="info-banner">
+            <h2 class="proveedores">Proveedores disponibles para recibir pago.</h2>
+            <div class="d-flex align-items-center" >
+            <div class="image-section">
+                <picture class="logo">
+                    <img src="/public/Alpina.png" alt="logo" class="img-fluid" loading="lazy" title="logo" />
+                </picture>
+            </div>
+            <div class="text-section ml-3">
+                <p class="parrafo-marcas">Alpina</p>
+                <div class="button-banner">
+                    <button type="submit" class="btn btn-primary mt-2 btn-size" id="Pantalla2">
+                        Pagar
+                    </button>
+                    </div>
+                </div>
+            </div>          
+        </div>
+      </div>
+    </div>
+  </section>
 </template>
 
-<style scoped>
-.logo-container {
-  text-align: center;
-  margin-top: 1rem;
+<style>
+body {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    background-color: white;
 }
 
-.logo-main {
-  width: 200px;
-  height: auto;
-  display: inline-block;
+.formkit-wrapper {
+    align-items: center;
+    width: 100%;
 }
 
-.icon-left,
-.icon-right {
-  font-size: 1.2rem;
+.formkit-input {
+    text-align: center;
 }
 
-.icon-circle {
-  background-color: white;
-  color: #2b008b;
-  padding: 0.5rem;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.formkit-help {
+    margin-left: 50px;
 }
 
-.content {
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  align-items: center;
+.form-group input {
+    background-color: transparent;
+    border-width: 0 0 1px;
+    border-bottom: solid 1px rgba(17, 17, 17, 0.2);
+    color: rgb(17, 17, 17);
+    padding: 8px 0;
+    width: 100%;
+    outline: none;
 }
 
-.card {
-  background: #fff;
-  border-radius: 15px;
-  padding: 1.5rem;
-  max-width: 500px;
-  width: 100%;
-  text-align: left;
+.container button {
+    padding: 0.5rem 1rem;
+    border-radius: 6.25rem;
+    background: #dd3590;
+    color: #fff;
+    display: flex;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    border: none;
+    align-items: center;
+    position: relative;
+    font-size: 1rem;
+    justify-content: center;
+    width: auto;
 }
 
-.card-header {
-  background-color: #251886;
-  color: white;
-  padding: 0.75rem;
-  border-radius: 10px;
-  text-align: center;
-  margin-bottom: 1rem;
+.container button svg {
+    margin-left: 8px;
 }
 
-.bold {
-  font-weight: bold;
-}
-.button {
-  background-color: #dd3590;
-  color: white;
-  border: none;
-  padding: 10px 24px;
-  border-radius: 25px;
-  font-weight: bold;
-  margin-top: 1rem;
-  cursor: pointer;
-  width: 200px;
-  margin-left: auto;
-  display: block;
-  text-align: center;
+.parrafo {
+    margin: 20px 0;
+    font-size: medium;
 }
 
-.button:hover {
-  background-color: #f15bab;
+.info-banner {
+    width: 100%;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+    background-color: #fff;
+    color: black;
+    padding: 24px;
+    display: flex;
+    align-items: center;
 }
-button:focus {
-  outline: none;
-  box-shadow: none;
+.info-banner3 {
+    width: 100%;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+    background-color: #fff;
+    color: black;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    margin-top: -80px; 
 }
-.provider-content {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  justify-content: center;
-  flex-wrap: wrap;
+.titulo-1 {
+    font-weight: bold;
 }
 
-.alpina-img {
-  width: 140px;
-  height: auto;
+.titulo {
+    margin: 0 0 16px;
+    color: inherit;
+    font-weight: bold;
+    letter-spacing: -0.03em;
+    font-size: 1.875rem;
+    line-height: 1.2;
 }
 
-.text-center {
-  text-align: center;
+.subtitulo {
+    color: black;
+}
+.button-banner-alpina button {
+    background-color: #dd3590;
+    color: white;
+    margin-left: 50px;
+}
+.button-banner button {
+    background-color: #dd3590;
+    color: white;
 }
 
-@media (max-width: 600px) {
-  .provider-content {
-    flex-direction: column;
-  }
+.deuda-total {
+    font-weight: bold;
+}
+
+.fecha-pago {
+    font-weight: bold;
+}
+
+.cupo-disponible-dinero {
+    font-weight: bold;
+}
+
+.separator {
+    width: 100%;
+    background-color: #b3b0b0;
+    height: 1px;
+    margin: 0 auto;
+}
+
+.parrafo-marcas-alpina{
+    font-weight: bold;
+    text-align: center;
+    margin-left: 50px;
+}
+
+.parrafo-marcas{
+    font-weight: bold;
+    text-align: center;
+}
+
+.img-fluid{
+    height: 40%;
+    width: 40%;
+}
+
+.text-section {
+    flex-grow: 1;
+    margin-left: 20px;
+}
+
+.proveedores{
+    font-weight: bold;
+}
+@media (max-width: 767px) {
+    .img-fluid {
+        margin-top: -90px;
+    }
+
+    .tarjeta {
+        background-color: #fff;
+        padding: 24px;
+        border-radius: 16px;
+        width: 100%;
+    }
+
+    .info-banner {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .text-section {
+        margin-left: 0;
+        margin-top: 10px;
+    }
 }
 </style>
