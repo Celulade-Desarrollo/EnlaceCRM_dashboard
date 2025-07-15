@@ -16,6 +16,8 @@ const error = ref("");
 const router = useRouter();
 
 let dataInfoapp = JSON.parse(localStorage.getItem("data"));
+const datosCuenta = JSON.parse(localStorage.getItem("datosCuenta")) || {};
+console.log("datosCuenta8:", datosCuenta );
 
 // Función para manejar el clic en el botón "Pantalla7"
 const handlePantalla7Click = () => {
@@ -43,10 +45,7 @@ onMounted(() => {
 
     <Heading
       :mensaje="
-        'Hola, ' +
-        (dataInfoapp && dataInfoapp.length > 0
-          ? dataInfoapp[0].nombre
-          : 'Usuario')
+        'Hola, ' + datosCuenta.Nombres
       "
     />
 
@@ -66,6 +65,9 @@ onMounted(() => {
                 xys123</span
               >
             </p>
+          </div>
+          <div class="infoCorresponsales">
+          <h2 class="proveedores">Corresponsales Bancarios Cerca a Ti</h2>
           </div>
           <div class="button-banner">
             <button type="submit" class="button" id="Pantalla7">Atras</button>
@@ -189,11 +191,9 @@ button:focus {
 
 .proveedores {
   font-weight: bold;
-  color: black;
+  color: #251886;
   width: 100%;
-  letter-spacing: -0.03em;
   line-height: 1.2;
-  background-color: #fff;
   padding: 24px;
   display: flex;
   align-items: center;

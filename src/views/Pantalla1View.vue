@@ -4,9 +4,8 @@ import { useRouter } from "vue-router";
 import Heading from "../components/UI/Heading.vue";
 import axios from "axios";
 const router = useRouter();
-const dataInfoapp = ref([
-  { nombre: "Juan", saldorestante: "$0", saldoabonado: "$0" },
-]);
+const datosCuenta = ref([
+  { nombre: "Juan", saldorestante: "$0", saldoabonado: "$0" }]);
 import { fadeInUp } from "../motion/pageAnimation";
 import { motion } from "motion-v";
 import CardAbonoCupos from "../components/UI/CardAbonoCupos.vue";
@@ -37,6 +36,14 @@ onMounted(async () => {
     console.error("Error al obtener el estado de cuenta:", error);
   }
 
+const tipo = localStorage.getItem("tipo");
+const idUsuario = localStorage.getItem("idUsuario");
+const datosCuenta = JSON.parse(localStorage.getItem("datosCuenta")) || {};
+
+console.log("localStorage token:", token);
+console.log("localStorage tipo:", tipo);
+console.log("idUsuario",idUsuario);
+console.log("datosCuenta", datosCuenta);
   // Establece fondo morado al cargar esta pantalla
   document.body.style.backgroundColor = "#2e008b";
 
@@ -72,7 +79,7 @@ const goToPantalla5 = () => {
     />
   </section>
   <!-- Encabezado -->
-  <Heading :mensaje="'Hola, ' + dataInfoapp[0].nombre" />
+  <Heading :mensaje="'Hola, ' + datosCuenta.nombre" />
 
   <motion.div v-bind="fadeInUp">
     <section class="content">
@@ -94,6 +101,17 @@ const goToPantalla5 = () => {
           <img src="../../public/PSELOGO.png" class="w-16 h-16" />
         </a>
       </div>
+      <!-- Tarjeta de proveedor -->
+      <div class="card">
+        <div class="provider-content">
+          <img src="/Alpina.png" alt="Alpina" class="alpina-img" />
+          <div class="text-center">
+            <button class="button" @click="goToPantallaFacturasDisponibles" id="Pantalla2">
+              Pagar
+            </button>
+          </div>
+        </div>
+        </div>
     </section>
   </motion.div>
 </template>

@@ -20,28 +20,42 @@ const datos = {
   nbCliente: "8100000470",
   nbAgenteComercial: "841891",
   token:
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NTIwNzMxMzIsImV4cCI6MTc1MjA3NjczMiwianRpIjoiZjViMTk2M2EtNTM4ZS00NzcyLTkxZjMtNzk0NjIxNzFhYTI0In0.Q_cJy-6sZJCz7QRLRnjGe4vJFA2JyANKotit4XvdeT8",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NTI1OTU1NjYsImV4cCI6MTc1MjU5OTE2NiwianRpIjoiOGExMDQ1MzEtNjQ5ZS00NTY3LTk0N2QtZTI0OWE0OTlhZmI3In0.3zEXVPo_tjMORzrUibWXDdmOi4JSX14n19g9YaMKZCs",
 };
 
 onMounted(async () => {
   try {
     const response = await axios.post("http://localhost:3000/api/user/login", datos);
     const data = response.data;
-
-    // Validamos si los datos están vacíos
-    const datosVacios = !data || (Array.isArray(data) && data.length === 0) || (typeof data === "object" && Object.keys(data).length === 0);
-
-    if (datosVacios) {
-    window.location.href = `http://localhost:5174/?nbCliente=${datos.nbCliente}&nbAgenteComercial=${datos.nbAgenteComercial}`;
-
-    } else {
+    if (response.status === 200 && response.data && Object.keys(response.data).length > 0) {
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("tipo", data.tipo);
+      localStorage.setItem("idUsuario", data.idUsuario);
+      localStorage.setItem("datosCuenta", JSON.stringify(data.cuenta));
       router.push("/Pantalla1View");
+    } else {
+      redirigirAFormulario(datos);
     }
 
   } catch (error) {
-    console.error("Error en la petición:", error);
+    if (error.response && error.response.status === 400) {
+      redirigirAFormulario(datos);
+    } else {
+      console.error("Error inesperado en la petición:", error);
+    }
   }
 });
+
+// Función para redirigir con los datos por query string
+function redirigirAFormulario(datos) {
+  const params = new URLSearchParams({
+    nbCliente: datos.nbCliente,
+    nbAgenteComercial: datos.nbAgenteComercial
+  }).toString();
+
+  window.location.href = `http://localhost:5173/?${params}`;
+}
+
 </script>
 
 <style scoped>

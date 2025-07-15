@@ -1,79 +1,96 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch  } from "vue";
 import { useRouter } from "vue-router";
 import Heading from "../components/UI/Heading.vue";
 import { fadeInUp } from "../motion/pageAnimation";
 import { motion } from "motion-v";
 import FacturasDisponibles from '../components/UI/FacturasDisponibles.vue';
+import axios from 'axios';
+
 // Variables reactivas
 const pagar = ref("");
 const facturasDisponibles = ref([]);
 const errorMessage = ref("");
+const totalFacturasSeleccionadas = ref(0);
+const facturasSeleccionadas = ref([]);
+
 const dataInfoapp = ref([{ nombre: "", saldorestante: "$0" }]);
 // Instancia de Vue Router
 const router = useRouter();
 
-//let dataInfoapp = $.parseJSON(localStorage.getItem("data"));
+const token = localStorage.getItem("token");
+const datosCuenta = JSON.parse(localStorage.getItem("datosCuenta")) || {};
+console.log("datosCuenta", datosCuenta);
+console.log("facturasDisponibles", facturasDisponibles.value.factura);
+const isLoading = ref(true);
 
 // Función para manejar el clic en el botón "Pagar"
-const handlePago1Click = () => {
+const handleContinuarClick = () => {
   const valorPago = pagar.value;
-  const regex = /^\d{5,}$/; // Mínimo 5 dígitos, solo números
-  const saldoTotal = parseFloat(
-    dataInfoapp.value[0].saldorestante.replace("$", "").replace(",", "")
-  );
-  if (!valorPago || isNaN(valorPago) || !regex.test(valorPago)) {
-    errorMessage.value =
-      "Ingrese un valor válido de al menos 5 dígitos sin puntos ni comas";
-    return;
-  }
-  if (valorPago > saldoTotal) {
-    errorMessage.value = "No puede ingresar un valor mayor a la deuda";
-    return;
-  }
 
+  console.log("valor a pagar", valorPago);
+
+  const regex = /^\d{5,}$/; // Mínimo 5 dígitos, solo números
+   if (!valorPago || isNaN(valorPago) || !regex.test(valorPago)) {
+     errorMessage.value =
+       "Ingrese un valor válido de al menos 5 dígitos sin puntos ni comas";
+     return;
+   }else {
+     errorMessage.value = "";
+   }
+     if (totalFacturasSeleccionadas.value === 0) {
+    errorMessage.value = "Debe seleccionar al menos una factura antes de continuar";
+    return;
+  }
+   if (valorPago > totalFacturasSeleccionadas.value) {
+    errorMessage.value =
+      "No puede ingresar un valor mayor al total de las facturas seleccionadas";
+    return;
+  }
+   if (valorPago > datosCuenta.CupoDisponible || valorPago > datosCuenta.CupoFinal) {
+    errorMessage.value =
+      "No puede ingresar un valor mayor al total del cupo disponible o cupo total";
+    return;
+  }
+  errorMessage.value = "";
   localStorage.setItem("pagarValor", valorPago); // Guarda el valor en localStorage
+  localStorage.setItem("datosCuenta", JSON.stringify(datosCuenta));
+  localStorage.setItem("token", token);
+  const numerosFacturas = facturasSeleccionadas.value.map(f => f.factura);
+  localStorage.setItem("numeroFactura", JSON.stringify(numerosFacturas));
+
   window.open("/Pantalla3View", "_parent");
 };
+  watch(totalFacturasSeleccionadas, (nuevoTotal) => {
+    pagar.value = nuevoTotal;
+  });
 
+const actualizarTotal = (total, seleccionadas) => {
+  totalFacturasSeleccionadas.value = total;
+  facturasSeleccionadas.value = seleccionadas;
+};
 onMounted(async () => {
-  //  try {
-  //     const response = await fetch("http://localhost:3000/api/pagos/facturas-pendientes");
-  //    const data = await response.json();
+  try {
+    const facturasResponse = await axios.post("http://localhost:3000/api/pagos/facturas-pendientes",
+      { identificadorTendero: datosCuenta.Cedula_Cliente }, 
+      {
+        headers: {  
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      }
+    );
+    
+    facturasDisponibles.value = facturasResponse.data;
+    console.log("Facturas:", facturasResponse.data);
 
-  //    facturasDisponibles.value = data;
-  // } catch (error) {
-  //    console.error("Error al cargar facturas:", error);
-  // }
-
-   facturasDisponibles.value = [
-   {
-    clienteId: "8100005233",
-     documento: "7724996",
-    factura: "3381",     valor: 10000,
-   },
-  {
-
-     clienteId: "8100005233",
-    documento: "7724997",
-    factura: "3382",
-    valor: 20000,
-  },
- ];
-  const dataUser = localStorage.getItem("data");
-  if (dataUser) {
-    try {
-      dataInfoapp.value = JSON.parse(dataUser);
-      const saldo = parseFloat(
-        dataInfoapp.value[0].saldorestante.replace("$", "").replace(",", "")
-      );
-       pagar.value = saldo;
-    } catch (error) {
-      console.error("Error al leer data desde localStorage:", error);
-    }
+  } catch (error) {
+    console.error("Error al cargar facturas:", error);
+  }finally {
+    isLoading.value = false;
   }
-});
 
+});
 </script>
 
 <template>
@@ -86,14 +103,7 @@ onMounted(async () => {
       />
     </section>
 
-    <Heading
-      :mensaje="
-        'Hola, ' +
-        (dataInfoapp && dataInfoapp.length > 0
-          ? dataInfoapp[0].nombre
-          : 'Usuario')
-      "
-    />
+    <Heading :mensaje="'Hola, ' + datosCuenta.Nombres" />
 
     <section class="content">
       <div class="card">
@@ -101,36 +111,46 @@ onMounted(async () => {
           <h3 class="card-header-text">Facturas disponibles para pago</h3>
           <img src="/Alpina.png" alt="Alpina" class="alpina-logo-outside" />
         </div>
-      <FacturasDisponibles :facturas="facturasDisponibles" @update-total="pagar = $event" />
-
-        <div class="form-group">
-          <label for="valor" class="input-label">
-            <input
-              class="form-control text-center"
-              aria-required="true"
-              aria-invalid="false"
-              aria-labelledby="label-pagar"
-              name="pagar"
-              v-model.number="pagar"
-              type="number"
-              placeholder=""
-              autocomplete="off"
-              id="pagar-valor"
-              aria-describedby="error-pagar"
-              :max="
-                parseFloat(
-                  dataInfoapp[0].saldorestante.replace('$', '').replace(',', '')
-                )
-              "
-            />
-            <span class="floating-label">Monto a pagar</span>
-          </label>
+        <div class="header-container">
+          <h3 class="card-header-text">Cupo disponible: ${{ datosCuenta.CupoDisponible }}</h3>
         </div>
-        <div class="button-banner">
-          <button type="button" id="boton-pago" @click="handlePago1Click">Continuar</button>
-          <p v-if="errorMessage" id="error-email" class="text-danger mt-1">
-            {{ errorMessage }}
-          </p>
+
+        <!-- Loader mientras se cargan las facturas -->
+        <div v-if="isLoading" class="loader-container">
+          <div class="loader"></div>
+          <p>Cargando facturas...</p>
+        </div>
+
+        <!-- Mostrar el resto del contenido solo cuando isLoading sea falso -->
+        <div v-else>
+          <FacturasDisponibles :facturas="facturasDisponibles" @update-total="actualizarTotal" />
+
+          <div class="form-group">
+            <label for="valor" class="input-label">
+              <input
+                class="form-control text-center"
+                aria-required="true"
+                aria-invalid="false"
+                aria-labelledby="label-pagar"
+                name="pagar"
+                v-model.number="pagar"
+                type="number"
+                placeholder=""
+                autocomplete="off"
+                id="pagar-valor"
+                aria-describedby="error-pagar"
+                :max="totalFacturasSeleccionadas"
+              />
+              <span class="floating-label">Monto a pagar</span>
+            </label>
+          </div>
+
+          <div class="button-banner">
+            <button type="button" id="boton-pago" @click="handleContinuarClick">Continuar</button>
+            <p v-if="errorMessage" id="error-email" class="text-danger mt-1">
+              {{ errorMessage }}
+            </p>
+          </div>
         </div>
       </div>
     </section>
@@ -138,6 +158,27 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+.loader-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 2rem 0;
+}
+
+.loader {
+  border: 5px solid #5708eb;
+  border-top: 5px solid #ff00f2;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 .facturas label {
     display: flex; /* Para alinear el checkbox visual con el texto */
     align-items: center; /* Centrar verticalmente */
