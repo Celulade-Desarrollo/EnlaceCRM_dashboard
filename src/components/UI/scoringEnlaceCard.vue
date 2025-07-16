@@ -2,6 +2,8 @@
 import axios from 'axios';
 import { defineProps, defineEmits, ref, watch } from 'vue';
 
+const token = localStorage.getItem("token");
+
 const props = defineProps({
       data: {
     type: Object,

@@ -31,6 +31,7 @@ const usuarioAprobado = ref("");
 const mensajeError = ref("");
 const botonAprobado = true;
 const camposBloqueados = ref(false);
+const token = localStorage.getItem("token");
 
 const precargado = {
   bancoListas: ref(false),
@@ -98,17 +99,41 @@ const handleSiClick = async () => {
   const usuarioCupoFinal = {
     IdFlujoRegistro: id,
     CupoFinal: props.data.Cupo,
-    Numero_Cliente:props.data.Numero_Cliente
+    Numero_Cliente:props.data.Numero_Cliente,
+    Cedula_Usuario: props.data.Cedula_Cliente,
+    CupoDisponible: Number(props.data.Cupo.replace(/\./g, '')),
   }
-  try {
-    const postInfo = await axios.put(`/api/coreBancario/${id}`, payloadPost);
-    const putInfo = await axios.put(`/api/scoring/estado/update/${id}`, payloadPut)
-    const postUser = await axios.post('/api/user', usuarioCupoFinal)
-    window.location.reload();
-    
-  } catch (error) {
-    console.error("Error en alguno de los pasos:", error);
-  }
+  console.log("CupoDisponible tipo:", typeof usuarioCupoFinal.CupoDisponible );
+     try {
+       const postInfo = await axios.put(`http://localhost:3000/api/coreBancario/${id}`, payloadPost,
+          {
+             headers: {  
+               Authorization: `Bearer ${token}`,
+               "Content-Type": "application/json"
+             }
+           }
+       );
+       const putInfo = await axios.put(`http://localhost:3000/api/scoring/estado/update/${id}`, payloadPut,
+          {
+             headers: {  
+               Authorization: `Bearer ${token}`,
+               "Content-Type": "application/json"
+             }
+           }
+       )
+       const postUser = await axios.post('http://localhost:3000/api/user', usuarioCupoFinal,
+          {
+             headers: {  
+               Authorization: `Bearer ${token}`,
+               "Content-Type": "application/json"
+             }
+           }
+       )
+       window.location.reload();
+
+     } catch (error) {
+       console.error("Error en alguno de los pasos:", error);
+     }
 };
 
 //funcion boton no aprobado
@@ -128,7 +153,14 @@ const handleNoClick = async () => {
     Estado: "negado",
   };
   try{
-    const putInfo = await axios.put(`/api/scoring/estado/update/${id}`, payloadPut)
+    const putInfo = await axios.put(`http://localhost:3000/api/scoring/estado/update/${id}`, 
+      payloadPut,
+        {
+          headers: {  
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        })
     window.location.reload();
 
   }catch(error){
@@ -161,8 +193,23 @@ const handleAprobadoClick = async () => {
     Estado: "aprobado",
   }
   try{
-      const postInfo = await axios.post('/api/bancow', payloadAprobado);
-      const putInfo = await axios.put(`/api/scoring/estado/update/${id}`, payloadPut)
+      const postInfo = await axios.post('http://localhost:3000/api/bancow', 
+        payloadAprobado,
+        {
+          headers: {  
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        }
+      );
+      const putInfo = await axios.put(`http://localhost:3000/api/scoring/estado/update/${id}`, 
+        payloadPut,
+        {
+          headers: {  
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        })
       window.location.reload();
 
   }catch(error){

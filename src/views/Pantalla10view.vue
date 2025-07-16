@@ -10,13 +10,30 @@ import axios from "axios";
 
 const creditDataRecords = ref([])
 const bancowData = ref([]);
+const token = localStorage.getItem("token");
 const router = useRouter();
 
 onMounted(async () => {
   try {
       const [pendientesRes, bancowRes] = await Promise.all([
-      axios.get('/api/scoring/estado/pendiente-aprobado'),
-      axios.get('/api/bancow')
+      axios.get('api/scoring/estado/pendiente-aprobado'),
+      axios.get('api/bancow'),
+      axios.get('api/scoring/estado/pendiente-aprobado',
+        {
+        headers: {  
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      }
+      ),
+      axios.get('http://localhost:3000/api/bancow',
+         {
+        headers: {  
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      }
+      )
     ]);
     creditDataRecords.value = pendientesRes.data;
     bancowData.value = bancowRes.data;

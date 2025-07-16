@@ -15,9 +15,6 @@ import { motion } from "motion-v";
 import axios from 'axios';
 
 const router = useRouter();
-
-
-
 onMounted(async () => {
   const queryParams = new URLSearchParams(window.location.search);
   const nbCliente = queryParams.get('nbCliente');

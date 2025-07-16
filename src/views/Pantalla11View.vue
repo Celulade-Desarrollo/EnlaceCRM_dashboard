@@ -10,6 +10,8 @@ const clientes = ref([]);
 const creditDataRecords = ref([])
 const router = useRouter();
 
+const token = localStorage.getItem("token");
+
 onMounted(async () => {
   try {
     const response = await axios.get('/api/flujoRegistroEnlace/estado/pendiente')
