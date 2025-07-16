@@ -38,6 +38,10 @@ const handleContinuarClick = () => {
    }else {
      errorMessage.value = "";
    }
+    if (valorPago < 20000) {
+    errorMessage.value = "El valor mínimo permitido para el pago es de $20.000";
+    return;
+   }
      if (totalFacturasSeleccionadas.value === 0) {
     errorMessage.value = "Debe seleccionar al menos una factura antes de continuar";
     return;
