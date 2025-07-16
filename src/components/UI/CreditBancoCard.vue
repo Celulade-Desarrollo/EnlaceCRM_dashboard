@@ -105,7 +105,7 @@ const handleSiClick = async () => {
   }
   console.log("CupoDisponible tipo:", typeof usuarioCupoFinal.CupoDisponible );
      try {
-       const postInfo = await axios.put(`http://localhost:3000/api/coreBancario/${id}`, payloadPost,
+       const postInfo = await axios.put(`api/coreBancario/${id}`, payloadPost,
           {
              headers: {  
                Authorization: `Bearer ${token}`,
@@ -113,7 +113,7 @@ const handleSiClick = async () => {
              }
            }
        );
-       const putInfo = await axios.put(`http://localhost:3000/api/scoring/estado/update/${id}`, payloadPut,
+       const putInfo = await axios.put(`api/scoring/estado/update/${id}`, payloadPut,
           {
              headers: {  
                Authorization: `Bearer ${token}`,
@@ -121,7 +121,7 @@ const handleSiClick = async () => {
              }
            }
        )
-       const postUser = await axios.post('http://localhost:3000/api/user', usuarioCupoFinal,
+       const postUser = await axios.post('api/user', usuarioCupoFinal,
           {
              headers: {  
                Authorization: `Bearer ${token}`,
@@ -153,7 +153,7 @@ const handleNoClick = async () => {
     Estado: "negado",
   };
   try{
-    const putInfo = await axios.put(`http://localhost:3000/api/scoring/estado/update/${id}`, 
+    const putInfo = await axios.put(`api/scoring/estado/update/${id}`, 
       payloadPut,
         {
           headers: {  
@@ -193,7 +193,7 @@ const handleAprobadoClick = async () => {
     Estado: "aprobado",
   }
   try{
-      const postInfo = await axios.post('http://localhost:3000/api/bancow', 
+      const postInfo = await axios.post('api/bancow', 
         payloadAprobado,
         {
           headers: {  
@@ -202,7 +202,7 @@ const handleAprobadoClick = async () => {
           }
         }
       );
-      const putInfo = await axios.put(`http://localhost:3000/api/scoring/estado/update/${id}`, 
+      const putInfo = await axios.put(`api/scoring/estado/update/${id}`, 
         payloadPut,
         {
           headers: {  
