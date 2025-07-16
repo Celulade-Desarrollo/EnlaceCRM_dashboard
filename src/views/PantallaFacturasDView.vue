@@ -71,7 +71,7 @@ const actualizarTotal = (total, seleccionadas) => {
 };
 onMounted(async () => {
   try {
-    const facturasResponse = await axios.post("http://localhost:3000/api/pagos/facturas-pendientes",
+    const facturasResponse = await axios.post("/api/pagos/facturas-pendientes",
       { identificadorTendero: datosCuenta.Cedula_Cliente }, 
       {
         headers: {  

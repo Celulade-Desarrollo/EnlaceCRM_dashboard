@@ -19,7 +19,6 @@ const router = useRouter();
 
 
 onMounted(async () => {
-
   const queryParams = new URLSearchParams(window.location.search);
   const nbCliente = queryParams.get('nbCliente');
   const nbAgenteComercial = queryParams.get('nbAgenteComercial');
@@ -32,7 +31,7 @@ onMounted(async () => {
 };
 
   try {
-    const response = await axios.post("http://localhost:3000/api/user/login", datos);
+    const response = await axios.post("api/user/login", datos);
     const data = response.data;
     if (response.status === 200 && response.data && Object.keys(response.data).length > 0) {
       localStorage.setItem("token", data.token);
@@ -60,7 +59,7 @@ function redirigirAFormulario(datos) {
     nbAgenteComercial: datos.nbAgenteComercial
   }).toString();
 
-  window.location.href = `https://enlace-crm.com/${params}`;
+  window.location.href = `https://enlace-crm.com/?${params}`;
 }
 
 </script>

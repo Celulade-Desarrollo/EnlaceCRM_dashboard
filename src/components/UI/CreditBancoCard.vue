@@ -101,9 +101,9 @@ const handleSiClick = async () => {
     Numero_Cliente:props.data.Numero_Cliente
   }
   try {
-    const postInfo = await axios.put(`http://localhost:3000/api/coreBancario/${id}`, payloadPost);
-    const putInfo = await axios.put(`http://localhost:3000/api/scoring/estado/update/${id}`, payloadPut)
-    const postUser = await axios.post('http://localhost:3000/api/user', usuarioCupoFinal)
+    const postInfo = await axios.put(`/api/coreBancario/${id}`, payloadPost);
+    const putInfo = await axios.put(`/api/scoring/estado/update/${id}`, payloadPut)
+    const postUser = await axios.post('/api/user', usuarioCupoFinal)
     window.location.reload();
     
   } catch (error) {
@@ -128,7 +128,7 @@ const handleNoClick = async () => {
     Estado: "negado",
   };
   try{
-    const putInfo = await axios.put(`http://localhost:3000/api/scoring/estado/update/${id}`, payloadPut)
+    const putInfo = await axios.put(`/api/scoring/estado/update/${id}`, payloadPut)
     window.location.reload();
 
   }catch(error){
@@ -161,8 +161,8 @@ const handleAprobadoClick = async () => {
     Estado: "aprobado",
   }
   try{
-      const postInfo = await axios.post('http://localhost:3000/api/bancow', payloadAprobado);
-      const putInfo = await axios.put(`http://localhost:3000/api/scoring/estado/update/${id}`, payloadPut)
+      const postInfo = await axios.post('/api/bancow', payloadAprobado);
+      const putInfo = await axios.put(`/api/scoring/estado/update/${id}`, payloadPut)
       window.location.reload();
 
   }catch(error){
