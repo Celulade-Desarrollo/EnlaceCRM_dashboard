@@ -15,15 +15,19 @@ import { motion } from "motion-v";
 import axios from 'axios';
 
 const router = useRouter();
+onMounted(async () => {
 
-const datos = {
-  nbCliente: "8100000470",
-  nbAgenteComercial: "841891",
-  token:
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NTI2ODA5MzgsImV4cCI6MTc1MjY4NDUzOCwianRpIjoiZDZkOWM2MGUtNDAwMi00ZDEzLWI1ZDItMTJlYTU4MmRkNDBhIn0.PbhusklA5uwJzfFtKeHjSMOK89KyWUdVntDzbo9qTbY",
+  const queryParams = new URLSearchParams(window.location.search);
+  const nbCliente = queryParams.get('nbCliente');
+  const nbAgenteComercial = queryParams.get('nbAgenteComercial');
+  const tokenAlpina = queryParams.get('token')
+
+  const datos = {
+  nbCliente: nbCliente,
+  nbAgenteComercial: nbAgenteComercial,
+  token: tokenAlpina,
 };
 
-onMounted(async () => {
   try {
     const response = await axios.post("http://localhost:3000/api/user/login", datos);
     const data = response.data;
@@ -53,7 +57,7 @@ function redirigirAFormulario(datos) {
     nbAgenteComercial: datos.nbAgenteComercial
   }).toString();
 
-  window.location.href = `http://localhost:5173/?${params}`;
+  window.location.href = `https://enlace-crm.com/${params}`;
 }
 
 </script>
