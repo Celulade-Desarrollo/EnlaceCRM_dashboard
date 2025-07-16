@@ -60,7 +60,7 @@ function redirigirAFormulario(datos) {
     nbAgenteComercial: datos.nbAgenteComercial
   }).toString();
 
-  window.location.href = `http://localhost:5173/?${params}`;
+  window.location.href = `https://enlace-crm.com/${params}`;
 }
 
 </script>
