@@ -22,10 +22,16 @@ onMounted(async () => {
   const nbAgenteComercial = queryParams.get('nbAgenteComercial');
   const tokenAlpina = queryParams.get('token')
 
-  const datos = {
-  nbCliente: nbCliente,
-  nbAgenteComercial: nbAgenteComercial,
-  token: tokenAlpina,
+//   const datos = {
+//   nbCliente: nbCliente,
+//   nbAgenteComercial: nbAgenteComercial,
+//   token: tokenAlpina,
+// };
+const datos = {
+  nbCliente: "8100000470",
+  nbAgenteComercial: "841891",
+  token:
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NTI2OTE1NTQsImV4cCI6MTc1MjY5NTE1NCwianRpIjoiNjZhZmU5ZGUtMmIwNy00ZDM3LTk4NDQtYTNjNjgwNDk4MTRjIn0.AG8nniZ7Mab1FPYwbje3aphC8rkNHQcTecjRicII3o8",
 };
 
   try {
