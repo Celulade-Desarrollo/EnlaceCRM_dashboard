@@ -29,7 +29,7 @@ try {
 const cargarMovimientos = async () => {
   try {
     const response = await axios.get(
-      `http://localhost:3000/api/pagos/estado-cuenta?identificadorTendero=${clienteCedula}`
+      `/api/pagos/estado-cuenta?identificadorTendero=${clienteCedula}`
     );
     movimientos.value = response.data.movimientos || [];
     mostrarMovimientos.value = true;
