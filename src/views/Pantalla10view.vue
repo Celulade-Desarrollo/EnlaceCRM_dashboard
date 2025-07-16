@@ -16,7 +16,9 @@ const router = useRouter();
 onMounted(async () => {
   try {
       const [pendientesRes, bancowRes] = await Promise.all([
-      axios.get('http://localhost:3000/api/scoring/estado/pendiente-aprobado',
+      axios.get('api/scoring/estado/pendiente-aprobado'),
+      axios.get('api/bancow'),
+      axios.get('api/scoring/estado/pendiente-aprobado',
         {
         headers: {  
           Authorization: `Bearer ${token}`,
@@ -42,7 +44,7 @@ onMounted(async () => {
 
 async function downloadExcel() {
   try {
-    const response = await fetch('http://localhost:3000/api/excel');
+    const response = await fetch('/api/excel');
     if (!response.ok) throw new Error('Error al obtener datos');
     const data = await response.json();
 

@@ -38,6 +38,10 @@ const handleContinuarClick = () => {
    }else {
      errorMessage.value = "";
    }
+    if (valorPago < 20000) {
+    errorMessage.value = "El valor mínimo permitido para el pago es de $20.000";
+    return;
+   }
      if (totalFacturasSeleccionadas.value === 0) {
     errorMessage.value = "Debe seleccionar al menos una factura antes de continuar";
     return;
@@ -82,7 +86,7 @@ const actualizarTotal = (total, seleccionadas) => {
 
 onMounted(async () => {
   try {
-    const facturasResponse = await axios.post("http://localhost:3000/api/pagos/facturas-pendientes",
+    const facturasResponse = await axios.post("/api/pagos/facturas-pendientes",
       { identificadorTendero: datosCuenta.Cedula_Cliente }, 
       {
         headers: {  
