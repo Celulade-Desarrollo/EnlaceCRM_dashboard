@@ -80,10 +80,25 @@ onMounted(async () => {
         }
       }
     );
+
     
     facturasDisponibles.value = facturasResponse.data;
     console.log("Facturas:", facturasResponse.data);
+    
+    const estadoCuentaResponse = await axios.post(
+      "http://localhost:3000/api/pagos/estado-cuenta",
+      { identificadorTendero: datosCuenta.Cedula_Cliente },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      }
+    );
 
+    estadoCuenta.value = estadoCuentaResponse.data;
+    console.log("Estado de cuenta:", estadoCuentaResponse.data);
+    
   } catch (error) {
     console.error("Error al cargar facturas:", error);
   }finally {
