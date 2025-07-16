@@ -31,7 +31,7 @@ const datos = {
   nbCliente: "8100000470",
   nbAgenteComercial: "841891",
   token:
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NTI2OTE1NTQsImV4cCI6MTc1MjY5NTE1NCwianRpIjoiNjZhZmU5ZGUtMmIwNy00ZDM3LTk4NDQtYTNjNjgwNDk4MTRjIn0.AG8nniZ7Mab1FPYwbje3aphC8rkNHQcTecjRicII3o8",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NTI2OTc0NjYsImV4cCI6MTc1MjcwMTA2NiwianRpIjoiM2M2Nzg3ODItN2VhZS00ZjNkLTgxNTMtNzQ3ODU5MmZmZmQ1In0.TJiHxWtiOeeGtwv2ynLH1FZb0gx3vLwIGkkrvPUQnNY",
 };
 
   try {

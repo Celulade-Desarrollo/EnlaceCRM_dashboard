@@ -112,8 +112,8 @@ onMounted(async () => {
     )
     bloquearBotones.value = hayBloqueo
 
-    //console.log("¿Bloquear botones?", hayBloqueo) 
-    //console.log("Estado de cuenta:", estadoCuentaResponse.data);
+    console.log("¿Bloquear botones?", hayBloqueo) 
+    console.log("Estado de cuenta:", estadoCuentaResponse.data);
 
     // Filtra los movimientos en estadoCuenta para obtener solo los que tienen bloqueo por mora
       if (estadoCuenta.value?.movimientos) {
