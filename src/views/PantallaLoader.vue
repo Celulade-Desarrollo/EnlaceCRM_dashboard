@@ -16,14 +16,21 @@ import axios from 'axios';
 
 const router = useRouter();
 
-const datos = {
-  nbCliente: "8100000470",
-  nbAgenteComercial: "841891",
-  token:
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NTI1OTU1NjYsImV4cCI6MTc1MjU5OTE2NiwianRpIjoiOGExMDQ1MzEtNjQ5ZS00NTY3LTk0N2QtZTI0OWE0OTlhZmI3In0.3zEXVPo_tjMORzrUibWXDdmOi4JSX14n19g9YaMKZCs",
-};
+
 
 onMounted(async () => {
+
+  const queryParams = new URLSearchParams(window.location.search);
+  const nbCliente = queryParams.get('nbCliente');
+  const nbAgenteComercial = queryParams.get('nbAgenteComercial');
+  const tokenAlpina = queryParams.get('token')
+
+  const datos = {
+  nbCliente: nbCliente,
+  nbAgenteComercial: nbAgenteComercial,
+  token: tokenAlpina,
+};
+
   try {
     const response = await axios.post("http://localhost:3000/api/user/login", datos);
     const data = response.data;
