@@ -2,14 +2,40 @@
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import Heading from "../components/UI/Heading.vue";
+import axios from "axios";
 const router = useRouter();
-const dataInfoapp = ref([
-  { nombre: "Juan", saldorestante: "$0", saldoabonado: "$0" },
-]);
+const datosCuenta = ref([
+  { nombre: "Juan", saldorestante: "$0", saldoabonado: "$0" }]);
 import { fadeInUp } from "../motion/pageAnimation";
 import { motion } from "motion-v";
+import CardAbonoCupos from "../components/UI/CardAbonoCupos.vue";
 
-const token = localStorage.getItem("token");
+const estadoCuenta = ref({
+  CupoFinal: '',
+  CupoDisponible: '',
+  FechaPagoProgramado: '',
+  deudaTotal: ''
+});
+
+onMounted(async () => {
+  const IdUsuario = localStorage.getItem("idUsuario");
+  // Obtener el token del localStorage
+  const token = localStorage.getItem("token");
+  try {
+    const response = await axios.get(
+      `http://localhost:3000/api/user/estado-cuenta/${IdUsuario}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    estadoCuenta.value = response.data;
+    console.log(estadoCuenta.value);
+  } catch (error) {
+    console.error("Error al obtener el estado de cuenta:", error);
+  }
+
 const tipo = localStorage.getItem("tipo");
 const idUsuario = localStorage.getItem("idUsuario");
 const datosCuenta = JSON.parse(localStorage.getItem("datosCuenta")) || {};
@@ -18,8 +44,6 @@ console.log("localStorage token:", token);
 console.log("localStorage tipo:", tipo);
 console.log("idUsuario",idUsuario);
 console.log("datosCuenta", datosCuenta);
-
-onMounted(() => {
   // Establece fondo morado al cargar esta pantalla
   document.body.style.backgroundColor = "#2e008b";
 
@@ -55,27 +79,30 @@ const goToPantalla5 = () => {
     />
   </section>
   <!-- Encabezado -->
-  <Heading :mensaje="'Hola, ' + datosCuenta.Nombres" />
+  <Heading :mensaje="'Hola, ' + datosCuenta.nombre" />
 
   <motion.div v-bind="fadeInUp">
     <section class="content">
-      <!-- Tarjeta de deuda -->
-      <div class="card">
-        <h2>Deuda total</h2>
-        <p class="bold">{{ dataInfoapp[0]?.saldorestante }}</p>
-        <p><span class="bold pink">Fecha siguiente abono:</span></p>
-        <p>
-          Cupo disponible:
-          <span class="pink bold">{{ dataInfoapp[0]?.saldoabonado }}</span>
-        </p>
-        <button class="button" @click="goToPantalla5" id="Pantalla5">
-          Ver más
-        </button>
+      <CardAbonoCupos
+        :cupoTotal="estadoCuenta.CupoFinal"
+        :cupoDisp="estadoCuenta.CupoDisponible"
+        :fechaAbono="estadoCuenta.FechaPagoProgramado"
+        :deudaTotal="estadoCuenta.deudaTotal"
+        @abonar="goToPantalla5"
+      />
+      <div class="bg-white w-full h-40 rounded-xl flex flex-col items-center relative justify-start pt-3">
+        <h2 class="w-full text-center font-bold mb-2">¿Cómo quieres pagar?</h2>
+        <a href="https://portalpagos.payty.com/PortalPagosPayty/WEB/?codigoConvenio=112878"
+          class=" no-underline flex items-center justify-between bg-gray-100 rounded-lg shadow w-72 h-20 px-4 mt-4"
+        >
+          <span class=" no-underline flex flex-col text-left font-bold text-gray-700 text-lg leading-tight">
+            Pago<br />Digital via PSE
+          </span>
+          <img src="../../public/PSELOGO.png" class="w-16 h-16" />
+        </a>
       </div>
-
       <!-- Tarjeta de proveedor -->
       <div class="card">
-        <!-- <h3 class="card-header">Proveedores disponibles para recibir pago</h3> -->
         <div class="provider-content">
           <img src="/Alpina.png" alt="Alpina" class="alpina-img" />
           <div class="text-center">
@@ -84,7 +111,7 @@ const goToPantalla5 = () => {
             </button>
           </div>
         </div>
-      </div>
+        </div>
     </section>
   </motion.div>
 </template>
