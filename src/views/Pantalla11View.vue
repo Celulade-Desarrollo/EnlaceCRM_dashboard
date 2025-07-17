@@ -14,7 +14,14 @@ const token = localStorage.getItem("token");
 
 onMounted(async () => {
   try {
-    const response = await axios.get('/api/flujoRegistroEnlace/estado/pendiente')
+    const response = await axios.get('/api/flujoRegistroEnlace/estado/pendiente',
+       {
+        headers: {  
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      }
+    )
     creditDataRecords.value = response.data
   } catch (error) {
     console.error('Error cargando datos:', error)

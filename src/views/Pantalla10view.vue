@@ -11,13 +11,28 @@ import axios from "axios";
 const creditDataRecords = ref([])
 const bancowData = ref([]);
 const token = localStorage.getItem("token");
+console.log("token", token);
 const router = useRouter();
 
 onMounted(async () => {
   try {
       const [pendientesRes, bancowRes] = await Promise.all([
-      axios.get('api/scoring/estado/pendiente-aprobado'),
-      axios.get('api/bancow'),
+      axios.get('api/scoring/estado/pendiente-aprobado',
+         {
+        headers: {  
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      }
+      ),
+      axios.get('api/bancow',
+       {
+        headers: {  
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      }
+      ),
       axios.get('api/scoring/estado/pendiente-aprobado',
         {
         headers: {  
@@ -26,7 +41,7 @@ onMounted(async () => {
         }
       }
       ),
-      axios.get('http://localhost:3000/api/bancow',
+      axios.get('api/bancow',
          {
         headers: {  
           Authorization: `Bearer ${token}`,
@@ -44,7 +59,12 @@ onMounted(async () => {
 
 async function downloadExcel() {
   try {
-    const response = await fetch('/api/excel');
+    const response = await fetch('/api/excel', {
+        headers: {  
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      });
     if (!response.ok) throw new Error('Error al obtener datos');
     const data = await response.json();
 
