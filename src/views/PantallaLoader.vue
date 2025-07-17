@@ -30,11 +30,11 @@ const datos = {
   nbCliente: "8100000470",
   nbAgenteComercial: "841891",
   token:
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NTI3MDI3MTUsImV4cCI6MTc1MjcwNjMxNSwianRpIjoiNTllYzU0ZGUtM2NjYi00Y2EyLWE5ZWEtNzVjMDhmOGUyNzdkIn0.Y2dy0zojDsOPhPyLMQxISnARsFrosuxH9ilHnvBFV7A",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NTI3ODAxNDksImV4cCI6MTc1Mjc4Mzc0OSwianRpIjoiZGE1ODI3OTgtN2UwZi00YjNmLWI0Y2UtNjUwYWNjNWNiZDgwIn0.bUTS1ra5BMTOVj_xnQWK7exuoLVhaYgFCAHm-vEaB0k",
 };
 
   try {
-    const response = await axios.post("api/user/login", datos);
+    const response = await axios.post("http://localhost:3000/api/user/login", datos);
     const data = response.data;
     if (response.status === 200 && response.data && Object.keys(response.data).length > 0) {
       localStorage.setItem("token", data.token);

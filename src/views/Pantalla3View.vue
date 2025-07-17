@@ -40,7 +40,7 @@ import axios from "axios";
 }
     console.log("datosPagoFactura:", dataPagoFactura);
      try {
-       const pagoFacturas = await axios.post("/api/movimientos",
+       const pagoFacturas = await axios.post("http://localhost:3000/api/movimientos",
          dataPagoFactura,
           {
         headers: {  
