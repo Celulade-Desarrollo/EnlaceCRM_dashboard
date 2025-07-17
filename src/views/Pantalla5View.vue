@@ -24,7 +24,7 @@ const extraerDatosCliente = () => {
       clienteCedula.value = data?.[0]?.cedula ?? null;
       clienteNombre.value = data?.[0]?.nombre ?? "Usuario";
       console.log("📦 Cédula actualizada:", clienteCedula.value);
-      cargarMovimientos(); // se actualiza automáticamente
+      cargarMovimientos();
     }
   } catch (e) {
     console.error("Error al leer data del localStorage", e);
@@ -37,13 +37,14 @@ const cargarMovimientos = async () => {
   console.log("🔑 Token usado:", token);
   if (!clienteCedula.value) return;
 
-    try {
+  try {
     const response = await axios.get(
-      `http://localhost:3000/api/pagos/estado-cuenta?identificadorTendero=${clienteCedula.value}`,
+      `http://localhost:3000/api/pagos/estado-cuenta`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
-        }
+        },
+        params: { identificadorTendero: clienteCedula.value }
       }
     );
     console.log("🟢 Respuesta completa:", response.data);
@@ -96,7 +97,6 @@ onMounted(() => {
   extraerDatosCliente();
   updateProgressBar();
 
-  // Redirección al botón Abonar
   const botonAbonar = document.getElementById("Pantalla6");
   if (botonAbonar) {
     botonAbonar.addEventListener("click", () => {
@@ -105,7 +105,6 @@ onMounted(() => {
   }
 });
 
-// Actualiza cuando se modifique localStorage (misma pestaña)
 watchEffect(() => {
   extraerDatosCliente();
 });
