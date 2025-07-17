@@ -23,8 +23,10 @@ const extraerDatosCliente = () => {
     if (data?.[0]?.cedula !== clienteCedula.value) {
       clienteCedula.value = data?.[0]?.cedula ?? null;
       clienteNombre.value = data?.[0]?.nombre ?? "Usuario";
-      console.log("📦 Cédula actualizada:", clienteCedula.value);
-      cargarMovimientos();
+      console.log(" Cédula actualizada:", clienteCedula.value);
+      if (clienteCedula.value) {
+        cargarMovimientos();
+      }
     }
   } catch (e) {
     console.error("Error al leer data del localStorage", e);
@@ -34,20 +36,19 @@ const extraerDatosCliente = () => {
 
 const cargarMovimientos = async () => {
   const token = localStorage.getItem("token");
-  console.log("🔑 Token usado:", token);
+  console.log(" Token usado:", token);
   if (!clienteCedula.value) return;
 
-try {
-  const response = await axios.get(
-    `/api/pagos/estado-cuenta`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      params: { identificadorTendero: clienteCedula.value }
-    }
-  );
-    console.log("🟢 Respuesta completa:", response.data);
+  try {
+    const response = await axios.get(
+      `/api/pagos/estado-cuenta?identificadorTendero=${clienteCedula.value}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      }
+    );
+    console.log(" Respuesta completa:", response.data);
 
     if (Array.isArray(response.data.movimientos)) {
       movimientos.value = response.data.movimientos;
@@ -61,7 +62,7 @@ try {
     cupoTotal.value = response.data.cupoDisponible ?? 0;
     mostrarMovimientos.value = true;
   } catch (err) {
-    console.error("❌ Error al obtener movimientos:", err);
+    console.error(" Error al obtener movimientos:", err);
     movimientos.value = [];
   }
 };
