@@ -11,6 +11,7 @@ const error = ref("");
 
 const deudaTotal = ref(0);
 const cupoTotal = ref(0);
+const datosCuenta = JSON.parse(localStorage.getItem("datosCuenta")) || {};
 
 // Instancia de router
 const router = useRouter();
@@ -27,14 +28,14 @@ const handlePago1Click = () => {
 };
 
 // Función para calcular y ajustar la barra de progreso
-const updateProgressBar = () => {
-  const total = deudaTotal.value + cupoTotal.value;
-  const deudaPercentage = (deudaTotal.value / total) * 100;
-  const cupoPercentage = (cupoTotal.value / total) * 100;
+// const updateProgressBar = () => {
+//   const total = deudaTotal.value + cupoTotal.value;
+//   const deudaPercentage = (deudaTotal.value / total) * 100;
+//   const cupoPercentage = (cupoTotal.value / total) * 100;
 
-  document.getElementById("deuda-bar").style.width = `${deudaPercentage}%`;
-  document.getElementById("cupo-bar").style.width = `${cupoPercentage}%`;
-};
+//   document.getElementById("deuda-bar").style.width = `${deudaPercentage}%`;
+//   document.getElementById("cupo-bar").style.width = `${cupoPercentage}%`;
+// };
 
 // Montar el event listener para el envío del formulario
 onMounted(() => {
@@ -44,11 +45,11 @@ onMounted(() => {
   }
 
   // Actualizar la barra de progreso al montar el componente
-  updateProgressBar();
+  //updateProgressBar();
 });
 
 // Observar cambios en los valores para actualizar la barra de progreso
-watch([deudaTotal, cupoTotal], updateProgressBar);
+//watch([deudaTotal, cupoTotal], updateProgressBar);
 </script>
 
 <template>
@@ -60,14 +61,7 @@ watch([deudaTotal, cupoTotal], updateProgressBar);
     />
   </section>
 
-  <Heading
-    :mensaje="
-      'Hola, ' +
-      (dataInfoapp && dataInfoapp.length > 0
-        ? dataInfoapp[0].nombre
-        : 'Usuario')
-    "
-  />
+  <Heading :mensaje="'Hola, ' + datosCuenta.Nombres" /> 
 
   <section class="content">
     <div class="card">
