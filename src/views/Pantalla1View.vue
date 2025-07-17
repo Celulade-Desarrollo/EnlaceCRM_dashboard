@@ -2,26 +2,58 @@
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import Heading from "../components/UI/Heading.vue";
+import axios from "axios";
 const router = useRouter();
-const dataInfoapp = ref([
-  { nombre: "Juan", saldorestante: "$0", saldoabonado: "$0" },
-]);
 import { fadeInUp } from "../motion/pageAnimation";
 import { motion } from "motion-v";
 import CardAbonoCupos from "../components/UI/CardAbonoCupos.vue";
 
-onMounted(() => {
+const estadoCuenta = ref({
+  CupoFinal: '',
+  CupoDisponible: '',
+  FechaPagoProgramado: '',
+  deudaTotal: ''
+});
+
+const datosCuenta = JSON.parse(localStorage.getItem("datosCuenta")) || {};
+
+onMounted(async () => {
+  const IdUsuario = localStorage.getItem("idUsuario");
+  // Obtener el token del localStorage
+  const token = localStorage.getItem("token");
+  try {
+    const response = await axios.get(
+      `/api/user/estado-cuenta/${IdUsuario}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    estadoCuenta.value = response.data;
+    console.log("deudatotal",estadoCuenta.value);
+  } catch (error) {
+    console.error("Error al obtener el estado de cuenta:", error);
+  }
+
+const tipo = localStorage.getItem("tipo");
+const idUsuario = localStorage.getItem("idUsuario");
+
+console.log("localStorage token:", token);
+console.log("localStorage tipo:", tipo);
+console.log("idUsuario",idUsuario);
+console.log("datosCuenta", datosCuenta);
   // Establece fondo morado al cargar esta pantalla
   document.body.style.backgroundColor = "#2e008b";
 
-  const data = localStorage.getItem("data");
-  if (data) {
-    try {
-      dataInfoapp.value = JSON.parse(data);
-    } catch (e) {
-      console.error("Error al parsear data desde localStorage:", e);
-    }
-  }
+  // const data = localStorage.getItem("data");
+  // if (data) {
+  //   try {
+  //     dataInfoapp.value = JSON.parse(data);
+  //   } catch (e) {
+  //     console.error("Error al parsear data desde localStorage:", e);
+  //   }
+  // }
 });
 
 const goToPantalla2 = () => {
@@ -46,11 +78,39 @@ const goToPantalla5 = () => {
     />
   </section>
   <!-- Encabezado -->
-  <Heading :mensaje="'Hola, ' + dataInfoapp[0].nombre" />
+   <Heading :mensaje="'Hola, ' + datosCuenta.Nombres" /> 
 
   <motion.div v-bind="fadeInUp">
     <section class="content">
-      <CardAbonoCupos :cupoTotal="`200.000`" :cupoDisp="`200.000`" :fechaAbono="`10 AGO`" :deudaTotal="`200.000`" @abonar="goToPantalla5"/>   
+      <CardAbonoCupos
+        :cupoTotal="estadoCuenta.CupoFinal"
+        :cupoDisp="estadoCuenta.CupoDisponible"
+        :fechaAbono="estadoCuenta.FechaPagoProgramado"
+        :deudaTotal="estadoCuenta.deudaTotal"
+        @abonar="goToPantalla5"
+      />
+      <div class="bg-white w-full h-40 rounded-xl flex flex-col items-center relative justify-start pt-3">
+        <h2 class="w-full text-center font-bold mb-2">¿Cómo quieres pagar?</h2>
+        <a href="https://portalpagos.payty.com/PortalPagosPayty/WEB/?codigoConvenio=112878"
+          class=" no-underline flex items-center justify-between bg-gray-100 rounded-lg shadow w-72 h-20 px-4 mt-4"
+        >
+          <span class=" no-underline flex flex-col text-left font-bold text-gray-700 text-lg leading-tight">
+            Pago<br />Digital via PSE
+          </span>
+          <img src="../../public/PSELOGO.png" class="w-16 h-16" />
+        </a>
+      </div>
+      <!-- Tarjeta de proveedor -->
+      <div class="card">
+        <div class="provider-content">
+          <img src="/Alpina.png" alt="Alpina" class="alpina-img" />
+          <div class="text-center">
+            <button class="button" @click="goToPantallaFacturasDisponibles" id="Pantalla2">
+              Pagar
+            </button>
+          </div>
+        </div>
+        </div>
     </section>
   </motion.div>
 </template>

@@ -1,79 +1,138 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch  } from "vue";
 import { useRouter } from "vue-router";
 import Heading from "../components/UI/Heading.vue";
 import { fadeInUp } from "../motion/pageAnimation";
 import { motion } from "motion-v";
 import FacturasDisponibles from '../components/UI/FacturasDisponibles.vue';
+import axios from 'axios';
+
 // Variables reactivas
 const pagar = ref("");
 const facturasDisponibles = ref([]);
 const errorMessage = ref("");
-const dataInfoapp = ref([{ nombre: "", saldorestante: "$0" }]);
+const totalFacturasSeleccionadas = ref(0);
+const facturasSeleccionadas = ref([]);
+const token = localStorage.getItem("token");
+const datosCuenta = JSON.parse(localStorage.getItem("datosCuenta")) || {};
+const estadoCuenta = ref(null)
+const bloquearBotones = ref(false);
+const isLoading = ref(true);
+const facturasEnMora = ref([]);
+
 // Instancia de Vue Router
 const router = useRouter();
 
-//let dataInfoapp = $.parseJSON(localStorage.getItem("data"));
+//console.log("datosCuenta", datosCuenta);
 
 // Función para manejar el clic en el botón "Pagar"
-const handlePago1Click = () => {
+const handleContinuarClick = () => {
+
   const valorPago = pagar.value;
   const regex = /^\d{5,}$/; // Mínimo 5 dígitos, solo números
-  const saldoTotal = parseFloat(
-    dataInfoapp.value[0].saldorestante.replace("$", "").replace(",", "")
-  );
-  if (!valorPago || isNaN(valorPago) || !regex.test(valorPago)) {
-    errorMessage.value =
-      "Ingrese un valor válido de al menos 5 dígitos sin puntos ni comas";
-    return;
-  }
-  if (valorPago > saldoTotal) {
-    errorMessage.value = "No puede ingresar un valor mayor a la deuda";
-    return;
-  }
 
-  localStorage.setItem("pagarValor", valorPago); // Guarda el valor en localStorage
+   if (!valorPago || isNaN(valorPago) || !regex.test(valorPago)) {
+     errorMessage.value =
+       "Ingrese un valor válido de al menos 5 dígitos sin puntos ni comas";
+     return;
+   }else {
+     errorMessage.value = "";
+   }
+    if (valorPago < 20000) {
+    errorMessage.value = "El valor mínimo permitido para el pago es de $20.000";
+    return;
+   }
+     if (totalFacturasSeleccionadas.value === 0) {
+    errorMessage.value = "Debe seleccionar al menos una factura antes de continuar";
+    return;
+  }
+   if (valorPago > totalFacturasSeleccionadas.value) {
+    errorMessage.value =
+      "No puede ingresar un valor mayor al total de las facturas seleccionadas";
+    return;
+  }
+   if (valorPago > datosCuenta.CupoDisponible || valorPago > datosCuenta.CupoFinal) {
+    errorMessage.value =
+      "No puede ingresar un valor mayor al total del cupo disponible o cupo total";
+    return;
+  }
+  errorMessage.value = "";
+  localStorage.setItem("pagarValor", valorPago);
+  localStorage.setItem("datosCuenta", JSON.stringify(datosCuenta));
+  localStorage.setItem("token", token);
+  const numerosFacturas = facturasSeleccionadas.value.map(f => f.factura);
+  localStorage.setItem("numeroFactura", JSON.stringify(numerosFacturas));
+
   window.open("/Pantalla3View", "_parent");
 };
+// Observa cambios en totalFacturasSeleccionadas y actualiza pagar automáticamente
+    watch(totalFacturasSeleccionadas, (nuevoTotal) => {
+      pagar.value = nuevoTotal;
+    });
+
+const actualizarTotal = (total, seleccionadas) => {
+  totalFacturasSeleccionadas.value = total;
+  facturasSeleccionadas.value = seleccionadas;
+};
+// Formatea una fecha ISO a formato legible en español "14 de julio de 2025"
+  function formatFecha(fechaISO) {
+    const fecha = new Date(fechaISO);
+    return fecha.toLocaleDateString('es-CO', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  };
 
 onMounted(async () => {
-  //  try {
-  //     const response = await fetch("http://localhost:3000/api/pagos/facturas-pendientes");
-  //    const data = await response.json();
+  try {
+    const facturasResponse = await axios.post("/api/pagos/facturas-pendientes",
+      { identificadorTendero: datosCuenta.Cedula_Cliente }, 
+      {
+        headers: {  
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      }
+    );
+    facturasDisponibles.value = facturasResponse.data;
+   // console.log("Facturas:", facturasResponse.data);
+    
+    const estadoCuentaResponse = await axios.get(
+      "http://localhost:3000/api/pagos/estado-cuenta",
+        {
+        params: { identificadorTendero: datosCuenta.Cedula_Cliente },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      }
+    );
+      estadoCuenta.value = estadoCuentaResponse.data;
 
-  //    facturasDisponibles.value = data;
-  // } catch (error) {
-  //    console.error("Error al cargar facturas:", error);
-  // }
+    // Verifica si existe al menos un movimiento con bloqueo por mora para bloquear el boton
+      const hayBloqueo = estadoCuenta.value.movimientos.some(
+      (mov) => mov.BloqueoMora === true
+    )
+    bloquearBotones.value = hayBloqueo
 
-   facturasDisponibles.value = [
-   {
-    clienteId: "8100005233",
-     documento: "7724996",
-    factura: "3381",     valor: 10000,
-   },
-  {
+    console.log("¿Bloquear botones?", hayBloqueo) 
+    console.log("Estado de cuenta:", estadoCuentaResponse.data);
 
-     clienteId: "8100005233",
-    documento: "7724997",
-    factura: "3382",
-    valor: 20000,
-  },
- ];
-  const dataUser = localStorage.getItem("data");
-  if (dataUser) {
-    try {
-      dataInfoapp.value = JSON.parse(dataUser);
-      const saldo = parseFloat(
-        dataInfoapp.value[0].saldorestante.replace("$", "").replace(",", "")
-      );
-       pagar.value = saldo;
-    } catch (error) {
-      console.error("Error al leer data desde localStorage:", error);
-    }
+    // Filtra los movimientos en estadoCuenta para obtener solo los que tienen bloqueo por mora
+      if (estadoCuenta.value?.movimientos) {
+        facturasEnMora.value = estadoCuenta.value.movimientos.filter(
+        (mov) => mov.BloqueoMora === true
+        );
+      } 
+
+  } catch (error) {
+    console.error("Error al cargar facturas o el estado de cuenta:", error);
+  }finally {
+    isLoading.value = false;
   }
-});
 
+});
 </script>
 
 <template>
@@ -86,14 +145,7 @@ onMounted(async () => {
       />
     </section>
 
-    <Heading
-      :mensaje="
-        'Hola, ' +
-        (dataInfoapp && dataInfoapp.length > 0
-          ? dataInfoapp[0].nombre
-          : 'Usuario')
-      "
-    />
+    <Heading :mensaje="'Hola, ' + datosCuenta.Nombres" />
 
     <section class="content">
       <div class="card">
@@ -101,36 +153,60 @@ onMounted(async () => {
           <h3 class="card-header-text">Facturas disponibles para pago</h3>
           <img src="/Alpina.png" alt="Alpina" class="alpina-logo-outside" />
         </div>
-      <FacturasDisponibles :facturas="facturasDisponibles" @update-total="pagar = $event" />
-
-        <div class="form-group">
-          <label for="valor" class="input-label">
-            <input
-              class="form-control text-center"
-              aria-required="true"
-              aria-invalid="false"
-              aria-labelledby="label-pagar"
-              name="pagar"
-              v-model.number="pagar"
-              type="number"
-              placeholder=""
-              autocomplete="off"
-              id="pagar-valor"
-              aria-describedby="error-pagar"
-              :max="
-                parseFloat(
-                  dataInfoapp[0].saldorestante.replace('$', '').replace(',', '')
-                )
-              "
-            />
-            <span class="floating-label">Monto a pagar</span>
-          </label>
+        <div class="header-container">
+          <h3 class="card-header-text">Cupo disponible: ${{ datosCuenta.CupoDisponible }}</h3>
         </div>
-        <div class="button-banner">
-          <button type="button" id="boton-pago" @click="handlePago1Click">Continuar</button>
-          <p v-if="errorMessage" id="error-email" class="text-danger mt-1">
-            {{ errorMessage }}
-          </p>
+
+        <!-- Loader mientras se cargan las facturas -->
+        <div v-if="isLoading" class="loader-container">
+          <div class="loader"></div>
+          <p>Cargando facturas...</p>
+        </div>
+
+        <!-- Mostrar el resto del contenido solo cuando isLoading sea falso -->
+        <div v-else>
+          <FacturasDisponibles :facturas="facturasDisponibles" @update-total="actualizarTotal" />
+
+          <div class="form-group">
+            <label for="valor" class="input-label">
+              <input
+                class="form-control text-center"
+                aria-required="true"
+                aria-invalid="false"
+                aria-labelledby="label-pagar"
+                name="pagar"
+                v-model.number="pagar"
+                type="number"
+                placeholder=""
+                autocomplete="off"
+                id="pagar-valor"
+                aria-describedby="error-pagar"
+                :max="totalFacturasSeleccionadas"
+              />
+              <span class="floating-label">Monto a pagar</span>
+            </label>
+          </div>
+            <div v-if="facturasEnMora.length > 0" class="alert alert-danger mt-3">
+              <p><strong>⚠ Tiene factura(s) en mora que debe pagar antes de continuar:</strong></p>
+              <ul>
+                <li
+                  v-for="factura in facturasEnMora"
+                  :key="factura.IdMovimiento"
+                >
+                  <p>
+                    <strong>Factura N°:</strong> {{ factura.NroFacturaAlpina }}<br />
+                    <strong>Monto:</strong> ${{ factura.Monto.toLocaleString() }}<br />
+                    <strong>Fecha de pago programado:</strong> {{ formatFecha(factura.FechaPagoProgramado) }}
+                  </p>
+                </li>
+              </ul>
+            </div>
+          <div class="button-banner">
+            <button type="button" id="boton-pago" @click="handleContinuarClick" :disabled="bloquearBotones" >Continuar</button>
+            <p v-if="errorMessage" id="error-email" class="text-danger mt-1">
+              {{ errorMessage }}
+            </p>
+          </div>
         </div>
       </div>
     </section>
@@ -138,21 +214,42 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+
+.loader-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 2rem 0;
+}
+
+.loader {
+  border: 5px solid #5708eb;
+  border-top: 5px solid #ff00f2;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 .facturas label {
-    display: flex; /* Para alinear el checkbox visual con el texto */
-    align-items: center; /* Centrar verticalmente */
-    cursor: pointer; /* Indica que es un elemento interactivo */
-    margin-bottom: 10px; /* Espacio entre las facturas */
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    margin-bottom: 10px;
 }
 
 .facturas input[type="checkbox"] {
-    /* Oculta el checkbox nativo */
     display: none;
 }
 
 .checkbox-visual {
-    width: 28px;          /* Aumenta el ancho */
-    height: 28px;         /* Aumenta el alto */
+    width: 28px;
+    height: 28px;
     border: 2px solid #09008be1;
     background-color: transparent;
     margin-right: 10px;
@@ -161,19 +258,18 @@ onMounted(async () => {
     border-radius: 4px;
 }
 
-/* Estilo cuando el checkbox está marcado */
 .facturas input[type="checkbox"]:checked + .checkbox-visual {
     background-color: #ff00f2;
 }
 
-/* El checkmark más grande */
+
 .facturas input[type="checkbox"]:checked + .checkbox-visual::after {
     content: '';
     position: absolute;
     left: 7px;
     top: 4px;
-    width: 8px;           /* Ancho del checkmark */
-    height: 16px;         /* Alto del checkmark */
+    width: 8px;
+    height: 16px;
     border: solid white;
     border-width: 0 3px 3px 0;
     transform: rotate(45deg);
@@ -216,7 +312,7 @@ input[type="number"]::-webkit-inner-spin-button {
   white-space: nowrap;
 }
 
-/* Animación al enfocar o escribir */
+
 .form-control:focus + .floating-label,
 .form-control:not(:placeholder-shown) + .floating-label {
   top: -15px;
@@ -233,6 +329,10 @@ input[type="number"]::-webkit-inner-spin-button {
   outline: none;
   box-shadow: none;
 }
+button:disabled {
+  background-color: #ccc;
+  opacity: 0.6;
+}
 button {
   padding-left: 1.25rem;
   padding-right: 1.25rem;
@@ -247,8 +347,8 @@ button {
   outline: none;
   align-items: center;
 }
-.button:hover {
-  background-color: #f15bab;
+button:disabled:hover {
+  background-color: #ccc !important;
 }
 
 button:focus {

@@ -39,15 +39,15 @@ const cargarMovimientos = async () => {
   console.log(" Token usado:", token);
   if (!clienteCedula.value) return;
 
-  try {
-    const response = await axios.get(
-      `/api/pagos/estado-cuenta?identificadorTendero=${clienteCedula.value}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        }
+try {
+  const response = await axios.get(
+    `/api/pagos/estado-cuenta?identificadorTendero=${clienteCedula.value}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
       }
-    );
+    }
+  );
     console.log(" Respuesta completa:", response.data);
 
     if (Array.isArray(response.data.movimientos)) {
