@@ -4,8 +4,6 @@ import { useRouter } from "vue-router";
 import Heading from "../components/UI/Heading.vue";
 import axios from "axios";
 const router = useRouter();
-const datosCuenta = ref([
-  { nombre: "Juan", saldorestante: "$0", saldoabonado: "$0" }]);
 import { fadeInUp } from "../motion/pageAnimation";
 import { motion } from "motion-v";
 import CardAbonoCupos from "../components/UI/CardAbonoCupos.vue";
@@ -16,6 +14,8 @@ const estadoCuenta = ref({
   FechaPagoProgramado: '',
   deudaTotal: ''
 });
+
+const datosCuenta = JSON.parse(localStorage.getItem("datosCuenta")) || {};
 
 onMounted(async () => {
   const IdUsuario = localStorage.getItem("idUsuario");
@@ -31,14 +31,13 @@ onMounted(async () => {
       }
     );
     estadoCuenta.value = response.data;
-    console.log(estadoCuenta.value);
+    console.log("deudatotal",estadoCuenta.value);
   } catch (error) {
     console.error("Error al obtener el estado de cuenta:", error);
   }
 
 const tipo = localStorage.getItem("tipo");
 const idUsuario = localStorage.getItem("idUsuario");
-const datosCuenta = JSON.parse(localStorage.getItem("datosCuenta")) || {};
 
 console.log("localStorage token:", token);
 console.log("localStorage tipo:", tipo);
@@ -47,14 +46,14 @@ console.log("datosCuenta", datosCuenta);
   // Establece fondo morado al cargar esta pantalla
   document.body.style.backgroundColor = "#2e008b";
 
-  const data = localStorage.getItem("data");
-  if (data) {
-    try {
-      dataInfoapp.value = JSON.parse(data);
-    } catch (e) {
-      console.error("Error al parsear data desde localStorage:", e);
-    }
-  }
+  // const data = localStorage.getItem("data");
+  // if (data) {
+  //   try {
+  //     dataInfoapp.value = JSON.parse(data);
+  //   } catch (e) {
+  //     console.error("Error al parsear data desde localStorage:", e);
+  //   }
+  // }
 });
 
 const goToPantalla2 = () => {
@@ -79,7 +78,7 @@ const goToPantalla5 = () => {
     />
   </section>
   <!-- Encabezado -->
-  <Heading :mensaje="'Hola, ' + datosCuenta.nombre" />
+   <Heading :mensaje="'Hola, ' + datosCuenta.Nombres" /> 
 
   <motion.div v-bind="fadeInUp">
     <section class="content">
