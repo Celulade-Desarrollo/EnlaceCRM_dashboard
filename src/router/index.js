@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from "vue-router";
-
 const routes = [
   {
     path: "/",
@@ -17,6 +16,12 @@ const routes = [
     name: "pantalla1",
     component: () => import("../views/Pantalla1View.vue"),
     meta: { requiresAuth: true, role: "usuario" },
+  },
+   {
+    path: "/LoginView",
+    name: "LoginView",
+    component: () => import("../views/LoginView.vue"),
+    meta: { requiresAuth: false },
   },
   {
     path: "/Pantalla2View",
