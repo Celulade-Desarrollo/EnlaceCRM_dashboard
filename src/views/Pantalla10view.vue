@@ -23,12 +23,12 @@ const logout = () => {
   localStorage.removeItem("admin_userData");
   localStorage.removeItem("admin_isAuthenticated");
 
-  router.push("/InicioView")
+  router.push("/LoginView");
 }
 
 onMounted(async () => {
   if (!token || company !== "bancow" || company == null) {
-    router.push("/InicioView")
+    router.push("/LoginView");
     return
   }
   try {

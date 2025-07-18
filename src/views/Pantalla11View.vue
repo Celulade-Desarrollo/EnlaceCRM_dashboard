@@ -23,13 +23,13 @@ const logout = () => {
   localStorage.removeItem("admin_userData");
   localStorage.removeItem("admin_isAuthenticated");
 
-  router.push("/InicioView")
+  router.push("/LoginView");
 }
 
 onMounted(async () => {
   // si no hay token o el company no es "enlace", redirige
   if (!token || company !== "enlace" || company == null) {
-    router.push("/InicioView")
+    router.push("/LoginView");
     return
   }
 

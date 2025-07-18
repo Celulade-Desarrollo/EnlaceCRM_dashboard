@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-import InicioView from "../views/InicioView.vue";
+
 
 const routes = [
   {
@@ -22,9 +22,9 @@ const routes = [
     meta: { requiresAuth: true },
   },
    {
-    path: "/InicioView",
-    name: "inicioView",
-    component: () => import("../views/InicioView.vue"),
+    path: "/LoginView",
+    name: "LoginView",
+    component: () => import("../views/LoginView.vue"),
     meta: { requiresAuth: true },
   },
   {
