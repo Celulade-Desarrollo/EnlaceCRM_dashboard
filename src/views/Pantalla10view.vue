@@ -10,11 +10,27 @@ import axios from "axios";
 
 const creditDataRecords = ref([])
 const bancowData = ref([]);
-const token = localStorage.getItem("token");
-console.log("token", token);
+
+const token = localStorage.getItem("admin_token");
+const company = localStorage.getItem("company");
+
 const router = useRouter();
 
+const logout = () => {  
+  localStorage.removeItem("admin_token");
+  localStorage.removeItem("company");
+  localStorage.removeItem("admin_tipo");
+  localStorage.removeItem("admin_userData");
+  localStorage.removeItem("admin_isAuthenticated");
+
+  router.push("/InicioView")
+}
+
 onMounted(async () => {
+  if (!token || company !== "bancow" || company == null) {
+    router.push("/InicioView")
+    return
+  }
   try {
       const [pendientesRes, bancowRes] = await Promise.all([
       axios.get('api/scoring/estado/pendiente-aprobado',
@@ -139,7 +155,9 @@ async function downloadExcel() {
         Descargar Excel
       </button>
     </div>
-
+    <div class="logout">
+      <button class="boton-logout" @click="logout">Cerrar sesión</button>
+    </div>
      <section class="content">
       <CreditBancoCard
         v-for="record in creditDataRecords"
@@ -152,6 +170,25 @@ async function downloadExcel() {
 </template>
 
 <style scoped>
+.logout {
+  display: flex;
+  justify-content: right;
+  margin-top: 1rem;
+}
+.boton-logout {
+  padding: 10px 30px;
+  font-size: 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  background: #dd3590;
+  color: #fff;
+  outline: none;
+  border: none;
+}
+.boton-logout:hover {
+  background-color: #f15bab;
+}
 .logo-container {
   text-align: center;
   margin-block: 1.5rem;

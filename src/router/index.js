@@ -8,7 +8,7 @@ const routes = [
     component: () => import("../views/PantallaLoader.vue"),
   },
   
-    {
+  {
     path: "/ayuda",
     name: "ayuda",
     component: () => import("../views/PantallaAyudaView.vue"),
@@ -19,6 +19,12 @@ const routes = [
     path: "/Pantalla1View",
     name: "pantalla1",
     component: () => import("../views/Pantalla1View.vue"),
+    meta: { requiresAuth: true },
+  },
+   {
+    path: "/InicioView",
+    name: "inicioView",
+    component: () => import("../views/InicioView.vue"),
     meta: { requiresAuth: true },
   },
   {

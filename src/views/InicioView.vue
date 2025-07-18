@@ -1,85 +1,78 @@
 <script setup>
-import { ref, reactive } from "vue";
+import { ref } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
-const router = useRouter();
-import { fadeInUp } from "../motion/pageAnimation";
-import { motion } from "motion-v";
 
-// Referencias para los campos del formulario
-const telefono = ref("");
+const router = useRouter();
+
+const cedula = ref("");
 const password = ref("");
 const errorMessage = ref("");
 const telefonoRegex = /^[0-9]{10}$/;
 
-// Función para obtener datos
-const fetchData = async () => {
-  try {
-    const response = await axios.get(
-      `https://enlacecrm.com/api/get_data.php?tipo=login&&usuario=${telefono.value}&&pass=${password.value}`
-    );
-    if (response.data == "NO") {
-      errorMessage.value = "Usuario y clave incorrecto";
-      setTimeout(() => {
-        errorMessage.value = "";
-      }, 3000);
-      return;
-    } else {
-      let data = response.data;
-      data = JSON.stringify(data);
-      console.log(data);
-      localStorage.setItem("data", data);
-
-      let respuesta = JSON.parse(localStorage.getItem("data"));
-      localStorage.setItem("isAuthenticated", "true");
-      router.push("/Pantalla1View");
-    }
-  } catch (error) {
-    alerta.mensaje = "Error al conectarse al servidor";
-    alerta.tipo = "error";
-    setTimeout(() => {
-      alerta.mensaje = "";
-      alerta.tipo = "";
-    }, 3000);
-  }
-};
-
-const goToPantalla9 = () => {
-  window.open("/Pantalla9View", "_parent");
-};
-
 const soloNumeros = (e) => {
-  telefono.value = e.target.value.replace(/\D/g, ""); // Reemplaza todo lo que no sea dígito
+  cedula.value = e.target.value.replace(/\D/g, "");
 };
 
 const handleSubmit = async (event) => {
-  event.preventDefault(); // Evita el envío del formulario por defecto
-  await fetchData(); // Llama a la función fetchData para obtener datos
-};
+  event.preventDefault();
 
-const validar = async () => {
-  if (!telefono.value || !password.value) {
+  if (!cedula.value || !password.value) {
     errorMessage.value = "Todos los campos son obligatorios";
-    setTimeout(() => {
-      alerta.mensaje = "";
-      alerta.tipo = "";
-    }, 3000);
-  } else if (!telefonoRegex.test(telefono.value)) {
-    errorMessage.value = "Ingrese un número de teléfono válido";
-    setTimeout(() => {
-      errorMessage.value = "";
-    }, 3000);
-  } else if (!password.value) {
-    errorMessage.value = "La contraseña no puede estar vacía";
-    setTimeout(() => {
-      errorMessage.value = "";
-    }, 3000);
-  } else {
-    errorMessage.value = "";
-    await fetchData();
+    setTimeout(() => (errorMessage.value = ""), 3000);
     return;
   }
+
+  const dataLogin = {
+    Cedula: cedula.value,
+    Password: password.value,
+  };
+
+  try {
+    const response = await axios.post("/api/admin/login", dataLogin);
+
+    if (response.data?.state !== "Authenticated") {
+      errorMessage.value = "Cédula o contraseña incorrecta";
+      setTimeout(() => (errorMessage.value = ""), 3000);
+      return;
+    } 
+
+    // Guardar datos del login administrador con prefijo para evitar conflictos
+    localStorage.setItem("admin_token", response.data.token);
+    localStorage.setItem("company", response.data.company);
+    localStorage.setItem("admin_tipo", response.data.tipo);
+    localStorage.setItem("admin_userData", JSON.stringify(response.data));
+    localStorage.setItem("admin_isAuthenticated", "true");
+
+    // Redirigir según la compañía
+    if (response.data.company === "enlace") {
+      router.push("/Pantalla11View");
+    } else if (response.data.company === "bancow") {
+      router.push("/Pantalla10View");
+    } else {
+      errorMessage.value = "Empresa no reconocida";
+      setTimeout(() => (errorMessage.value = ""), 3000);
+    }
+
+  } catch (error) {
+    if (error.response) {
+      // El backend está respondiendo con error 500 aunque debería ser 401
+      if (error.response.status === 500) {
+        errorMessage.value = "Cédula o contraseña incorrecta";
+      } else if (error.response.status === 401 || error.response.status === 403) {
+        errorMessage.value = "Cédula o contraseña incorrecta";
+      } else {
+        errorMessage.value = `Error del servidor: ${error.response.status}`;
+      }
+    } else {
+      errorMessage.value = "No se pudo conectar al servidor";
+    }
+
+    setTimeout(() => (errorMessage.value = ""), 3000);
+  }
 };
+
+
 </script>
 
 <template>
@@ -100,50 +93,45 @@ const validar = async () => {
     <h3 class="titulo-login">Ingresa a tu cuenta</h3>
     <section class="login-container">
       <div class="login-card">
-        <form id="myForm" class="myForm" @submit.prevent="validar">
-          <div class="form-group">
-            <label
-              for="telefono"
-              class="input-label flex text-center justify-center items-center"
-            >
-              <input
-                class="form-control"
-                v-model="telefono"
-                type="tel"
-                placeholder=""
-                @input="soloNumeros"
-                maxlength="10"
-              />
-              <span class="floating-label">Ingresa tu teléfono</span>
-            </label>
-          </div>
-          <div class="form-group">
-            <label for="password" class="input-label">
-              <input
-                class="form-control"
-                v-model="password"
-                type="password"
-                placeholder=""
-              />
-              <span class="floating-label">OTP</span>
-            </label>
-          </div>
-          <button type="submit" class="button mt-4" @click="handleSubmit">
-            Ingresar
-          </button>
-          <p v-if="errorMessage.value" class="text-danger mt-2">
-            {{ errorMessage.value }}
-          </p>
-        </form>
-        <p class="subtitulo mt-4">
+        <form id="myForm" class="myForm" @submit.prevent="handleSubmit">
+        <div class="form-group">
+          <label for="telefono" class="input-label">
+            <input
+              class="form-control"
+              v-model="cedula"
+              type="tel"
+              placeholder=""
+              maxlength="10"
+              @input="soloNumeros"
+            />
+            <span class="floating-label">Cédula</span>
+          </label>
+        </div>
+        <div class="form-group">
+          <label for="password" class="input-label">
+            <input
+              class="form-control"
+              v-model="password"
+              type="password"
+              placeholder=""
+            />
+            <span class="floating-label">Contraseña</span>
+          </label>
+        </div>
+        <button type="submit" class="button mt-4">Ingresar</button>
+        <p v-if="errorMessage" class="text-danger mt-2">
+          {{ errorMessage }}
+        </p>
+      </form>
+        <!-- <p class="subtitulo mt-4">
           ¿No estás registrado?<br />
           Regístrate
           <a href="https://fiado.enlacecrm.com/"><span>AQUÍ</span></a>
-        </p>
-        <p class="fpassword mt-4" @click="goToPantalla9">
+        </p> -->
+        <!-- <p class="fpassword mt-4" @click="goToPantalla9">
           ¿Olvidaste tu contraseña?<br />
           Haz click <span>AQUÍ</span>
-        </p>
+        </p> -->
       </div>
     </section>
   </motion.div>
