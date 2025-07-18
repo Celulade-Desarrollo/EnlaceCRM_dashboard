@@ -43,7 +43,7 @@ onMounted(async () => {
 
   } catch (error) {
     if (error.response && error.response.status === 400) {
-      redirigirAFormulario(datos);
+      // redirigirAFormulario(datos);
     } else {
       console.error("Error inesperado en la petición:", error);
     }
