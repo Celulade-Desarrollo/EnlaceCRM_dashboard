@@ -19,7 +19,7 @@ console.log("Company:", company);
 const logout = () => {  
   localStorage.removeItem("admin_token");
   localStorage.removeItem("company");
-  localStorage.removeItem("admin_tipo");
+  localStorage.removeItem("tipo");
   localStorage.removeItem("admin_userData");
   localStorage.removeItem("admin_isAuthenticated");
 

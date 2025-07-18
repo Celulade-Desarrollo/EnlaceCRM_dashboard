@@ -40,7 +40,7 @@ const handleSubmit = async (event) => {
     // Guardar datos del login administrador con prefijo para evitar conflictos
     localStorage.setItem("admin_token", response.data.token);
     localStorage.setItem("company", response.data.company);
-    localStorage.setItem("admin_tipo", response.data.tipo);
+    localStorage.setItem("tipo", response.data.tipo);
     localStorage.setItem("admin_userData", JSON.stringify(response.data));
     localStorage.setItem("admin_isAuthenticated", "true");
 
