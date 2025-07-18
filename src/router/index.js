@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from "vue-router";
-import InicioView from "../views/InicioView.vue";
 
 const routes = [
   {
@@ -7,109 +6,125 @@ const routes = [
     name: "inicio",
     component: () => import("../views/PantallaLoader.vue"),
   },
-  
-    {
+  {
     path: "/ayuda",
     name: "ayuda",
     component: () => import("../views/PantallaAyudaView.vue"),
     meta: { requiresAuth: true },
   },
-
   {
     path: "/Pantalla1View",
     name: "pantalla1",
     component: () => import("../views/Pantalla1View.vue"),
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, role: "usuario" },
   },
   {
     path: "/Pantalla2View",
     name: "pantalla2",
     component: () => import("../views/Pantalla2View.vue"),
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, role: "usuario" },
   },
   {
     path: "/Pantalla3View",
     name: "pantalla3",
     component: () => import("../views/Pantalla3View.vue"),
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, role: "usuario" },
   },
   {
     path: "/Pantalla4View",
     name: "pantalla4",
     component: () => import("../views/Pantalla4View.vue"),
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, role:"usuario" },
   },
   {
     path: "/Pantalla5View",
     name: "pantalla5",
     component: () => import("../views/Pantalla5View.vue"),
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, role: "usuario" }
   },
   {
     path: "/Pantalla6View",
     name: "pantalla6",
     component: () => import("../views/Pantalla6View.vue"),
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, role:"usuario" }
   },
   {
     path: "/Pantalla7View",
     name: "pantalla7",
     component: () => import("../views/Pantalla7View.vue"),
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, role:"usuario" }
   },
   {
     path: "/Pantalla8View",
     name: "pantalla8",
     component: () => import("../views/Pantalla8View.vue"),
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, role:"usuario" }
   },
   {
     path: "/Pantalla9View",
     name: "pantalla9",
     component: () => import("../views/Pantalla9View.vue"),
+    meta: { requiresAuth: true, role:"usuario" }
   },
-
-   {
+  {
     path: "/Pantalla10view",
     name: "pantalla10",
-    component: () => import("../views/Pantalla10view.vue"),
+  component: () => import("../views/Pantalla10view.vue"),
+  meta: { requiresAuth: true, role: "admin", empresa: "bancow"}
   },
   {
     path: "/Pantalla11View",
     name: "pantalla11",
     component: () => import("../views/Pantalla11View.vue"),
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, role: "admin", empresa: "enlace"}
   },
   {
     path: "/Pantalla12View",
     name: "pantalla12",
     component: () => import("../views/Pantalla12View.vue"),
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true }
   },
-   {
+  {
     path: "/PantallaFacturasView",
     name: "PantallaFacturas",
     component: () => import("../views/PantallaFacturasDView.vue"),
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true,  role: "usuario" },
   },
 ];
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
 });
 
-// Comentar si es necesario para desactivar temporalmente las protección de las rutas.
-/*
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
+  const role = (localStorage.getItem("tipo") || "").toLowerCase(); // "admin" o "usuario"
+  const company = (localStorage.getItem("company") || "").toLowerCase(); // "bancow" o "enlace"
+  const requiresAuth = to.meta.requiresAuth;
+  const requiredRole = (to.meta.role || "").toLowerCase();
+  const requiredCompany = (to.meta.empresa || "").toLowerCase();
 
-  if (to.meta.requiresAuth && !isAuthenticated) {
-    next("/");
-  } else {
-    next();
+  console.log("ruta:", to.name, "| role:", role, "| company:", company);
+
+  // Solo bloquear si requiere autenticación y no tiene rol
+  if (requiresAuth && !role) {
+    return next("/");
   }
+
+  // Validar rol si se requiere
+  if (requiredRole && role !== requiredRole) {
+    return next("/");
+  }
+
+  // Validar empresa si se requiere
+  if (requiredCompany && company !== requiredCompany) {
+    return next("/");
+  }
+
+  return next();
 });
 
-*/
+
+
 
 export default router;
