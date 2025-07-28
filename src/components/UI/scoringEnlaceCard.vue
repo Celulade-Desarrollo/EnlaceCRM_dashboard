@@ -2,8 +2,6 @@
 import axios from 'axios';
 import { defineProps, defineEmits, ref, watch } from 'vue';
 
-const token = localStorage.getItem("admin_token");
-
 const props = defineProps({
       data: {
     type: Object,
@@ -12,9 +10,14 @@ const props = defineProps({
       cedula: "",
     }),
   },
-
+ token: {
+    type: String,
+    required: true
+  }
 });
 console.log("Data recibida en Card:", props.data);
+console.log("tokenProp:", props.token);
+
 const handleclick =async ()=> {
    if (
     !localScoring.value ||
@@ -39,7 +42,7 @@ const payloadput = {Estado: "completado"};
      const response = await axios.post('/api/scoring', payload,
       {
         headers: {  
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${props.token}`,
           "Content-Type": "application/json"
         }
       }
@@ -47,7 +50,7 @@ const payloadput = {Estado: "completado"};
      const padding = await axios.put(`/api/flujoRegistroEnlace/estado/pendiente/${id}`, payloadput,
       {
         headers: {  
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${props.token}`,
           "Content-Type": "application/json"
         }
       }
