@@ -81,7 +81,7 @@ const routes = [
     path: "/Pantalla11View",
     name: "pantalla11",
     component: () => import("../views/Pantalla11View.vue"),
-    meta: { requiresAuth: true, role: "admin", empresa: "enlace"}
+   // meta: { requiresAuth: true, role: "admin", empresa: "enlace"}
   },
   {
     path: "/Pantalla12View",
