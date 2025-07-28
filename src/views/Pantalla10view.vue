@@ -164,6 +164,7 @@ async function downloadExcel() {
         :key="record.id"
         :data="record"
         :bancowData="bancowData"
+        :token="token"
       />
     </section>
   </motion.div>

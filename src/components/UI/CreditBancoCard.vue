@@ -14,6 +14,10 @@ const props = defineProps({
   bancowData: {
     type: Array,
     required: true,
+  },
+  token: {
+    type: String,
+    required: true
   }
 });
 
@@ -108,7 +112,7 @@ const handleSiClick = async () => {
        const postInfo = await axios.put(`api/coreBancario/${id}`, payloadPost,
           {
              headers: {  
-               Authorization: `Bearer ${token}`,
+               Authorization: `Bearer ${props.token}`,
                "Content-Type": "application/json"
              }
            }
@@ -116,7 +120,7 @@ const handleSiClick = async () => {
        const putInfo = await axios.put(`api/scoring/estado/update/${id}`, payloadPut,
           {
              headers: {  
-               Authorization: `Bearer ${token}`,
+               Authorization: `Bearer ${props.token}`,
                "Content-Type": "application/json"
              }
            }
@@ -124,7 +128,7 @@ const handleSiClick = async () => {
        const postUser = await axios.post('api/user', usuarioCupoFinal,
           {
              headers: {  
-               Authorization: `Bearer ${token}`,
+               Authorization: `Bearer ${props.token}`,
                "Content-Type": "application/json"
              }
            }
@@ -157,7 +161,7 @@ const handleNoClick = async () => {
       payloadPut,
         {
           headers: {  
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${props.token}`,
             "Content-Type": "application/json"
           }
         })
@@ -197,7 +201,7 @@ const handleAprobadoClick = async () => {
         payloadAprobado,
         {
           headers: {  
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${props.token}`,
             "Content-Type": "application/json"
           }
         }
@@ -206,7 +210,7 @@ const handleAprobadoClick = async () => {
         payloadPut,
         {
           headers: {  
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${props.token}`,
             "Content-Type": "application/json"
           }
         })

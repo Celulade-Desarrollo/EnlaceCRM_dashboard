@@ -63,6 +63,7 @@ onMounted(async () => {
         v-for="record in creditDataRecords"
         :key="record.id"
         :data="record"
+        :token = "token"
       />
     </section>
   </motion.div>
