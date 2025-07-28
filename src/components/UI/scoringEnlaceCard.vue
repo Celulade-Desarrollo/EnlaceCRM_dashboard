@@ -2,7 +2,7 @@
 import axios from 'axios';
 import { defineProps, defineEmits, ref, watch } from 'vue';
 
-const token = localStorage.getItem("token");
+const token = localStorage.getItem("admin_token");
 
 const props = defineProps({
       data: {
@@ -36,8 +36,22 @@ const id = props.data.Id;
 };
 const payloadput = {Estado: "completado"};
  try {
-     const response = await axios.post('/api/scoring', payload);
-     const padding = await axios.put(`/api/flujoRegistroEnlace/estado/pendiente/${id}`, payloadput);
+     const response = await axios.post('/api/scoring', payload,
+      {
+        headers: {  
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      }
+     );
+     const padding = await axios.put(`/api/flujoRegistroEnlace/estado/pendiente/${id}`, payloadput,
+      {
+        headers: {  
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      }
+     );
      window.location.reload();
    } catch (error) {
      console.error('Error al enviar al banco:', error);
