@@ -15,7 +15,8 @@ import axios from "axios";
   const nroFacturaAlpina = facturas.join(",");
   const numeroTransportista = ref("");
   const token = localStorage.getItem("token");
-  
+  const errorMessage = ref("");
+
   console.log("datosCuenta:", datosCuenta);
   console.log("Facturas seleccionadas:", facturas);
 
@@ -28,16 +29,21 @@ import axios from "axios";
  const fechaPagoProgramado = fechaProgramada.toISOString().split("T")[0];
 
   const handlePagoClick = async () => {
+  if (!numeroTransportista.value) {
+    errorMessage.value = "Por favor, ingresa el teléfono del transportista";
+    return;
+  }
+      errorMessage.value = "";
     const dataPagoFactura = {
-   "identificadorTendero": datosCuenta.Cedula_Cliente,
-   "monto": pagarValor,
-   "tipoMovimiento": 1,
-   "descripcion": "pago de factura",
-   "fechaPagoProgramado": fechaPagoProgramado,
-   "idMedioPago": 14,
-   "nroFacturaAlpina": nroFacturaAlpina,
-  "telefonoTransportista":String(numeroTransportista.value)
-}
+      "identificadorTendero": datosCuenta.Cedula_Cliente,
+      "monto": pagarValor,
+      "tipoMovimiento": 1,
+      "descripcion": "pago de factura",
+      "fechaPagoProgramado": fechaPagoProgramado,
+      "idMedioPago": 14,
+      "nroFacturaAlpina": nroFacturaAlpina,
+      "telefonoTransportista":String(numeroTransportista.value)
+    }
     console.log("datosPagoFactura:", dataPagoFactura);
      try {
        const pagoFacturas = await axios.post("/api/movimientos",
@@ -54,7 +60,9 @@ import axios from "axios";
      } catch (error) {
        console.error("Error al realizar el pago:", error);
      }
-  };
+    
+   
+};
   const handlePagina2Click = () => {
     window.open("/PantallaFacturasView", "_parent");
   };
@@ -116,6 +124,7 @@ import axios from "axios";
           </label>
         </div>
         <div class="button-banner-pedidos">
+          <p v-if="errorMessage" class="error-text">{{ errorMessage }}</p>
           <button type="button" id="boton-pago" class="boton" @click="handlePagoClick">Pagar</button>
           <button type="button" id="boton-atras" class="boton">Atrás</button>
         </div>
@@ -125,6 +134,10 @@ import axios from "axios";
 </template>
 
 <style scoped>
+.error-text {
+  color: red;
+  font-size: 0.99rem;
+}
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
