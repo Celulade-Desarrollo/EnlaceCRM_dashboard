@@ -18,10 +18,10 @@ const router = useRouter();
 let pagarValor = localStorage.getItem("pagarValor");
 let dataInfoapp = JSON.parse(localStorage.getItem("data"));
 
-deudaTotal.value = parseFloat(
-  dataInfoapp[0].saldorestante.replace(/[$,]/g, "")
-);
-cupoTotal.value = parseFloat(dataInfoapp[0].saldoabonado.replace(/[$,]/g, ""));
+// deudaTotal.value = parseFloat(
+//   dataInfoapp[0].saldorestante.replace(/[$,]/g, "")
+// );
+// cupoTotal.value = parseFloat(dataInfoapp[0].saldoabonado.replace(/[$,]/g, ""));
 
 const handlePago1Click = () => {
   window.open("/Pantalla1View", "_parent");
