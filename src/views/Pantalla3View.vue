@@ -56,7 +56,7 @@ import axios from "axios";
      }
   };
   const handlePagina2Click = () => {
-    window.open("/Pantalla2View", "_parent");
+    window.open("/PantallaFacturasView", "_parent");
   };
 
   // Montar el event listener para el envío del formulario y clic en el botón

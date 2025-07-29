@@ -99,7 +99,7 @@ onMounted(async () => {
    // console.log("Facturas:", facturasResponse.data);
     
     const estadoCuentaResponse = await axios.get(
-      "http://localhost:3000/api/pagos/estado-cuenta",
+      "/api/pagos/estado-cuenta",
         {
         params: { identificadorTendero: datosCuenta.Cedula_Cliente },
         headers: {
