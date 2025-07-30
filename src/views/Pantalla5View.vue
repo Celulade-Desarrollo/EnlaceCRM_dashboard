@@ -1,152 +1,110 @@
 <script setup>
-import { ref, onMounted, watch, watchEffect } from "vue";
-import { useRouter } from "vue-router";
+import { ref, onMounted } from "vue";
 import axios from "axios";
 import Heading from "../components/UI/Heading.vue";
-import { fadeInUp } from "../motion/pageAnimation";
 import { motion } from "motion-v";
+import { fadeInUp } from "../motion/pageAnimation";
 
-const deudaTotal = ref(50000);
-const cupoTotal = ref(100000);
-const mostrarMovimientos = ref(false);
+// Datos iniciales
+const datosCuentaUser = JSON.parse(localStorage.getItem("datosCuenta")) || {};
+console.log("datosCuentaUser", datosCuentaUser);
+
+const deudaTotal = ref(0);
+const cupoTotal = ref(0);
+const mostrarMovimientos = ref(true);
+const datosCuenta = ref(null);
 const movimientos = ref([]);
-const router = useRouter();
 
-const clienteCedula = ref(null);
-const clienteNombre = ref("Usuario");
 
-const extraerDatosCliente = () => {
-  try {
-    const raw = localStorage.getItem("data");
-    const data = raw ? JSON.parse(raw) : [];
-
-    if (data?.[0]?.cedula !== clienteCedula.value) {
-      clienteCedula.value = data?.[0]?.cedula ?? null;
-      clienteNombre.value = data?.[0]?.nombre ?? "Usuario";
-      console.log(" Cédula actualizada:", clienteCedula.value);
-      if (clienteCedula.value) {
-        cargarMovimientos();
-      }
-    }
-  } catch (e) {
-    console.error("Error al leer data del localStorage", e);
-    clienteCedula.value = null;
-  }
-};
-
-const cargarMovimientos = async () => {
-  const token = localStorage.getItem("token");
-  console.log(" Token usado:", token);
-  if (!clienteCedula.value) return;
-
-try {
-  const response = await axios.get(
-    `/api/pagos/estado-cuenta?identificadorTendero=${clienteCedula.value}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      }
-    }
-  );
-    console.log(" Respuesta completa:", response.data);
-
-    if (Array.isArray(response.data.movimientos)) {
-      movimientos.value = response.data.movimientos;
-    } else if (Array.isArray(response.data)) {
-      movimientos.value = response.data;
-    } else {
-      movimientos.value = [];
-    }
-
-    deudaTotal.value = response.data.deudaTotal ?? 0;
-    cupoTotal.value = response.data.cupoDisponible ?? 0;
-    mostrarMovimientos.value = true;
-  } catch (err) {
-    console.error(" Error al obtener movimientos:", err);
-    movimientos.value = [];
-  }
-};
-
-const updateProgressBar = () => {
-  const total = deudaTotal.value + cupoTotal.value;
-  const deudaPercentage = (deudaTotal.value / total) * 100;
-  const cupoPercentage = (cupoTotal.value / total) * 100;
-
-  document.getElementById("deuda-bar").style.width = `${deudaPercentage}%`;
-  document.getElementById("cupo-bar").style.width = `${cupoPercentage}%`;
-};
-
-const formatFecha = (fecha) => {
-  const d = new Date(fecha);
-  const hoy = new Date();
-  if (d.toDateString() === hoy.toDateString()) return "Hoy";
-
-  return d.toLocaleDateString("es-CO", {
-    day: "numeric",
-    month: "short",
-    year: "numeric"
-  });
-};
-
-const formatPesos = (valor) =>
-  new Intl.NumberFormat("es-CO", {
+function formatPesos(valor) {
+  return new Intl.NumberFormat("es-CO", {
+    style: "currency",
     currency: "COP",
-    maximumFractionDigits: 0
-  }).format(valor);
+    minimumFractionDigits: 0
+  }).format(valor || 0);
+}
 
-onMounted(() => {
-  extraerDatosCliente();
-  updateProgressBar();
+function formatFecha(fechaISO) {
+  const fecha = new Date(fechaISO);
+  return fecha.toLocaleDateString("es-CO", {
+    year: "numeric",
+    month: "long",
+    day: "numeric"
+  });
+}
 
-  const botonAbonar = document.getElementById("Pantalla6");
-  if (botonAbonar) {
-    botonAbonar.addEventListener("click", () => {
-      router.push("/Pantalla6View");
-    });
+// Lógica de obtención de datos
+onMounted(async () => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    console.error("No hay token en localStorage");
+    return;
+  }
+
+  try {
+    const idUsuario = datosCuentaUser.IdUsuarioFinal
+    
+      const resCuenta = await axios.get(`/api/user/estado-cuenta/${idUsuario}`,
+        {
+          headers: {  
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        }
+      );
+
+      datosCuenta.value = resCuenta.data;
+      deudaTotal.value = resCuenta.data.DeudaTotal || 0;
+      cupoTotal.value = resCuenta.data.CupoDisponible || 0;
+    
+     //Obtener movimientos
+     const resMov = await axios.get(`/api/movimientos/${idUsuario}`,
+       {
+          headers: {  
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        }
+     );
+     movimientos.value = resMov.data;
+  } catch (error) {
+    console.error("Error al obtener datos:", error);
   }
 });
-
-watchEffect(() => {
-  extraerDatosCliente();
-});
-
-watch([deudaTotal, cupoTotal], updateProgressBar);
 </script>
-
 <template>
   <motion.div v-bind="fadeInUp">
     <section class="logo-container">
       <img src="/enlaceFiado.png" alt="logo Enlace CRM" class="logo-main" />
     </section>
 
-    <!-- ✅ Cambiado para usar clienteNombre -->
-    <Heading :mensaje="'Hola, ' + clienteNombre" />
+  <Heading :mensaje="'Hola, ' + datosCuentaUser.Nombres" />
 
     <section class="container banners py-4">
       <div class="d-flex flex-column align-items-center">
-        <!-- Banner deuda/cupo -->
+        <!-- Tarjeta de deuda y cupo -->
         <div class="banner1 mb-4">
           <div class="info-banner">
             <div class="d-flex justify-content-between w-100">
               <div class="text-start">
                 <h2 class="deuda-total">Deuda total</h2>
-                <p class="cantidad-total mb-2" id="deuda-total">${{ deudaTotal }}</p>
+                <p class="cantidad-total mb-2" id="deuda-total">{{ deudaTotal }}</p>
               </div>
               <div class="text-end">
                 <h2 class="cupo-total">Cupo disponible</h2>
-                <p class="cantidad-total mb-2" id="cupo-total">${{ cupoTotal }}</p>
+                <p class="cantidad-total mb-2" id="cupo-total">{{ formatPesos(cupoTotal) }}</p>
               </div>
             </div>
           </div>
           <div class="progress">
-            <div id="deuda-bar" class="progress-bar deuda-bar"></div>
-            <div id="cupo-bar" class="progress-bar cupo-bar"></div>
+            <div id="deuda-bar" class="progress-bar deuda-bar" :style="{ width: deudaTotal + cupoTotal ? ((deudaTotal / (deudaTotal + cupoTotal)) * 100) + '%' : '0%' }"></div>
+            <div id="cupo-bar" class="progress-bar cupo-bar" :style="{ width: deudaTotal + cupoTotal ? ((cupoTotal / (deudaTotal + cupoTotal)) * 100) + '%' : '0%' }"></div>
           </div>
         </div>
 
-        <!-- Botón redirección -->
+        <!-- Botón abonar -->
         <div class="button-banner mb-2">
-          <button type="button" class="button" id="Pantalla6">Abonar</button>
+          <button type="button" class="button" @click="router.push('/Pantalla6View')">Abonar</button>
         </div>
 
         <!-- Lista de movimientos -->
@@ -183,6 +141,7 @@ watch([deudaTotal, cupoTotal], updateProgressBar);
     </section>
   </motion.div>
 </template>
+
 
 <style scoped>
 .banners {
