@@ -1,71 +1,84 @@
-<script>
-import jwtDecode from "jwt-decode";
+<script setup>
+import { ref, onMounted } from "vue";
 import axios from "axios";
-import Heading from "../componets/UI/Heading.vue";
+import Heading from "../components/UI/Heading.vue";
+import { motion } from "motion-v";
+import { fadeInUp } from "../motion/pageAnimation";
+
+// Datos iniciales
+const datosCuentaUser = JSON.parse(localStorage.getItem("datosCuenta")) || {};
+console.log("datosCuentaUser", datosCuentaUser);
+
+const deudaTotal = ref(0);
+const cupoTotal = ref(0);
+const mostrarMovimientos = ref(true);
+const datosCuenta = ref(null);
+const movimientos = ref([]);
 
 
-const datosCuenta = JSON.parse(localStorage.getItem("datosCuenta")) || {};
+function formatPesos(valor) {
+  return new Intl.NumberFormat("es-CO", {
+    style: "currency",
+    currency: "COP",
+    minimumFractionDigits: 0
+  }).format(valor || 0);
+}
 
-export default {
-  name: "Pantalla5View",
-  data() {
-    return {
-      cliente: null,
-      datosCuenta: null,
-      movimientos: []
-    };
-  },
-  methods: {
-    async obtenerDatos() {
-      const token = sessionStorage.getItem("token");
-      if (!token) return console.error("No hay token en sessionStorage");
+function formatFecha(fechaISO) {
+  const fecha = new Date(fechaISO);
+  return fecha.toLocaleDateString("es-CO", {
+    year: "numeric",
+    month: "long",
+    day: "numeric"
+  });
+}
 
-      const decoded = jwtDecode(token);
-      const cedula = decoded.cedula;
-      console.log("Token usado:", token);
-      console.log("Cédula actualizada:", cedula);
-
-      try {
-        // Obtener cliente desde localStorage
-        const clientes = JSON.parse(localStorage.getItem("data")) || [];
-        const clienteActual = clientes.find(c => c.cedula === cedula);
-        this.cliente = clienteActual || { nombre: "No encontrado", cedula };
-
-        // Obtener estado de cuenta (por ID, ej: 54)
-        const idUsuario = sessionStorage.getItem("idUsuario");
-        if (idUsuario) {
-          const resCuenta = await axios.get(`/api/user/estado-cuenta/${idUsuario}`);
-          this.datosCuenta = resCuenta.data;
-          console.log("Estado de cuenta:", resCuenta.data);
-        }
-
-        // Obtener movimientos por cédula
-        const resMov = await axios.get(`/api/movimientos?identificadorTendero=${cedula}`);
-        this.movimientos = resMov.data;
-        console.log("Movimientos:", resMov.data);
-
-      } catch (error) {
-        console.error("Error al obtener datos:", error);
-      }
-    },
-    redirigirAbonar() {
-      this.$router.push("/pantalla6");
-    }
-  },
-  mounted() {
-    this.obtenerDatos();
+// Lógica de obtención de datos
+onMounted(async () => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    console.error("No hay token en localStorage");
+    return;
   }
-};
+
+  try {
+    const idUsuario = datosCuentaUser.IdUsuarioFinal
+    
+      const resCuenta = await axios.get(`/api/user/estado-cuenta/${idUsuario}`,
+        {
+          headers: {  
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        }
+      );
+
+      datosCuenta.value = resCuenta.data;
+      deudaTotal.value = resCuenta.data.DeudaTotal || 0;
+      cupoTotal.value = resCuenta.data.CupoDisponible || 0;
+    
+     //Obtener movimientos
+     const resMov = await axios.get(`/api/movimientos/${idUsuario}`,
+       {
+          headers: {  
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        }
+     );
+     movimientos.value = resMov.data;
+  } catch (error) {
+    console.error("Error al obtener datos:", error);
+  }
+});
 </script>
-
-
 <template>
   <motion.div v-bind="fadeInUp">
     <section class="logo-container">
       <img src="/enlaceFiado.png" alt="logo Enlace CRM" class="logo-main" />
     </section>
 
-    <Heading :mensaje="'Hola, ' + datosCuenta.Nombres" />
+  <Heading :mensaje="'Hola, ' + datosCuentaUser.Nombres" />
 
     <section class="container banners py-4">
       <div class="d-flex flex-column align-items-center">
@@ -75,7 +88,7 @@ export default {
             <div class="d-flex justify-content-between w-100">
               <div class="text-start">
                 <h2 class="deuda-total">Deuda total</h2>
-                <p class="cantidad-total mb-2" id="deuda-total">{{ formatPesos(deudaTotal) }}</p>
+                <p class="cantidad-total mb-2" id="deuda-total">{{ deudaTotal }}</p>
               </div>
               <div class="text-end">
                 <h2 class="cupo-total">Cupo disponible</h2>
