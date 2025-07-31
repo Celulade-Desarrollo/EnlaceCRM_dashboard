@@ -1,0 +1,24 @@
+name: Deploy Vue App to Windows Server
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v3
+
+      - name: Instalar dependencias
+        run: npm install
+
+      - name: Compilar Vue app
+        run: npm run build
+
+      - name: Reiniciar Nginx
+        run: |
+          Stop-Process -Name nginx -Force
+          Start-Process "C:\nginx\nginx.exe"
