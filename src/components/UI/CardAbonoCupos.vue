@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue';
+import { motion } from "motion-v";
 
 const props = defineProps({
   cupoTotal: {
@@ -36,6 +37,8 @@ const fechaFormateada = computed(() => {
 </script>
 
 <template>
+<motion.div v-bind="fadeInUp">
+<section>
   <div class="card">
     <div class="flex gap-3 flex-column mb-3">
       <h3 class="flex gap-2">
@@ -61,6 +64,8 @@ const fechaFormateada = computed(() => {
     </div>
   </div>
   </div>
+</section>
+</motion.div>
 </template>
 
 <style scoped>

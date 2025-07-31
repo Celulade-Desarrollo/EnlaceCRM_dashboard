@@ -95,6 +95,12 @@ const routes = [
     component: () => import("../views/PantallaFacturasDView.vue"),
     meta: { requiresAuth: true,  role: "usuario" },
   },
+    {
+    path: "/PantallaAbonoView",
+    name: "PantallaAbono",
+    component: () => import("../views/PantallaAbonoView.vue"),
+    meta: { requiresAuth: true,  role: "usuario" },
+  }
 ];
 
 const router = createRouter({

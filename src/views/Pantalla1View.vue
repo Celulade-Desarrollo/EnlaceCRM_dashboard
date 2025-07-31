@@ -56,8 +56,8 @@ console.log("datosCuenta", datosCuenta);
   // }
 });
 
-const goToPantalla2 = () => {
-  router.push("/Pantalla2View");
+const goToPantallaAbonar = () => {
+  router.push("/PantallaAbonoView");
 };
 
 const goToPantallaFacturasDisponibles = () => {
@@ -87,20 +87,10 @@ const goToPantalla5 = () => {
         :cupoDisp="estadoCuenta.CupoDisponible"
         :fechaAbono="estadoCuenta.FechaPagoProgramado"
         :deudaTotal="estadoCuenta.deudaTotal"
-        @abonar="goToPantalla5"
+        @abonar="goToPantallaAbonar"
         @movimientos="goToPantalla5"
       />
-      <div class="bg-white w-full h-40 rounded-xl flex flex-col items-center relative justify-start pt-3">
-        <h2 class="w-full text-center font-bold mb-2">¿Cómo quieres pagar?</h2>
-        <a href="https://portalpagos.payty.com/PortalPagosPayty/WEB/?codigoConvenio=112878"
-          class=" no-underline flex items-center justify-between bg-gray-100 rounded-lg shadow w-72 h-20 px-4 mt-4"
-        >
-          <span class=" no-underline flex flex-col text-left font-bold text-gray-700 text-lg leading-tight">
-            Pago<br />Digital via PSE
-          </span>
-          <img src="../../public/PSELOGO.png" class="w-16 h-16" />
-        </a>
-      </div>
+     
       <!-- Tarjeta de proveedor -->
       <div class="card">
         <div class="provider-content">

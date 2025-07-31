@@ -4,7 +4,8 @@ import axios from "axios";
 import Heading from "../components/UI/Heading.vue";
 import { motion } from "motion-v";
 import { fadeInUp } from "../motion/pageAnimation";
-
+import { useRouter } from "vue-router";
+const router = useRouter();
 // Datos iniciales
 const datosCuentaUser = JSON.parse(localStorage.getItem("datosCuenta")) || {};
 console.log("datosCuentaUser", datosCuentaUser);
@@ -32,7 +33,9 @@ function formatFecha(fechaISO) {
     day: "numeric"
   });
 }
-
+const goToPantallaAbonar = () => {
+  router.push("/PantallaAbonoView");
+};
 // Lógica de obtención de datos
 onMounted(async () => {
   const token = localStorage.getItem("token");
@@ -104,7 +107,7 @@ onMounted(async () => {
 
         <!-- Botón abonar -->
         <div class="button-banner mb-2">
-          <button type="button" class="button" @click="router.push('/Pantalla6View')">Abonar</button>
+          <button type="button" class="button" @click="goToPantallaAbonar()">Abonar</button>
         </div>
 
         <!-- Lista de movimientos -->

@@ -9,6 +9,7 @@ import axios from 'axios';
 
 // Variables reactivas
 const pagar = ref("");
+const pagarFormateado = ref(""); 
 const facturasDisponibles = ref([]);
 const errorMessage = ref("");
 const totalFacturasSeleccionadas = ref(0);
@@ -75,15 +76,33 @@ const actualizarTotal = (total, seleccionadas) => {
   facturasSeleccionadas.value = seleccionadas;
 };
 // Formatea una fecha ISO a formato legible en español "14 de julio de 2025"
-  function formatFecha(fechaISO) {
-    const fecha = new Date(fechaISO);
-    return fecha.toLocaleDateString('es-CO', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  };
+function formatFecha(fechaISO) {
+  const fecha = new Date(fechaISO);
+  return fecha.toLocaleDateString('es-CO', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+};
 
+function formatPesos(valor) {
+  return new Intl.NumberFormat("es-CO", {
+    style: "currency",
+    currency: "COP",
+    minimumFractionDigits: 0
+  }).format(valor || 0);
+};
+watch(pagarFormateado, (nuevoValor) => {
+  const soloNumeros = nuevoValor.replace(/\D/g, "");
+  const numero = parseInt(soloNumeros) || 0;
+  pagar.value = numero;
+  pagarFormateado.value = numero.toLocaleString("es-CO");
+});
+
+watch(totalFacturasSeleccionadas, (nuevoTotal) => {
+  pagar.value = nuevoTotal;
+  pagarFormateado.value = nuevoTotal.toLocaleString("es-CO");
+});
 onMounted(async () => {
   try {
     const facturasResponse = await axios.post("/api/pagos/facturas-pendientes",
@@ -99,7 +118,7 @@ onMounted(async () => {
    // console.log("Facturas:", facturasResponse.data);
     
     const estadoCuentaResponse = await axios.get(
-      "http://localhost:3000/api/pagos/estado-cuenta",
+      "/api/pagos/estado-cuenta",
         {
         params: { identificadorTendero: datosCuenta.Cedula_Cliente },
         headers: {
@@ -133,6 +152,7 @@ onMounted(async () => {
   }
 
 });
+
 </script>
 
 <template>
@@ -154,7 +174,7 @@ onMounted(async () => {
           <img src="/Alpina.png" alt="Alpina" class="alpina-logo-outside" />
         </div>
         <div class="header-container">
-          <h3 class="card-header-text">Cupo disponible: ${{ datosCuenta.CupoDisponible }}</h3>
+          <h3 class="card-header-text">Cupo disponible: {{ formatPesos(datosCuenta.CupoDisponible)}}</h3>
         </div>
 
         <!-- Loader mientras se cargan las facturas -->
@@ -163,25 +183,23 @@ onMounted(async () => {
           <p>Cargando facturas...</p>
         </div>
 
-        <!-- Mostrar el resto del contenido solo cuando isLoading sea falso -->
         <div v-else>
           <FacturasDisponibles :facturas="facturasDisponibles" @update-total="actualizarTotal" />
 
           <div class="form-group">
             <label for="valor" class="input-label">
-              <input
+             <input
                 class="form-control text-center"
+                name="pagar"
+                v-model="pagarFormateado"
+                type="text"
+                id="pagar-valor"
+                autocomplete="off"
                 aria-required="true"
                 aria-invalid="false"
                 aria-labelledby="label-pagar"
-                name="pagar"
-                v-model.number="pagar"
-                type="number"
-                placeholder=""
-                autocomplete="off"
-                id="pagar-valor"
-                aria-describedby="error-pagar"
                 :max="totalFacturasSeleccionadas"
+                aria-describedby="error-pagar"
               />
               <span class="floating-label">Monto a pagar</span>
             </label>
