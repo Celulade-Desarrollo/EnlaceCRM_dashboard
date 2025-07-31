@@ -88,6 +88,7 @@ const goToPantalla5 = () => {
         :fechaAbono="estadoCuenta.FechaPagoProgramado"
         :deudaTotal="estadoCuenta.deudaTotal"
         @abonar="goToPantalla5"
+        @movimientos="goToPantalla5"
       />
       <div class="bg-white w-full h-40 rounded-xl flex flex-col items-center relative justify-start pt-3">
         <h2 class="w-full text-center font-bold mb-2">¿Cómo quieres pagar?</h2>

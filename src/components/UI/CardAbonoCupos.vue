@@ -48,11 +48,18 @@ const fechaFormateada = computed(() => {
 
       <h3 class="font-bold flex text-[13px]"> Fecha del siguiente abono:  <p class="font-normal">{{ fechaFormateada }}</p></h3>
     </div>
-    <div class="button-banner w-[60%] ">
-      <button type="button" id="boton-pago" class="w-full" @click="$emit('abonar')">
-        Abonar
-      </button>
+    <div class="flex w-full justify-center gap-2">
+  <div class="button-banner w-[50%]">
+    <button type="button" id="boton-abonar" class="w-full" @click="$emit('abonar')">
+      Abonar
+    </button>
+  </div>
+  <div class="button-banner w-[50%]">
+    <button type="button" id="boton-movimientos" class="w-full" @click="$emit('movimientos')">
+      Movimientos 
+    </button>
     </div>
+  </div>
   </div>
 </template>
 
@@ -76,8 +83,9 @@ button {
   border: none;
   outline: none;
   align-items: center;
+  font-weight: bold;
 }
-.button:hover {
+button:hover {
   background-color: #f15bab;
 }
 
