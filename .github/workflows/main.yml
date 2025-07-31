@@ -1,4 +1,4 @@
-name: Deploy Vue App to Windows Server
+name: Deploy EnlaceCRM dashboard en servidor windows automatico 
 
 on:
   push:
