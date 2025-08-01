@@ -16,7 +16,6 @@ import axios from 'axios';
 
 const router = useRouter();
 onMounted(async () => {
-  alert("prueba")
   const queryParams = new URLSearchParams(window.location.search);
   const nbCliente = queryParams.get('nbCliente');
   const nbAgenteComercial = queryParams.get('nbAgenteComercial');
