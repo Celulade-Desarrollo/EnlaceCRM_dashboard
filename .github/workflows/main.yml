@@ -2,7 +2,7 @@ name: Deploy EnlaceCRM dashboard en servidor windows automatico
 
 on:
   push:
-    branches: [main]
+    branches: [develop]
 
 jobs:
   deploy:
