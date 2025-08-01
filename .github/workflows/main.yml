@@ -21,4 +21,4 @@ jobs:
       - name: Reiniciar Nginx
         run: |
           Stop-Process -Name nginx -Force
-          Start-Process "C:\nginx\nginx.exe"
+          Start-Process "C:\Nginx\nginx-1.28.0\nginx.exe"
