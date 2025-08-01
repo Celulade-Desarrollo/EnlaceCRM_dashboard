@@ -19,6 +19,8 @@ jobs:
         run: npm run build
 
       - name: Reiniciar Nginx
+        shell: powershell
         run: |
-          Stop-Process -Name nginx.exe -Force
+          taskkill /F /IM nginx.exe
+          Start-Sleep -Seconds 2
           Start-Process "C:\Nginx\nginx-1.28.0\nginx.exe"
