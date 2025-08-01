@@ -32,6 +32,5 @@ jobs:
       - name: Reiniciar Nginx
         shell: powershell
         run: |
-          taskkill /F /IM nginx.exe
-          Start-Sleep -Seconds 2
-          Start-Process "C:\Nginx\nginx-1.28.0\nginx.exe"
+          Set-Location "C:\Nginx\nginx-1.28.0"
+          .\nginx.exe -s reload
