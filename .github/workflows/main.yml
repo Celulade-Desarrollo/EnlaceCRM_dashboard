@@ -18,6 +18,17 @@ jobs:
       - name: Compilar Vue app
         run: npm run build
 
+      - name: Copiar archivos compilados a ruta de Nginx
+        shell: powershell
+        run: |
+          $destino = "C:\EnlaceCRM\EnlaceCRM_dashboard\dist"
+          if (Test-Path $destino) {
+            Remove-Item -Recurse -Force "$destino\*"
+          } else {
+            New-Item -ItemType Directory -Path $destino | Out-Null
+          }
+          Copy-Item -Path "dist\*" -Destination $destino -Recurse
+
       - name: Reiniciar Nginx
         shell: powershell
         run: |
