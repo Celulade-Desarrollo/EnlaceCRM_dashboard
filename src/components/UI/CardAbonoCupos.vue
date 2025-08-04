@@ -47,9 +47,9 @@ const fechaFormateada = computed(() => {
       </h3>
       <h3 class="flex gap-2"> Cupo disponible $ <p class="font-bold">{{ formatoMiles(props.cupoDisp) }}</p></h3>
 
-      <h2 class="text-xl font-bold flex gap-3 mt-4 " >Deuda total <p>{{ deudaTotal }}</p></h2>
+      <h2 class="text-xl flex gap-3 mt-4 " >Deuda total $<p class="font-bold">{{formatoMiles(deudaTotal) }}</p></h2>
 
-      <h3 class="font-bold flex text-[13px]"> Fecha del siguiente abono:  <p class="font-normal">{{ fechaFormateada }}</p></h3>
+      <h3 class=" flex text-[13px]"> Fecha del siguiente abono:  <p class="font-bold">{{ fechaFormateada }}</p></h3>
     </div>
     <div class="flex w-full justify-center gap-2">
   <div class="button-banner w-[50%]">

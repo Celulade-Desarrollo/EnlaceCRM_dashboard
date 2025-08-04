@@ -16,7 +16,6 @@ const estadoCuenta = ref({
 });
 
 const datosCuenta = JSON.parse(localStorage.getItem("datosCuenta")) || {};
-
 onMounted(async () => {
   const IdUsuario = localStorage.getItem("idUsuario");
   // Obtener el token del localStorage
@@ -30,7 +29,14 @@ onMounted(async () => {
         },
       }
     );
+
     estadoCuenta.value = response.data;
+
+    const cupoFinal = parseInt(estadoCuenta.value.CupoFinal.replace(/\./g, ''));
+    const cupoDisponible = parseInt(estadoCuenta.value.CupoDisponible);
+    const deuda = cupoFinal - cupoDisponible;
+    estadoCuenta.value.deudaTotal = deuda;
+
     console.log("deudatotal",estadoCuenta.value);
   } catch (error) {
     console.error("Error al obtener el estado de cuenta:", error);
