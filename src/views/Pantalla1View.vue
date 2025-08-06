@@ -70,50 +70,49 @@ const goToPantalla5 = () => {
 </script>
 
 <template>
-  <section class="logo-container">
-    <img
-      src="/public/enlaceFiado.png"
-      alt="logo Enlace CRM"
-      class="logo-main"
-    />
-  </section>
-  <!-- Encabezado -->
-   <Heading :mensaje="'Hola, ' + datosCuenta.Nombres" /> 
+  <Heading :mensaje="'Hola, ' + datosCuenta.Nombres" />
 
   <motion.div v-bind="fadeInUp">
     <section class="content">
-      <CardAbonoCupos
-        :cupoTotal="estadoCuenta.CupoFinal"
-        :cupoDisp="estadoCuenta.CupoDisponible"
-        :fechaAbono="estadoCuenta.FechaPagoProgramado"
-        :deudaTotal="estadoCuenta.deudaTotal"
-        @abonar="goToPantalla5"
-      />
-      <div class="bg-white w-full h-40 rounded-xl flex flex-col items-center relative justify-start pt-3">
-        <h2 class="w-full text-center font-bold mb-2">¿Cómo quieres pagar?</h2>
-        <a href="https://portalpagos.payty.com/PortalPagosPayty/WEB/?codigoConvenio=112878"
-          class=" no-underline flex items-center justify-between bg-gray-100 rounded-lg shadow w-72 h-20 px-4 mt-4"
-        >
-          <span class=" no-underline flex flex-col text-left font-bold text-gray-700 text-lg leading-tight">
-            Pago<br />Digital via PSE
-          </span>
-          <img src="../../public/PSELOGO.png" class="w-16 h-16" />
-        </a>
+      <!-- Tarjeta contenedora única -->
+      <div class="bg-white w-full min-h-[600px] rounded-2xl shadow-lg p-6 space-y-6">
+
+        <!-- Tarjeta de abonos -->
+        <CardAbonoCupos
+          :cupoTotal="estadoCuenta.CupoFinal"
+          :cupoDisp="estadoCuenta.CupoDisponible"
+          :fechaAbono="estadoCuenta.FechaPagoProgramado"
+          :deudaTotal="estadoCuenta.deudaTotal"
+          @abonar="goToPantalla5"
+        />
+
+        <!-- Sección PSE -->
+        <div class="w-full flex flex-col items-center">
+          <h2 class="w-full text-left font-bold mb-2">¿Cómo quieres pagar?</h2>
+          <a
+            href="https://portalpagos.payty.com/PortalPagosPayty/WEB/?codigoConvenio=112878"
+            class="no-underline flex items-center justify-between bg-gray-100 rounded-lg shadow w-72 h-20 px-4 mt-4"
+          >
+            <span class="flex flex-col text-left font-bold text-gray-700 text-lg leading-tight">
+              Pago<br />Digital via PSE
+            </span>
+            <img src="../../public/PSELOGO.png" class="w-16 h-16" />
+          </a>
+        </div>
+
+        <!-- Botón de proveedor -->
+        <div class="flex flex-col items-center">
+          <img src="/Alpina.png" alt="Alpina" class="w-32 mb-4" />
+          <button class="button" @click="goToPantallaFacturasDisponibles" id="Pantalla2">
+            Pagar
+          </button>
+        </div>
+
       </div>
-      <!-- Tarjeta de proveedor -->
-      <div class="card">
-        <div class="provider-content">
-          <img src="/Alpina.png" alt="Alpina" class="alpina-img" />
-          <div class="text-center">
-            <button class="button" @click="goToPantallaFacturasDisponibles" id="Pantalla2">
-              Pagar
-            </button>
-          </div>
-        </div>
-        </div>
     </section>
   </motion.div>
 </template>
+
 
 <style scoped>
 .logo-container {
@@ -143,34 +142,47 @@ const goToPantalla5 = () => {
 }
 
 .content {
-  padding: 1rem;
+  padding: 2rem;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
   align-items: center;
+  background-color: rgb(255, 255, 255);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 800px;
+  min-height: 450px;
+  min-height: 100px;
+  margin: 2rem auto;
+  top: -30px;
+  border-radius: 0;
+  position: relative;
+  transition: top 0.3s ease;
 }
 
 .card {
   background: #fff;
-  border-radius: 15px;
   padding: 1.5rem;
-  max-width: 500px;
+  max-width: 700px;
+  min-height: 100px;
   width: 100%;
   text-align: left;
+  border-radius: 0;
 }
 
 .card-header {
   background-color: #251886;
   color: white;
   padding: 0.75rem;
-  border-radius: 10px;
   text-align: center;
   margin-bottom: 1rem;
+  border: none;
 }
 
 .bold {
   font-weight: bold;
 }
+
 .button {
   background-color: #dd3590;
   color: white;
@@ -189,10 +201,12 @@ const goToPantalla5 = () => {
 .button:hover {
   background-color: #f15bab;
 }
+
 button:focus {
   outline: none;
   box-shadow: none;
 }
+
 .provider-content {
   display: flex;
   align-items: center;

@@ -137,13 +137,6 @@ onMounted(async () => {
 
 <template>
   <motion.div v-bind="fadeInUp">
-    <section class="logo-container">
-      <img
-        src="/public/enlaceFiado.png"
-        alt="logo Enlace CRM"
-        class="logo-main"
-      />
-    </section>
 
     <Heading :mensaje="'Hola, ' + datosCuenta.Nombres" />
 
@@ -368,8 +361,9 @@ button:focus {
 
 /* Contenido */
 .content {
-  padding: 1rem;
+
   display: flex;
+  width: 430px;
   flex-direction: column;
   gap: 1.5rem;
   align-items: center;
@@ -377,10 +371,10 @@ button:focus {
 
 .card {
   background: #fff;
-  border-radius: 15px;
+  border-radius: 0px;
   padding: 1.5rem;
-  max-width: 500px;
-  width: 100%;
+  width: 430px;
+  min-height: 720px;
   text-align: left;
 }
 

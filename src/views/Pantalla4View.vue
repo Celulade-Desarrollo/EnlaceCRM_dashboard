@@ -53,13 +53,6 @@ onMounted(() => {
 </script>
 
 <template>
-  <section class="logo-container">
-    <img
-      src="/public/enlaceFiado.png"
-      alt="logo Enlace CRM"
-      class="logo-main"
-    />
-  </section>
 
   <Heading :mensaje="'Hola, ' + datosCuenta.Nombres" /> 
 
@@ -104,7 +97,7 @@ onMounted(() => {
 
 /* Contenido */
 .content {
-  padding: 1rem;
+  width: 430px;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -113,10 +106,10 @@ onMounted(() => {
 
 .card {
   background: #fff;
-  border-radius: 15px;
-  padding: 1.5rem;
+  padding: 1rem;
   max-width: 500px;
-  width: 100%;
+  width: 430px;
+  height: 700px;
   text-align: center;
   font-size: 17px;
 }
@@ -130,8 +123,9 @@ onMounted(() => {
 }
 
 .logo {
-  margin-bottom: 1rem; /* Espacio debajo del logo */
+  margin-bottom: 1rem;
   margin-top: 0px;
+  width: 200px;
 }
 
 .alpina-logo-outside {
@@ -200,7 +194,7 @@ button:focus {
 /* Responsive */
 @media (max-width: 600px) {
   .header-container {
-    flex-direction: column; /* Asegurar que siga siendo columna en responsive */
+    flex-direction: column;
     align-items: center;
     text-align: center;
   }
