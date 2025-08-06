@@ -2,13 +2,13 @@
 //import { onMounted } from "vue";
 import Heading from "../components/UI/Heading.vue";
 import { motion } from "motion-v";
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted } from "vue";
 import axios from "axios";
-import { useRouter } from "vue-router";
 
-const router = useRouter();
+
 const datosCuenta = JSON.parse(localStorage.getItem("datosCuenta")) || {};
 console.log("Datos de la cuenta:", datosCuenta);
+const deudaTotal = ref(0);
 
 const estadoCuenta = ref({
   CupoFinal: '',
@@ -16,6 +16,19 @@ const estadoCuenta = ref({
   FechaPagoProgramado: '',
   deudaTotal: ''
 });
+const formatoMiles = (numero) => {
+  return new Intl.NumberFormat('es-ES').format(Number(numero));
+};
+
+function formatFecha(fechaISO) {
+  if (!fechaISO) return '';
+  const fecha = new Date(fechaISO);
+  return fecha.toLocaleDateString('es-ES', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+}
 
 onMounted(async () => {
   const IdUsuario = localStorage.getItem("idUsuario");
@@ -40,24 +53,7 @@ onMounted(async () => {
   } catch (error) {
     console.error("Error al obtener el estado de cuenta:", error);
   }
-
 });
-const goToPantallaCorresponsal = () => {
-  router.push("/PantallaCorresponsalView");
-};
-const formatoMiles = (numero) => {
-  return new Intl.NumberFormat('es-ES').format(Number(numero));
-};
-
-function formatFecha(fechaISO) {
-  if (!fechaISO) return '';
-  const fecha = new Date(fechaISO);
-  return fecha.toLocaleDateString('es-ES', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  });
-}
 </script>
 
 <template>
@@ -71,26 +67,8 @@ function formatFecha(fechaISO) {
             <h2 class="text-xl flex gap-3 mt-4 " >Deuda total $<p class="font-bold">{{ formatoMiles(estadoCuenta.deudaTotal) }}</p></h2>
             <h3 class=" flex text-[13px]"> Fecha del siguiente abono:  <p class="font-bold">{{ formatFecha(estadoCuenta.FechaPagoProgramado) }}</p></h3>
           </div>
-            <h2 class="w-full text-center font-bold mb-2">¿Cómo quieres pagar?</h2>
-            <a
-            href="https://portalpagos.payty.com/PortalPagosPayty/WEB/?codigoConvenio=112878"
-            class="no-underline flex items-center justify-between bg-gray-100 rounded-lg shadow w-72 h-20 px-4 mt-4"
-            >
-            <span class="no-underline flex flex-col text-left font-bold text-gray-700 text-lg leading-tight">
-                Pago<br />Digital via PSE
-            </span>
-            <img src="../../public/PSELOGO.png" class="w-16 h-16" />
-            </a>
-            <div
-            class="no-underline flex items-center justify-between bg-gray-100 rounded-lg shadow w-72 h-20 px-4 mt-4"
-            >
-            <span class="no-underline flex flex-col text-left font-bold text-gray-700 text-lg leading-tight">
-                Pago en corresponsal
-            </span>
-            <button class="button" @click ="goToPantallaCorresponsal">
-                Info
-            </button>
-            </div>
+            <h2 class="w-full text-center font-bold mb-2">Corresponsales Bancarios cerca a ti </h2>
+           <img src="" alt="">
         </div>
         </div>
     </div>

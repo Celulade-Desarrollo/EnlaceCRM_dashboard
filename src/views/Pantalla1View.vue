@@ -42,13 +42,13 @@ onMounted(async () => {
     console.error("Error al obtener el estado de cuenta:", error);
   }
 
-const tipo = localStorage.getItem("tipo");
-const idUsuario = localStorage.getItem("idUsuario");
+  const tipo = localStorage.getItem("tipo");
+  const idUsuario = localStorage.getItem("idUsuario");
 
-console.log("localStorage token:", token);
-console.log("localStorage tipo:", tipo);
-console.log("idUsuario",idUsuario);
-console.log("datosCuenta", datosCuenta);
+  console.log("localStorage token:", token);
+  console.log("localStorage tipo:", tipo);
+  console.log("idUsuario",idUsuario);
+  console.log("datosCuenta", datosCuenta);
   // Establece fondo morado al cargar esta pantalla
   document.body.style.backgroundColor = "#2e008b";
 

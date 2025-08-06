@@ -100,6 +100,12 @@ const routes = [
     name: "PantallaAbono",
     component: () => import("../views/PantallaAbonoView.vue"),
     meta: { requiresAuth: true,  role: "usuario" },
+  },
+    {
+  path: "/PantallaCorresponsalView",
+  name: "PantallaCorresponsal",
+  component: () => import("../views/PantallaCorresponsalView.vue"),
+  meta: { requiresAuth: true,  role: "usuario" },
   }
 ];
 

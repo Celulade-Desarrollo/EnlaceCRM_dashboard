@@ -75,15 +75,15 @@ const actualizarTotal = (total, seleccionadas) => {
   totalFacturasSeleccionadas.value = total;
   facturasSeleccionadas.value = seleccionadas;
 };
-// Formatea una fecha ISO a formato legible en español "14 de julio de 2025"
-function formatFecha(fechaISO) {
-  const [year, month, day] = fechaISO.split('T')[0].split('-');
-  const meses = [
-    'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
-    'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
-  ];
 
-  return `${parseInt(day)} de ${meses[parseInt(month) - 1]} de ${year}`;
+function formatFecha(fechaISO) {
+  if (!fechaISO) return '';
+  const fecha = new Date(fechaISO);
+  return fecha.toLocaleDateString('es-ES', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
 }
 
 function formatPesos(valor) {
@@ -131,9 +131,9 @@ onMounted(async () => {
        estadoCuenta.value = estadoCuentaResponse.data;
 
     // Verifica si existe al menos un movimiento con bloqueo por mora para bloquear el boton
-       const hayBloqueo = estadoCuenta.value.movimientos.some(
-       (mov) => mov.BloqueoMora === true
-     )
+    //    const hayBloqueo = estadoCuenta.value.movimientos.some(
+    //    (mov) => mov.BloqueoMora === true
+    //  )
     bloquearBotones.value = datosCuenta.BloqueoPorMora
 
     // console.log("¿Bloquear botones?", hayBloqueo) 
