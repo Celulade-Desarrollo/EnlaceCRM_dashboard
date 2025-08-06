@@ -78,13 +78,7 @@ import axios from "axios";
 
 <template>
   <motion.div v-bind="fadeInUp">
-    <section class="logo-container">
-      <img
-        src="/public/enlaceFiado.png"
-        alt="logo Enlace CRM"
-        class="logo-main"
-      />
-    </section>
+
 
     <Heading
       :mensaje="
@@ -226,20 +220,28 @@ button:focus {
 /* Contenido */
 .content {
   padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
   align-items: center;
+  outline: none;
+  min-height: 600px;
+  height: 400px;
+  width: 430px;
+
+
 }
+
+
 
 .card {
   background: #fff;
-  border-radius: 15px;
+  border-radius: 0;
+  margin-top: -15px;
   padding: 1.5rem;
-  max-width: 500px;
-  width: 100%;
   text-align: center;
   font-size: 20px;
+  width: 430px;
+  min-height: 740px;
+ margin-left: -15px;
+
 }
 
 .header-container {
@@ -253,7 +255,6 @@ button:focus {
   background-color: #251886;
   color: white;
   padding: 0.75rem 1rem;
-  border-radius: 10px;
   margin: 0;
 }
 

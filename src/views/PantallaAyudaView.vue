@@ -1,4 +1,24 @@
+<script setup>
+import { ref } from 'vue';
+import Heading from '../components/UI/Heading.vue';
+
+const datosCuentaUser = JSON.parse(localStorage.getItem("datosCuenta")) || {};
+const datosCuenta = JSON.parse(localStorage.getItem("datosCuenta")) || {};
+
+
+const whatsappLink = "https://wa.me/573001234567";
+const categoriaSeleccionada = ref(null);
+
+
+function toggleCategoria(categoria) {
+  categoriaSeleccionada.value =
+    categoriaSeleccionada.value === categoria ? null : categoria;
+}
+</script>
+
 <template>
+<Heading :mensaje="'Hola, ' + datosCuentaUser.Nombres" />
+
   <div class="ayuda-wrapper">
     <h1 class="titulo">¿Cómo podemos ayudarte?</h1>
 
@@ -98,30 +118,20 @@
   </div>
 </template>
 
-<script setup>
-import { ref } from 'vue';
 
-const whatsappLink = "https://wa.me/573001234567";
-const categoriaSeleccionada = ref(null);
-
-function toggleCategoria(categoria) {
-  categoriaSeleccionada.value =
-    categoriaSeleccionada.value === categoria ? null : categoria;
-}
-</script>
 
 <style scoped>
 .ayuda-wrapper {
-  max-width: 480px;
-  margin: auto;
+  max-width: 700px; /* Aumenta si quieres más ancho */
+  margin: 0 auto;
+  background-color: #ffffff;
   padding: 2rem 1rem;
-  font-family: 'Segoe UI', sans-serif;
-  background-color: #f0f4f8;
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
+  min-height: 100vh;
 }
+
 
 .titulo {
   font-size: 1.6rem;
@@ -144,8 +154,9 @@ function toggleCategoria(categoria) {
 
 .faq-card {
   background-color: white;
-  border-radius: 14px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  max-width: 480px;
+  border-radius: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   padding: 1rem;
   margin-bottom: 1rem;
   display: flex;
@@ -153,6 +164,7 @@ function toggleCategoria(categoria) {
   align-items: center;
   cursor: pointer;
   transition: transform 0.2s ease;
+  min-height: 120px;
 }
 
 .faq-card:hover {

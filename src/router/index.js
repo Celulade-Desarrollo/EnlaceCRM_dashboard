@@ -24,12 +24,6 @@ const routes = [
     meta: { requiresAuth: false },
   },
   {
-    path: "/Pantalla2View",
-    name: "pantalla2",
-    component: () => import("../views/Pantalla2View.vue"),
-    meta: { requiresAuth: true, role: "usuario" },
-  },
-  {
     path: "/Pantalla3View",
     name: "pantalla3",
     component: () => import("../views/Pantalla3View.vue"),
@@ -47,30 +41,13 @@ const routes = [
     component: () => import("../views/Pantalla5View.vue"),
     meta: { requiresAuth: true, role: "usuario" }
   },
-  {
-    path: "/Pantalla6View",
-    name: "pantalla6",
-    component: () => import("../views/Pantalla6View.vue"),
-    meta: { requiresAuth: true, role:"usuario" }
-  },
-  {
-    path: "/Pantalla7View",
-    name: "pantalla7",
-    component: () => import("../views/Pantalla7View.vue"),
-    meta: { requiresAuth: true, role:"usuario" }
-  },
-  {
-    path: "/Pantalla8View",
-    name: "pantalla8",
-    component: () => import("../views/Pantalla8View.vue"),
-    meta: { requiresAuth: true, role:"usuario" }
-  },
-  {
-    path: "/Pantalla9View",
-    name: "pantalla9",
-    component: () => import("../views/Pantalla9View.vue"),
-    meta: { requiresAuth: true, role:"usuario" }
-  },
+
+  // {
+  //   path: "/Pantalla9View",
+  //   name: "pantalla9",
+  //   component: () => import("../views/Pantalla9View.vue"),
+  //   meta: { requiresAuth: true, role:"usuario" }
+  // },
   {
     path: "/Pantalla10view",
     name: "pantalla10",
