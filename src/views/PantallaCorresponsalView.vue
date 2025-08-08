@@ -57,66 +57,104 @@ onMounted(async () => {
 </script>
 
 <template>
-<Heading :mensaje="'Hola, ' + datosCuenta.Nombres" />
-    <motion.div v-bind="fadeInUp">
-    <section>
-        <div class="card">
+  <Heading :mensaje="'Hola, ' + datosCuenta.Nombres" />
+  <motion.div v-bind="fadeInUp">
+    <section class="content">
+      <div class="card">
         <div class="provider-content">
-        <div class="bg-white w-full rounded-xl flex flex-col items-center relative justify-start pt-3">
-            <div class="flex gap-3 flex-column mb-3">
-            <h2 class="text-xl flex gap-3 mt-4 " >Deuda total $<p class="font-bold">{{ formatoMiles(estadoCuenta.deudaTotal) }}</p></h2>
-            <h3 class=" flex text-[13px]"> Fecha del siguiente abono:  <p class="font-bold">{{ formatFecha(estadoCuenta.FechaPagoProgramado) }}</p></h3>
+          <div class="info-container">
+            <div class="info-texts">
+              <h2 class="title">
+                Deuda total $<span class="bold-text">{{ formatoMiles(estadoCuenta.deudaTotal) }}</span>
+              </h2>
+              <h3 class="subtitle">
+                Fecha del siguiente abono: <span class="bold-text">{{ formatFecha(estadoCuenta.FechaPagoProgramado) }}</span>
+              </h3>
+            </div>
+            <h2 class="centered-title">Corresponsales Bancarios cerca a ti</h2>
           </div>
-            <h2 class="w-full text-center font-bold mb-2">Corresponsales Bancarios cerca a ti </h2>
-           <img src="" alt="">
         </div>
-        </div>
-    </div>
-  </section>
-</motion.div>
+      </div>
+    </section>
+  </motion.div>
 </template>
 
 <style scoped>
-.card {
-  background: #fff;
-  border-radius: 15px;
-  padding: 1.5rem;
-  max-width: 500px;
+.content {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
+  background-color: rgb(255, 255, 255);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   width: 100%;
-  text-align: left;
+  max-width: 800px;
+  min-height: 450px;
+  margin: 2rem auto;
+  border-radius: 0;
+  position: relative;
+  transition: top 0.3s ease;
 }
 
-.card-header {
-  background-color: #251886;
-  color: white;
-  padding: 0.75rem;
-  border-radius: 10px;
-  text-align: center;
-  margin-bottom: 1rem;
+.card {
+  background: #fff;
+  padding: 1.5rem;
+  max-width: 700px;
+  width: 100%;
+  text-align: left;
+  border-radius: 0;
 }
+
 .provider-content {
   display: flex;
   align-items: center;
-  gap: 1rem;
   justify-content: center;
-  flex-wrap: wrap;
+  width: 100%;
 }
 
-.button {
-  background-color: #dd3590;
-  color: white;
-  border: none;
-  padding: 10px 24px;
-  border-radius: 25px;
+.info-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  max-width: 500px;
+}
+
+.info-texts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.title {
+  font-size: 1.25rem; /* similar a text-xl */
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.subtitle {
+  font-size: 13px;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.bold-text {
   font-weight: bold;
-  cursor: pointer;
 }
 
-.button:hover {
-  background-color: #f15bab;
+.centered-title {
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 1rem;
 }
-.button:focus {
-  outline: none;
-  box-shadow: none;
+
+/* Opcional: responsive como la otra pantalla */
+@media (max-width: 600px) {
+  .provider-content {
+    flex-direction: column;
+  }
 }
 </style>

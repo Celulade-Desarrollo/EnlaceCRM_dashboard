@@ -43,13 +43,7 @@ onMounted(() => {
 
 <template>
   <motion.div v-bind="fadeInUp">
-    <section class="logo-container">
-      <img
-        src="/public/enlaceFiado.png"
-        alt="logo Enlace CRM"
-        class="logo-main"
-      />
-    </section>
+
 
     <Heading :mensaje="'Hola, ' + dataInfoapp[0].nombre" />
 
@@ -108,12 +102,14 @@ onMounted(() => {
   width: 100%;
   max-width: 800px;
   margin: 0 auto;
+  width: 430px;
+  height: 300px;
 }
 
 .banner {
   width: 100%;
   background-color: #f5f5f5;
-  border-radius: 12px;
+  border-radius: 0px;
   padding: 1rem;
 }
 

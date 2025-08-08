@@ -76,15 +76,7 @@ const goToPantalla5 = () => {
 </script>
 
 <template>
-  <section class="logo-container">
-    <img
-      src="/public/enlaceFiado.png"
-      alt="logo Enlace CRM"
-      class="logo-main"
-    />
-  </section>
-  <!-- Encabezado -->
-   <Heading :mensaje="'Hola, ' + datosCuenta.Nombres" /> 
+  <Heading :mensaje="'Hola, ' + datosCuenta.Nombres" />
 
   <motion.div v-bind="fadeInUp">
     <section class="content">
@@ -111,6 +103,7 @@ const goToPantalla5 = () => {
     </section>
   </motion.div>
 </template>
+
 
 <style scoped>
 .logo-container {
@@ -140,34 +133,47 @@ const goToPantalla5 = () => {
 }
 
 .content {
-  padding: 1rem;
+  padding: 2rem;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
   align-items: center;
+  background-color: rgb(255, 255, 255);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 800px;
+  min-height: 450px;
+  min-height: 100px;
+  margin: 2rem auto;
+  top: -30px;
+  border-radius: 0;
+  position: relative;
+  transition: top 0.3s ease;
 }
 
 .card {
   background: #fff;
-  border-radius: 15px;
   padding: 1.5rem;
-  max-width: 500px;
+  max-width: 700px;
+  min-height: 100px;
   width: 100%;
   text-align: left;
+  border-radius: 0;
 }
 
 .card-header {
   background-color: #251886;
   color: white;
   padding: 0.75rem;
-  border-radius: 10px;
   text-align: center;
   margin-bottom: 1rem;
+  border: none;
 }
 
 .bold {
   font-weight: bold;
 }
+
 .button {
   background-color: #dd3590;
   color: white;
@@ -186,10 +192,12 @@ const goToPantalla5 = () => {
 .button:hover {
   background-color: #f15bab;
 }
+
 button:focus {
   outline: none;
   box-shadow: none;
 }
+
 .provider-content {
   display: flex;
   align-items: center;

@@ -15,7 +15,8 @@ import axios from "axios";
   const nroFacturaAlpina = facturas.join(",");
   const numeroTransportista = ref("");
   const token = localStorage.getItem("token");
-  
+  const errorMessage = ref("");
+
   console.log("datosCuenta:", datosCuenta);
   console.log("Facturas seleccionadas:", facturas);
 
@@ -28,16 +29,21 @@ import axios from "axios";
  const fechaPagoProgramado = fechaProgramada.toISOString().split("T")[0];
 
   const handlePagoClick = async () => {
+  if (!numeroTransportista.value) {
+    errorMessage.value = "Por favor, ingresa el teléfono del transportista";
+    return;
+  }
+      errorMessage.value = "";
     const dataPagoFactura = {
-   "identificadorTendero": datosCuenta.Cedula_Cliente,
-   "monto": pagarValor,
-   "tipoMovimiento": 1,
-   "descripcion": "pago de factura",
-   "fechaPagoProgramado": fechaPagoProgramado,
-   "idMedioPago": 14,
-   "nroFacturaAlpina": nroFacturaAlpina,
-  "telefonoTransportista":String(numeroTransportista.value)
-}
+      "identificadorTendero": datosCuenta.Cedula_Cliente,
+      "monto": pagarValor,
+      "tipoMovimiento": 1,
+      "descripcion": "pago de factura",
+      "fechaPagoProgramado": fechaPagoProgramado,
+      "idMedioPago": 14,
+      "nroFacturaAlpina": nroFacturaAlpina,
+      "telefonoTransportista":String(numeroTransportista.value)
+    }
     console.log("datosPagoFactura:", dataPagoFactura);
      try {
        const pagoFacturas = await axios.post("/api/movimientos",
@@ -54,9 +60,11 @@ import axios from "axios";
      } catch (error) {
        console.error("Error al realizar el pago:", error);
      }
-  };
+    
+   
+};
   const handlePagina2Click = () => {
-    window.open("/Pantalla2View", "_parent");
+    window.open("/PantallaFacturasView", "_parent");
   };
 function formatPesos(valor) {
   return new Intl.NumberFormat("es-CO", {
@@ -76,13 +84,7 @@ function formatPesos(valor) {
 
 <template>
   <motion.div v-bind="fadeInUp">
-    <section class="logo-container">
-      <img
-        src="/public/enlaceFiado.png"
-        alt="logo Enlace CRM"
-        class="logo-main"
-      />
-    </section>
+
 
     <Heading
       :mensaje="
@@ -122,6 +124,7 @@ function formatPesos(valor) {
           </label>
         </div>
         <div class="button-banner-pedidos">
+          <p v-if="errorMessage" class="error-text">{{ errorMessage }}</p>
           <button type="button" id="boton-pago" class="boton" @click="handlePagoClick">Pagar</button>
           <button type="button" id="boton-atras" class="boton">Atrás</button>
         </div>
@@ -131,6 +134,10 @@ function formatPesos(valor) {
 </template>
 
 <style scoped>
+.error-text {
+  color: red;
+  font-size: 0.99rem;
+}
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
@@ -219,20 +226,28 @@ button:focus {
 /* Contenido */
 .content {
   padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
   align-items: center;
+  outline: none;
+  min-height: 600px;
+  height: 400px;
+  width: 430px;
+
+
 }
+
+
 
 .card {
   background: #fff;
-  border-radius: 15px;
+  border-radius: 0;
+  margin-top: -15px;
   padding: 1.5rem;
-  max-width: 500px;
-  width: 100%;
   text-align: center;
   font-size: 20px;
+  width: 430px;
+  min-height: 740px;
+ margin-left: -15px;
+
 }
 
 .header-container {
@@ -246,7 +261,6 @@ button:focus {
   background-color: #251886;
   color: white;
   padding: 0.75rem 1rem;
-  border-radius: 10px;
   margin: 0;
 }
 

@@ -79,10 +79,6 @@ onMounted(async () => {
 });
 </script>
 <template>
-  <motion.div v-bind="fadeInUp">
-    <section class="logo-container">
-      <img src="/enlaceFiado.png" alt="logo Enlace CRM" class="logo-main" />
-    </section>
 
   <Heading :mensaje="'Hola, ' + datosCuentaUser.Nombres" />
 
@@ -109,7 +105,7 @@ onMounted(async () => {
         </div>
 
         <!-- Botón abonar -->
-        <div class="button-banner mb-2">
+        <div class="button-banner mb-1">
           <button type="button" class="button" @click="goToPantallaAbonar()">Abonar</button>
         </div>
 
@@ -145,7 +141,6 @@ onMounted(async () => {
         </div>
       </div>
     </section>
-  </motion.div>
 </template>
 
 
@@ -153,7 +148,8 @@ onMounted(async () => {
 .banners {
   background-color: #ffffff;
   min-height: 100vh;
-  border-radius: 10px;
+  
+
 }
 .logo-container {
   text-align: center;
@@ -166,7 +162,7 @@ onMounted(async () => {
 }
 .banner1 {
   background-color: #ffffff;
-  border: 2px solid #2b008b;
+
   border-radius: 15px;
   padding: 20px;
   width: 100%;
@@ -194,6 +190,7 @@ onMounted(async () => {
 .button-banner {
   display: flex;
   justify-content: center;
+  width: 100%;
 }
 .button {
   background-color: #dd3590;
@@ -203,8 +200,10 @@ onMounted(async () => {
   border-radius: 25px;
   font-weight: bold;
   cursor: pointer;
-  width: 100%;
-  max-width: 500px;
+  display: flex;
+  width: auto;
+  margin-left: 20px;
+  justify-content: flex-start;
   text-align: center;
   font-size: 1.1rem;
   transition: background-color 0.3s ease;
@@ -224,14 +223,14 @@ button:focus {
   background-color: #fff;
   padding: 15px;
   border-radius: 12px;
-  border: 2px solid #2b008b;
+
 }
 .titulo-movimientos {
   font-size: 1.2rem;
   font-weight: bold;
   margin-bottom: 15px;
   text-align: center;
-  color: #2b008b;
+  color: #000000;
 }
 .movimiento {
   display: flex;
