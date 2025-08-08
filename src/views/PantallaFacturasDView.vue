@@ -118,42 +118,34 @@ onMounted(async () => {
     facturasDisponibles.value = facturasResponse.data;
     console.log("Facturas:", facturasResponse.data);
     
-     const estadoCuentaResponse = await axios.get(
-       "/api/pagos/estado-cuenta",
-         {
-         params: { identificadorTendero: datosCuenta.Cedula_Cliente },
-         headers: {
-           Authorization: `Bearer ${token}`,
-           "Content-Type": "application/json"
-         }
-       }
-     );
-       estadoCuenta.value = estadoCuentaResponse.data;
+    const estadoCuentaResponse = await axios.get(
+      "/api/pagos/estado-cuenta",
+      {
+        params: { identificadorTendero: datosCuenta.Cedula_Cliente },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      }
+    );
+    estadoCuenta.value = estadoCuentaResponse.data;
 
-    // Verifica si existe al menos un movimiento con bloqueo por mora para bloquear el boton
-    //    const hayBloqueo = estadoCuenta.value.movimientos.some(
-    //    (mov) => mov.BloqueoMora === true
-    //  )
-    bloquearBotones.value = datosCuenta.BloqueoPorMora
+    bloquearBotones.value = datosCuenta.BloqueoPorMora;
 
-    // console.log("¿Bloquear botones?", hayBloqueo) 
-     console.log("Estado de cuenta:", estadoCuentaResponse.data);
+    console.log("Estado de cuenta:", estadoCuentaResponse.data);
 
-    // Filtra los movimientos en estadoCuenta para obtener solo los que tienen bloqueo por mora
-       if (estadoCuenta.value?.movimientos) {
-         facturasEnMora.value = estadoCuenta.value.movimientos.filter(
-         (mov) => mov.BloqueoMora === true
-         );
-       } 
+    if (estadoCuenta.value?.movimientos) {
+      facturasEnMora.value = estadoCuenta.value.movimientos.filter(
+        (mov) => mov.BloqueoMora === true
+      );
+    }
 
   } catch (error) {
     console.error("Error al cargar facturas o el estado de cuenta:", error);
-  }finally {
+  } finally {
     isLoading.value = false;
   }
-
 });
-
 </script>
 
 <template>
