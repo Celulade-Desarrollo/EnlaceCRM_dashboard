@@ -16,7 +16,6 @@ const estadoCuenta = ref({
 });
 
 const datosCuenta = JSON.parse(localStorage.getItem("datosCuenta")) || {};
-
 onMounted(async () => {
   const IdUsuario = localStorage.getItem("idUsuario");
   // Obtener el token del localStorage
@@ -30,19 +29,26 @@ onMounted(async () => {
         },
       }
     );
+
     estadoCuenta.value = response.data;
+
+    const cupoFinal = parseInt(estadoCuenta.value.CupoFinal.replace(/\./g, ''));
+    const cupoDisponible = parseInt(estadoCuenta.value.CupoDisponible);
+    const deuda = cupoFinal - cupoDisponible;
+    estadoCuenta.value.deudaTotal = deuda;
+
     console.log("deudatotal",estadoCuenta.value);
   } catch (error) {
     console.error("Error al obtener el estado de cuenta:", error);
   }
 
-const tipo = localStorage.getItem("tipo");
-const idUsuario = localStorage.getItem("idUsuario");
+  const tipo = localStorage.getItem("tipo");
+  const idUsuario = localStorage.getItem("idUsuario");
 
-console.log("localStorage token:", token);
-console.log("localStorage tipo:", tipo);
-console.log("idUsuario",idUsuario);
-console.log("datosCuenta", datosCuenta);
+  console.log("localStorage token:", token);
+  console.log("localStorage tipo:", tipo);
+  console.log("idUsuario",idUsuario);
+  console.log("datosCuenta", datosCuenta);
   // Establece fondo morado al cargar esta pantalla
   document.body.style.backgroundColor = "#2e008b";
 
@@ -56,8 +62,8 @@ console.log("datosCuenta", datosCuenta);
   // }
 });
 
-const goToPantalla2 = () => {
-  router.push("/Pantalla2View");
+const goToPantallaAbonar = () => {
+  router.push("/PantallaAbonoView");
 };
 
 const goToPantallaFacturasDisponibles = () => {
@@ -74,41 +80,26 @@ const goToPantalla5 = () => {
 
   <motion.div v-bind="fadeInUp">
     <section class="content">
-      <!-- Tarjeta contenedora única -->
-      <div class="bg-white w-full min-h-[600px] rounded-2xl shadow-lg p-6 space-y-6">
-
-        <!-- Tarjeta de abonos -->
-        <CardAbonoCupos
-          :cupoTotal="estadoCuenta.CupoFinal"
-          :cupoDisp="estadoCuenta.CupoDisponible"
-          :fechaAbono="estadoCuenta.FechaPagoProgramado"
-          :deudaTotal="estadoCuenta.deudaTotal"
-          @abonar="goToPantalla5"
-        />
-
-        <!-- Sección PSE -->
-        <div class="w-full flex flex-col items-center">
-          <h2 class="w-full text-left font-bold mb-2">¿Cómo quieres pagar?</h2>
-          <a
-            href="https://portalpagos.payty.com/PortalPagosPayty/WEB/?codigoConvenio=112878"
-            class="no-underline flex items-center justify-between bg-gray-100 rounded-lg shadow w-72 h-20 px-4 mt-4"
-          >
-            <span class="flex flex-col text-left font-bold text-gray-700 text-lg leading-tight">
-              Pago<br />Digital via PSE
-            </span>
-            <img src="../../public/PSELOGO.png" class="w-16 h-16" />
-          </a>
+      <CardAbonoCupos
+        :cupoTotal="estadoCuenta.CupoFinal"
+        :cupoDisp="estadoCuenta.CupoDisponible"
+        :fechaAbono="estadoCuenta.FechaPagoProgramado"
+        :deudaTotal="estadoCuenta.deudaTotal"
+        @abonar="goToPantallaAbonar"
+        @movimientos="goToPantalla5"
+      />
+     
+      <!-- Tarjeta de proveedor -->
+      <div class="card">
+        <div class="provider-content">
+          <img src="/Alpina.png" alt="Alpina" class="alpina-img" />
+          <div class="text-center">
+            <button class="button" @click="goToPantallaFacturasDisponibles" id="Pantalla2">
+              Pagar
+            </button>
+          </div>
         </div>
-
-        <!-- Botón de proveedor -->
-        <div class="flex flex-col items-center">
-          <img src="/Alpina.png" alt="Alpina" class="w-32 mb-4" />
-          <button class="button" @click="goToPantallaFacturasDisponibles" id="Pantalla2">
-            Pagar
-          </button>
         </div>
-
-      </div>
     </section>
   </motion.div>
 </template>

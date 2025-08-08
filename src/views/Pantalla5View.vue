@@ -4,7 +4,8 @@ import axios from "axios";
 import Heading from "../components/UI/Heading.vue";
 import { motion } from "motion-v";
 import { fadeInUp } from "../motion/pageAnimation";
-
+import { useRouter } from "vue-router";
+const router = useRouter();
 // Datos iniciales
 const datosCuentaUser = JSON.parse(localStorage.getItem("datosCuenta")) || {};
 console.log("datosCuentaUser", datosCuentaUser);
@@ -32,7 +33,9 @@ function formatFecha(fechaISO) {
     day: "numeric"
   });
 }
-
+const goToPantallaAbonar = () => {
+  router.push("/PantallaAbonoView");
+};
 // Lógica de obtención de datos
 onMounted(async () => {
   const token = localStorage.getItem("token");
@@ -54,9 +57,12 @@ onMounted(async () => {
       );
 
       datosCuenta.value = resCuenta.data;
-      deudaTotal.value = resCuenta.data.DeudaTotal || 0;
       cupoTotal.value = resCuenta.data.CupoDisponible || 0;
-    
+      
+      const cupoFinal = parseInt(resCuenta.data.CupoFinal.replace(/\./g, ''));
+      const cupoDisponible = parseInt(resCuenta.data.CupoDisponible);
+      deudaTotal.value = cupoFinal - cupoDisponible;
+      
      //Obtener movimientos
      const resMov = await axios.get(`/api/movimientos/${idUsuario}`,
        {
@@ -84,7 +90,7 @@ onMounted(async () => {
             <div class="d-flex justify-content-between w-100">
               <div class="text-start">
                 <h2 class="deuda-total">Deuda total</h2>
-                <p class="cantidad-total mb-2" id="deuda-total">{{ deudaTotal }}</p>
+                <p class="cantidad-total mb-2" id="deuda-total">{{ formatPesos(deudaTotal) }}</p>
               </div>
               <div class="text-end">
                 <h2 class="cupo-total">Cupo disponible</h2>
@@ -99,8 +105,8 @@ onMounted(async () => {
         </div>
 
         <!-- Botón abonar -->
-        <div class="button-banner mb-2">
-          <button type="button" class="button" @click="router.push('/Pantalla6View')">Abonar</button>
+        <div class="button-banner mb-1">
+          <button type="button" class="button" @click="goToPantallaAbonar()">Abonar</button>
         </div>
 
         <!-- Lista de movimientos -->
@@ -183,7 +189,7 @@ onMounted(async () => {
 }
 .button-banner {
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   width: 100%;
 }
 .button {

@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue';
+import { motion } from "motion-v";
 
 const props = defineProps({
   cupoTotal: {
@@ -19,7 +20,9 @@ const props = defineProps({
     required: true
   }
 });
+const datosCuenta = JSON.parse(localStorage.getItem("datosCuenta")) || {};
 
+const bloqueoMora = (datosCuenta.BloqueoPorMora);
 const formatoMiles = (numero) => {
   return new Intl.NumberFormat('es-ES').format(Number(numero));
 };
@@ -33,9 +36,12 @@ const fechaFormateada = computed(() => {
     year: 'numeric'
   });
 });
+
 </script>
 
 <template>
+<motion.div v-bind="fadeInUp">
+<section>
   <div class="card">
     <div class="flex gap-3 flex-column mb-3">
       <h3 class="flex gap-2">
@@ -44,16 +50,26 @@ const fechaFormateada = computed(() => {
       </h3>
       <h3 class="flex gap-2"> Cupo disponible $ <p class="font-bold">{{ formatoMiles(props.cupoDisp) }}</p></h3>
 
-      <h2 class="text-xl font-bold flex gap-3 mt-4 " >Deuda total <p>{{ deudaTotal }}</p></h2>
+      <h2 class="text-xl flex gap-3 mt-4 " >Deuda total $<p class="font-bold">{{formatoMiles(deudaTotal) }}</p></h2>
 
-      <h3 class="font-bold flex text-[13px]"> Fecha del siguiente abono:  <p class="font-normal">{{ fechaFormateada }}</p></h3>
+      <h3 class=" flex text-[13px]"> Fecha del siguiente abono:  <p class="font-bold">{{ fechaFormateada }}</p></h3>
+     <p v-if="bloqueoMora" id="bloqueo" class="text-danger mt-1"> Bloqueo por mora !</p>
     </div>
-    <div class="button-banner w-[60%] ">
-      <button type="button" id="boton-pago" class="w-full" @click="$emit('abonar')">
-        Abonar
-      </button>
+    <div class="flex w-full justify-center gap-2">
+  <div class="button-banner w-[50%]">
+    <button type="button" id="boton-abonar" class="w-full" @click="$emit('abonar')">
+      Abonar
+    </button>
+  </div>
+  <div class="button-banner w-[50%]">
+    <button type="button" id="boton-movimientos" class="w-full" @click="$emit('movimientos')">
+      Movimientos 
+    </button>
     </div>
   </div>
+  </div>
+</section>
+</motion.div>
 </template>
 
 <style scoped>
@@ -76,8 +92,9 @@ button {
   border: none;
   outline: none;
   align-items: center;
+  font-weight: bold;
 }
-.button:hover {
+button:hover {
   background-color: #f15bab;
 }
 

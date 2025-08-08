@@ -66,7 +66,13 @@ import axios from "axios";
   const handlePagina2Click = () => {
     window.open("/PantallaFacturasView", "_parent");
   };
-
+function formatPesos(valor) {
+  return new Intl.NumberFormat("es-CO", {
+    style: "currency",
+    currency: "COP",
+    minimumFractionDigits: 0
+  }).format(valor || 0);
+};
   // Montar el event listener para el envío del formulario y clic en el botón
   onMounted(() => {
      const atras = document.getElementById("boton-atras");
@@ -93,7 +99,7 @@ import axios from "axios";
         </div>
         <h2 class="proveedores">¿Está seguro que desea pagar?</h2>
         <h1 class="proveedores mb-4" id="cantidad-pagar">
-          <span>${{ pagarValor }}</span> a Alpina
+          <span>{{ formatPesos(pagarValor) }}</span> a Alpina
         </h1>
 
         <div class="form-group">

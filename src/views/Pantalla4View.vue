@@ -23,6 +23,14 @@ let dataInfoapp = JSON.parse(localStorage.getItem("data"));
 // );
 // cupoTotal.value = parseFloat(dataInfoapp[0].saldoabonado.replace(/[$,]/g, ""));
 
+function formatPesos(valor) {
+  return new Intl.NumberFormat("es-CO", {
+    style: "currency",
+    currency: "COP",
+    minimumFractionDigits: 0
+  }).format(valor || 0);
+}
+
 const handlePago1Click = () => {
   window.open("/Pantalla1View", "_parent");
 };
@@ -69,7 +77,7 @@ onMounted(() => {
           />
         </picture>
         <h2 class="proveedores mb-4" id="pagado">
-          Su pago por <span>${{ pagarValor }}</span> para Alpina <br />ha sido
+          Su pago por <span>${{ formatPesos(pagarValor) }}</span> para Alpina <br />ha sido
           recibido
         </h2>
         <h1 class="proveedores mb-4" id="cantidad-pagar">
