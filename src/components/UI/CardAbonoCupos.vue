@@ -29,7 +29,10 @@ const formatoMiles = (numero) => {
 
 const fechaFormateada = computed(() => {
   if (!props.fechaAbono) return '';
-  const fecha = new Date(props.fechaAbono);
+  
+  const [year, month, day] = props.fechaAbono.split('T')[0].split('-');
+  const fecha = new Date(Number(year), Number(month) - 1, Number(day));
+
   return fecha.toLocaleDateString('es-ES', {
     day: 'numeric',
     month: 'long',

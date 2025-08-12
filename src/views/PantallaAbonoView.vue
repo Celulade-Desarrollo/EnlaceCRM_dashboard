@@ -37,6 +37,7 @@ onMounted(async () => {
     const cupoDisponible = parseInt(estadoCuenta.value.CupoDisponible);
     const deuda = cupoFinal - cupoDisponible;
     estadoCuenta.value.deudaTotal = deuda;
+    console.log("estadoCuenta", estadoCuenta.value);
   } catch (error) {
     console.error("Error al obtener el estado de cuenta:", error);
   }
@@ -69,7 +70,9 @@ function formatFecha(fechaISO) {
           <div class="bg-white w-full rounded-xl flex flex-col items-center relative justify-start pt-3">
             <div class="flex gap-3 flex-column mb-3">
               <h2 class="text-xl flex gap-3 mt-4">Deuda total $<p class="font-bold">{{ formatoMiles(estadoCuenta.deudaTotal) }}</p></h2>
+              <h3 class="flex text-[13px]">Proximo pago $: <p class="font-bold">{{ formatFecha(estadoCuenta.FechaPagoProgramado) }}</p></h3>
               <h3 class="flex text-[13px]">Fecha del siguiente abono: <p class="font-bold">{{ formatFecha(estadoCuenta.FechaPagoProgramado) }}</p></h3>
+
             </div>
             <h2 class="w-full text-center font-bold mb-2">¿Cómo quieres pagar?</h2>
 

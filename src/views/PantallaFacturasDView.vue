@@ -208,7 +208,7 @@ onMounted(async () => {
                   <p>
                     <strong>Factura N°:</strong> {{ factura.NroFacturaAlpina }}<br />
                     <strong>Monto:</strong> ${{ factura.Monto.toLocaleString() }}<br />
-                    <strong>Fecha de pago programado:</strong> {{ formatFecha(factura.FechaPagoProgramado) }}
+                    <strong>Fecha de pago programado:</strong> {{ factura.FechaPagoProgramado }}
                   </p>
                 </li>
               </ul>
