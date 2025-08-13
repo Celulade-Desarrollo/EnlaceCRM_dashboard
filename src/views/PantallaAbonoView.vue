@@ -105,39 +105,17 @@ function formatFecha(fechaISO) {
 
 <style scoped>
 .content {
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  align-items: center;
-  background-color: rgb(255, 255, 255);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 800px;
-  min-height: 450px;
-  margin: 2rem auto;
-  top: -30px;
-  border-radius: 0;
-  position: relative;
-  transition: top 0.3s ease;
+  border: none;
+  outline: none;
+  box-shadow: none;
 }
 
 .card {
-  background: #fff;
-  padding: 1.5rem;
-  max-width: 700px;
-  min-height: 100px;
-  width: 100%;
-  text-align: left;
-  border-radius: 0;
-}
-
-.provider-content {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  justify-content: center;
-  flex-wrap: wrap;
+  border: none;
+  outline: none;
+  box-shadow: none;
+    width: 100%;
+  min-height: calc(100vh - 80px);
 }
 
 .button {
@@ -173,7 +151,7 @@ function formatFecha(fechaISO) {
   text-align: center;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 480px) {
   .provider-content {
     flex-direction: column;
   }

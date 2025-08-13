@@ -122,14 +122,13 @@ function toggleCategoria(categoria) {
 
 <style scoped>
 .ayuda-wrapper {
-  max-width: 700px; /* Aumenta si quieres más ancho */
-  margin: 0 auto;
   background-color: #ffffff;
   padding: 2rem 1rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 100vh;
+  width: 100%;
+  min-height: calc(100vh - 80px);
 }
 
 
@@ -194,6 +193,8 @@ function toggleCategoria(categoria) {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  width: 100%;
+  min-height: calc(100vh - 80px);
 }
 
 .respuesta-card {
@@ -204,6 +205,8 @@ function toggleCategoria(categoria) {
   text-align: left;
   font-size: 0.95rem;
   color: #333;
+  width: 100%;
+  min-height: calc(100vh - 80px);
 }
 
 .respuesta-card p {

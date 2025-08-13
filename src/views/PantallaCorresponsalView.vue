@@ -81,29 +81,18 @@ onMounted(async () => {
 
 <style scoped>
 .content {
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  align-items: center;
-  background-color: rgb(255, 255, 255);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 800px;
-  min-height: 450px;
-  margin: 2rem auto;
-  border-radius: 0;
-  position: relative;
-  transition: top 0.3s ease;
+  border: none;
+  outline: none;
+  box-shadow: none;
 }
 
 .card {
   background: #fff;
   padding: 1.5rem;
-  max-width: 700px;
-  width: 100%;
   text-align: left;
   border-radius: 0;
+    width: 100%;
+  min-height: calc(100vh - 80px);
 }
 
 .provider-content {
