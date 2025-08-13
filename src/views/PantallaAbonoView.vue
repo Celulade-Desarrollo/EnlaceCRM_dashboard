@@ -10,6 +10,8 @@ const router = useRouter();
 const datosCuenta = JSON.parse(localStorage.getItem("datosCuenta")) || {};
 console.log("Datos de la cuenta:", datosCuenta);
 
+const estadoMovimientoPago = ref({});
+
 const estadoCuenta = ref({
   CupoFinal: '',
   CupoDisponible: '',
@@ -19,6 +21,9 @@ const estadoCuenta = ref({
 
 onMounted(async () => {
   const IdUsuario = localStorage.getItem("idUsuario");
+  const cedula = datosCuenta.Cedula_Cliente
+  console.log("IdUsuario:", IdUsuario);
+  console.log("cedula:", cedula);
   // Obtener el token del localStorage
   const token = localStorage.getItem("token");
   try {
@@ -41,6 +46,21 @@ onMounted(async () => {
   } catch (error) {
     console.error("Error al obtener el estado de cuenta:", error);
   }
+  try{
+    const response = await axios.get(
+      `/api/pagos/estado-cuenta?identificadorTendero=${cedula}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    estadoMovimientoPago.value = response.data;
+    console.log("estadoMovimientoPago", estadoMovimientoPago.value);
+
+  }catch (error) {
+    console.error("Error al obtener el estado de cuenta-pago:", error);
+  }
 
 });
 const goToPantallaCorresponsal = () => {
@@ -54,11 +74,55 @@ function formatFecha(fechaISO) {
   if (!fechaISO) return '';
   const fecha = new Date(fechaISO);
   return fecha.toLocaleDateString('es-ES', {
+    timeZone: 'UTC', // ⚠️ clave
     day: 'numeric',
     month: 'long',
     year: 'numeric',
   });
 }
+const proximoPagoMonto = computed(() => {
+  const movimientos = estadoMovimientoPago.value.movimientos || [];
+  const hoy = new Date();
+
+  // Paso 1: Obtener facturas pendientes (IdTipoMovimiento === 1)
+  const facturasPendientes = movimientos.filter(mov => mov.IdTipoMovimiento === 1);
+
+  // Paso 2: Filtrar facturas que no tengan un pago registrado
+  const facturasNoPagadas = facturasPendientes.filter(factura => {
+    const yaPagada = movimientos.some(
+      m =>
+        m.NroFacturaAlpina === factura.NroFacturaAlpina &&
+        m.IdTipoMovimiento === 2 // ya pagada
+    );
+    return !yaPagada;
+  });
+
+  // Paso 3: Agrupar por FechaPagoProgramado
+  const agrupadasPorFecha = {};
+  facturasNoPagadas.forEach(factura => {
+    const fecha = factura.FechaPagoProgramado;
+    if (!agrupadasPorFecha[fecha]) agrupadasPorFecha[fecha] = [];
+    agrupadasPorFecha[fecha].push(factura);
+  });
+
+  // Paso 4: Encontrar la fecha más cercana al día actual
+  const fechas = Object.keys(agrupadasPorFecha);
+  if (fechas.length === 0) return 0;
+
+  const fechaMasCercana = fechas.reduce((prev, curr) => {
+    const prevDiff = Math.abs(new Date(prev) - hoy);
+    const currDiff = Math.abs(new Date(curr) - hoy);
+    return currDiff < prevDiff ? curr : prev;
+  });
+
+  // Paso 5: Sumar los montos de esa fecha
+  const montoTotal = agrupadasPorFecha[fechaMasCercana].reduce((sum, factura) => {
+    return sum + factura.Monto;
+  }, 0);
+
+  return montoTotal;
+});
+
 </script>
 
 <template>
@@ -70,7 +134,7 @@ function formatFecha(fechaISO) {
           <div class="bg-white w-full rounded-xl flex flex-col items-center relative justify-start pt-3">
             <div class="flex gap-3 flex-column mb-3">
               <h2 class="text-xl flex gap-3 mt-4">Deuda total $<p class="font-bold">{{ formatoMiles(estadoCuenta.deudaTotal) }}</p></h2>
-              <h3 class="flex text-[13px]">Proximo pago $: <p class="font-bold">{{ formatFecha(estadoCuenta.FechaPagoProgramado) }}</p></h3>
+              <h3 class="flex text-[13px]">Proximo pago$: <p  class="font-bold">{{ formatoMiles(proximoPagoMonto) }}</p></h3>
               <h3 class="flex text-[13px]">Fecha del siguiente abono: <p class="font-bold">{{ formatFecha(estadoCuenta.FechaPagoProgramado) }}</p></h3>
 
             </div>
