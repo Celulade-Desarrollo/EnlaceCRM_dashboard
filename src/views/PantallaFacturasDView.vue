@@ -208,7 +208,7 @@ onMounted(async () => {
                   <p>
                     <strong>Factura N°:</strong> {{ factura.NroFacturaAlpina }}<br />
                     <strong>Monto:</strong> ${{ factura.Monto.toLocaleString() }}<br />
-                    <strong>Fecha de pago programado:</strong> {{ formatFecha(factura.FechaPagoProgramado) }}
+                    <strong>Fecha de pago programado:</strong> {{ factura.FechaPagoProgramado }}
                   </p>
                 </li>
               </ul>
@@ -382,7 +382,6 @@ button:focus {
 .content {
 
   display: flex;
-  width: 430px;
   flex-direction: column;
   gap: 1.5rem;
   align-items: center;
@@ -392,9 +391,9 @@ button:focus {
   background: #fff;
   border-radius: 0px;
   padding: 1.5rem;
-  width: 430px;
-  min-height: 720px;
   text-align: left;
+  width: 100%;
+  min-height: calc(100vh - 80px);
 }
 
 .header-container {

@@ -37,6 +37,7 @@ onMounted(async () => {
     const cupoDisponible = parseInt(estadoCuenta.value.CupoDisponible);
     const deuda = cupoFinal - cupoDisponible;
     estadoCuenta.value.deudaTotal = deuda;
+    console.log("estadoCuenta", estadoCuenta.value);
   } catch (error) {
     console.error("Error al obtener el estado de cuenta:", error);
   }
@@ -69,7 +70,9 @@ function formatFecha(fechaISO) {
           <div class="bg-white w-full rounded-xl flex flex-col items-center relative justify-start pt-3">
             <div class="flex gap-3 flex-column mb-3">
               <h2 class="text-xl flex gap-3 mt-4">Deuda total $<p class="font-bold">{{ formatoMiles(estadoCuenta.deudaTotal) }}</p></h2>
+              <h3 class="flex text-[13px]">Proximo pago $: <p class="font-bold">{{ formatFecha(estadoCuenta.FechaPagoProgramado) }}</p></h3>
               <h3 class="flex text-[13px]">Fecha del siguiente abono: <p class="font-bold">{{ formatFecha(estadoCuenta.FechaPagoProgramado) }}</p></h3>
+
             </div>
             <h2 class="w-full text-center font-bold mb-2">¿Cómo quieres pagar?</h2>
 
@@ -102,39 +105,17 @@ function formatFecha(fechaISO) {
 
 <style scoped>
 .content {
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  align-items: center;
-  background-color: rgb(255, 255, 255);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 800px;
-  min-height: 450px;
-  margin: 2rem auto;
-  top: -30px;
-  border-radius: 0;
-  position: relative;
-  transition: top 0.3s ease;
+  border: none;
+  outline: none;
+  box-shadow: none;
 }
 
 .card {
-  background: #fff;
-  padding: 1.5rem;
-  max-width: 700px;
-  min-height: 100px;
-  width: 100%;
-  text-align: left;
-  border-radius: 0;
-}
-
-.provider-content {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  justify-content: center;
-  flex-wrap: wrap;
+  border: none;
+  outline: none;
+  box-shadow: none;
+    width: 100%;
+  min-height: calc(100vh - 80px);
 }
 
 .button {
@@ -170,7 +151,7 @@ function formatFecha(fechaISO) {
   text-align: center;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 480px) {
   .provider-content {
     flex-direction: column;
   }

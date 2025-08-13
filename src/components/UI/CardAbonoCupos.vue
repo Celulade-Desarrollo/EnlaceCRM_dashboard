@@ -29,7 +29,10 @@ const formatoMiles = (numero) => {
 
 const fechaFormateada = computed(() => {
   if (!props.fechaAbono) return '';
-  const fecha = new Date(props.fechaAbono);
+  
+  const [year, month, day] = props.fechaAbono.split('T')[0].split('-');
+  const fecha = new Date(Number(year), Number(month) - 1, Number(day));
+
   return fecha.toLocaleDateString('es-ES', {
     day: 'numeric',
     month: 'long',
@@ -80,13 +83,16 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 
 button {
-  padding-left: 1.25rem;
-  padding-right: 1.25rem;
+  padding: 10px 30px;
   border-radius: 6.25rem;
   background: #dd3590;
   color: white;
   height: 3rem;
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
   margin-top: 20px;
   cursor: pointer;
   border: none;

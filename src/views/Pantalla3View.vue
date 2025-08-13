@@ -225,29 +225,23 @@ button:focus {
 
 /* Contenido */
 .content {
-  padding: 1rem;
-  align-items: center;
-  outline: none;
-  min-height: 600px;
-  height: 400px;
-  width: 430px;
-
-
+  background-color: rgb(255, 255, 255);
+  width: 100%;
+  min-height: calc(100vh - 80px);
 }
 
 
 
 .card {
   background: #fff;
-  border-radius: 0;
+  border: none;
+  box-shadow: none;
+  outline: none;
   margin-top: -15px;
   padding: 1.5rem;
   text-align: center;
-  font-size: 20px;
-  width: 430px;
-  min-height: 740px;
- margin-left: -15px;
-
+  width: 100%;
+  min-height: calc(100vh - 80px);
 }
 
 .header-container {
@@ -310,7 +304,20 @@ button:focus {
 }
 
 /* Responsive */
-@media (max-width: 600px) {
+@media (max-width: 480px) {
+.content {
+  padding: 1rem;
+  align-items: center;
+  outline: none;
+  width: 100%;
+  min-height: calc(100vh - 80px);
+}
+  .card {
+    padding: 1rem;
+    width: 100%;
+    min-height: calc(100vh - 80px);
+  }
+
   .header-container {
     flex-direction: column;
     align-items: center;

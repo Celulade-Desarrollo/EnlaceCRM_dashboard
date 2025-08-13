@@ -6,28 +6,28 @@
       </span>
       <p class="mensaje">{{ mensaje }}</p>
     </div>
-
+ 
     <button class="icon-right icon-circle" @click="irAAyuda">
       <i class="fas fa-question-circle"></i>
     </button>
-
+ 
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
   </header>
 </template>
-
-
+ 
+ 
 <script setup>
 import { useRouter } from 'vue-router';
-
+ 
 const router = useRouter();
-
+ 
 function irAAyuda() {
   router.push('/ayuda'); // Cambia '/ayuda' por la ruta real que tengas
 }
-
+ 
 defineProps({
   mensaje: {
     type: String,
@@ -35,7 +35,7 @@ defineProps({
   }
 });
 </script>
-
+ 
 <style scoped>
 .header {
   background-color: #021066;
@@ -44,19 +44,18 @@ defineProps({
   justify-content: space-between;
   align-items: flex-start;
   padding: 1rem 1.5rem;
-  width: 100%;
-  height: 25vh;
+  width: 100vw;
 }
-
-
+ 
+ 
 .izquierda {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 0.3rem;
 }
-
-
+ 
+ 
 .icon-left {
   font-size: 1.2rem;
   background-color: white;

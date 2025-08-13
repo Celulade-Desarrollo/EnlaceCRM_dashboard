@@ -105,7 +105,8 @@ onMounted(() => {
 
 /* Contenido */
 .content {
-  width: 430px;
+    width: 100%;
+  min-height: calc(100vh - 80px);
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -115,11 +116,10 @@ onMounted(() => {
 .card {
   background: #fff;
   padding: 1rem;
-  max-width: 500px;
-  width: 430px;
-  height: 700px;
   text-align: center;
   font-size: 17px;
+  width: 100%;
+  min-height: calc(100vh - 80px);
 }
 
 .header-container {
