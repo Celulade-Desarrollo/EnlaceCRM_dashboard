@@ -80,13 +80,16 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 
 button {
-  padding-left: 1.25rem;
-  padding-right: 1.25rem;
+  padding: 10px 30px;
   border-radius: 6.25rem;
   background: #dd3590;
   color: white;
   height: 3rem;
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
   margin-top: 20px;
   cursor: pointer;
   border: none;
