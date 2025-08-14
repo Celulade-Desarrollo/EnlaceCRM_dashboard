@@ -80,7 +80,7 @@ onMounted(async () => {
 </script>
 <template>
 
-  <Heading :mensaje="'Hola, ' + datosCuentaUser.Nombres" />
+  <Heading :mensaje="'Hola, ' + datosCuentaUser.Nombres" :showBackButton="true" />
 
     <section class="container banners py-4">
       <div class="d-flex flex-column align-items-center">

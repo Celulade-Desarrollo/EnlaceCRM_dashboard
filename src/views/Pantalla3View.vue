@@ -90,6 +90,7 @@ function formatPesos(valor) {
       :mensaje="
         'Hola, ' + datosCuenta.Nombres
       "
+      :showBackButton="true"
     />
 
     <section class="content">

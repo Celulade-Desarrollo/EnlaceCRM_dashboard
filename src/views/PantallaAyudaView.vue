@@ -17,7 +17,7 @@ function toggleCategoria(categoria) {
 </script>
 
 <template>
-<Heading :mensaje="'Hola, ' + datosCuentaUser.Nombres" />
+<Heading :mensaje="'Hola, ' + datosCuentaUser.Nombres" :showBackButton="true" />
 
   <div class="ayuda-wrapper">
     <h1 class="titulo">¿Cómo podemos ayudarte?</h1>
