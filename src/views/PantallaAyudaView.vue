@@ -173,7 +173,7 @@ function toggleCategoria(categoria) {
 .faq-card h2 {
   font-size: 1.1rem;
   margin: 0;
-  color: #058d00;
+  color: #0047ab;
 }
 
 .faq-card p {
