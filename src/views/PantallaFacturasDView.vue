@@ -163,13 +163,13 @@ onMounted(async () => {
 
     <section class="content">
       <div class="card">
-        <div class="header-container">
-          <h3 class="card-header-text">Facturas disponibles para pago</h3>
-          <img src="/Alpina.png" alt="Alpina" class="alpina-logo-outside" />
-        </div>
-        <div class="header-container">
-          <h3 class="card-header-text">Cupo disponible: {{ formatPesos(datosCuenta.CupoDisponible)}}</h3>
-        </div>
+         <div class="header-container align-left">
+        <h3 class="header-text">Pago a proovedor</h3>
+        <img src="/Alpina.png" alt="Alpina" class="alpina-logo-outside" />
+      </div>
+        <div class="header-container facturas-header">
+        <h3 class="header-text">Facturas disponibles para pago</h3>
+      </div>
 
         <!-- Loader mientras se cargan las facturas -->
         <div v-if="isLoading" class="loader-container">
@@ -177,55 +177,64 @@ onMounted(async () => {
           <p>Cargando facturas...</p>
         </div>
 
-        <div v-else>
-          <FacturasDisponibles :facturas="facturasDisponibles" @update-total="actualizarTotal" />
+       <div v-else>
+  <div class="contenido-centrado">
+    <FacturasDisponibles :facturas="facturasDisponibles" @update-total="actualizarTotal" />
 
-          <div class="form-group">
-            <label for="valor" class="input-label">
-             <input
-                class="form-control text-center"
-                name="pagar"
-                v-model="pagarFormateado"
-                type="text"
-                id="pagar-valor"
-                autocomplete="off"
-                aria-required="true"
-                aria-invalid="false"
-                aria-labelledby="label-pagar"
-                :max="totalFacturasSeleccionadas"
-                aria-describedby="error-pagar"
-              />
-              <span class="floating-label">Monto a pagar</span>
-            </label>
-          </div>
-            <div v-if="facturasEnMora.length > 0" class="alert alert-danger mt-3">
-              <p><strong>⚠ Tiene factura(s) en mora que debe pagar antes de continuar:</strong></p>
-              <ul>
-                <li
-                  v-for="factura in facturasEnMora"
-                  :key="factura.IdMovimiento"
-                >
-                  <p>
-                    <strong>Factura N°:</strong> {{ factura.NroFacturaAlpina }}<br />
-                    <strong>Monto:</strong> ${{ factura.Monto.toLocaleString() }}<br />
-                    <strong>Fecha de pago programado:</strong> {{ factura.FechaPagoProgramado }}
-                  </p>
-                </li>
-              </ul>
-            </div>
-          <div class="button-banner">
-            <button type="button" id="boton-pago" @click="handleContinuarClick" :disabled="bloquearBotones" >Continuar</button>
-            <p v-if="errorMessage" id="error-email" class="text-danger mt-1">
-              {{ errorMessage }}
-            </p>
-          </div>
+    <div class="form-group">
+      <label for="valor" class="input-label">
+        <input
+          class="form-control text-center"
+          name="pagar"
+          v-model="pagarFormateado"
+          type="text"
+          id="pagar-valor"
+          autocomplete="off"
+          aria-required="true"
+          aria-invalid="false"
+          aria-labelledby="label-pagar"
+          :max="totalFacturasSeleccionadas"
+          aria-describedby="error-pagar"
+        />
+        <span class="floating-label">Monto a pagar</span>
+      </label>
+    </div>
+
+    <div class="header-container">
+      <h3 class="header-text">Cupo disponible: {{ formatPesos(datosCuenta.CupoDisponible) }}</h3>
+    </div>
+
+        <div v-if="facturasEnMora.length > 0" class="alert alert-danger mt-3">
+          <p><strong>⚠ Tiene factura(s) en mora que debe pagar antes de continuar:</strong></p>
+          <ul>
+            <li v-for="factura in facturasEnMora" :key="factura.IdMovimiento">
+              <p>
+                <strong>Factura N°:</strong> {{ factura.NroFacturaAlpina }}<br />
+                <strong>Monto:</strong> ${{ factura.Monto.toLocaleString() }}<br />
+                <strong>Fecha de pago programado:</strong> {{ factura.FechaPagoProgramado }}
+              </p>
+            </li>
+          </ul>
+        </div>
+
+        <div class="button-banner">
+          <button type="button" id="boton-pago" @click="handleContinuarClick" :disabled="bloquearBotones">Continuar</button>
+          <p v-if="errorMessage" id="error-email" class="text-danger mt-1">
+            {{ errorMessage }}
+          </p>
         </div>
       </div>
+    </div>
+      </div>
+
     </section>
   </motion.div>
 </template>
 
 <style scoped>
+.facturas-header {
+  margin-top: 2rem;
+}
 
 .loader-container {
   display: flex;
@@ -463,6 +472,17 @@ button:focus {
 .form-group label.input-pagar input {
   width: 100%;
   text-align: right;
+}
+.header-container.align-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Alinea todo a la izquierda */
+  margin-bottom: 1rem;
+}
+
+.alpina-logo-outside {
+  width: 100px;
+  margin-top: 0.5rem;
 }
 
 /* Responsive */
