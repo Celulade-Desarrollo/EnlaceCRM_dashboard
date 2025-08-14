@@ -6,7 +6,7 @@ const datosCuentaUser = JSON.parse(localStorage.getItem("datosCuenta")) || {};
 const datosCuenta = JSON.parse(localStorage.getItem("datosCuenta")) || {};
 
 
-const whatsappLink = "https://wa.me/573001234567";
+const whatsappLink = "https://wa.me/573001234545";
 const categoriaSeleccionada = ref(null);
 
 
@@ -173,7 +173,7 @@ function toggleCategoria(categoria) {
 .faq-card h2 {
   font-size: 1.1rem;
   margin: 0;
-  color: #00398d;
+  color: #058d00;
 }
 
 .faq-card p {
