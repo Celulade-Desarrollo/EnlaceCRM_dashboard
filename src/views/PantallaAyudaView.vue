@@ -192,21 +192,19 @@ function toggleCategoria(categoria) {
   margin-bottom: 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 2rem;
   width: 100%;
   min-height: calc(100vh - 80px);
 }
 
 .respuesta-card {
   background-color: #ffffff;
-  padding: 1rem;
+  padding: 2rem;
   border-radius: 12px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
   text-align: left;
   font-size: 0.95rem;
   color: #333;
-  width: 100%;
-  min-height: calc(100vh - 80px);
 }
 
 .respuesta-card p {
