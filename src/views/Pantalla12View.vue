@@ -45,7 +45,7 @@ onMounted(() => {
   <motion.div v-bind="fadeInUp">
 
 
-    <Heading :mensaje="'Hola, ' + dataInfoapp[0].nombre" />
+    <Heading :mensaje="'Hola, ' + dataInfoapp[0].nombre" :showBackButton="true" />
 
     <section class="banners-container">
       <!-- Banner principal -->

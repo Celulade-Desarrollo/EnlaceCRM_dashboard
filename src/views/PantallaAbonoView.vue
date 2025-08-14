@@ -126,7 +126,7 @@ const proximoPagoMonto = computed(() => {
 </script>
 
 <template>
-  <Heading :mensaje="'Hola, ' + datosCuenta.Nombres" />
+  <Heading :mensaje="'Hola, ' + datosCuenta.Nombres" :showBackButton="true" />
   <motion.div v-bind="fadeInUp">
     <section class="content">
       <div class="card">

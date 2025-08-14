@@ -159,7 +159,7 @@ onMounted(async () => {
 <template>
   <motion.div v-bind="fadeInUp">
 
-    <Heading :mensaje="'Hola, ' + datosCuenta.Nombres" />
+    <Heading :mensaje="'Hola, ' + datosCuenta.Nombres" :showBackButton="true" />
 
     <section class="content">
       <div class="card">

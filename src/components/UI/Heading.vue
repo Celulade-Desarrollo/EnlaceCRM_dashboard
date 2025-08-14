@@ -1,9 +1,12 @@
 <template>
   <header class="header">
     <div class="izquierda">
-      <span class="icon-left icon-circle">
-        <i class="fas fa-user"></i>
-      </span>
+      <div class="top-row">
+        <BackButton v-if="showBackButton" class="back-button-container" />
+        <span class="icon-left icon-circle">
+          <i class="fas fa-user"></i>
+        </span>
+      </div>
       <p class="mensaje">{{ mensaje }}</p>
     </div>
  
@@ -21,6 +24,7 @@
  
 <script setup>
 import { useRouter } from 'vue-router';
+import BackButton from './BackButton.vue';
  
 const router = useRouter();
  
@@ -32,6 +36,10 @@ defineProps({
   mensaje: {
     type: String,
     required: true
+  },
+  showBackButton: {
+    type: Boolean,
+    default: false
   }
 });
 </script>
@@ -53,6 +61,16 @@ defineProps({
   flex-direction: column;
   align-items: flex-start;
   gap: 0.3rem;
+}
+
+.top-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.back-button-container {
+  margin-right: 0.5rem;
 }
  
  
@@ -89,6 +107,22 @@ defineProps({
   margin: 0;
   text-align: left;
   margin-top: 30px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .top-row {
+    gap: 0.5rem;
+  }
+  
+  .back-button-container {
+    margin-right: 0.25rem;
+  }
+  
+  .mensaje {
+    font-size: 1rem;
+    margin-top: 20px;
+  }
 }
 
 </style>
