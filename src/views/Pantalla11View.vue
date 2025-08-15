@@ -52,8 +52,9 @@ onMounted(async () => {
   <motion.div v-bind="fadeInUp">
     <section class="logo-container">
       <img src="/public/enlaceFiado.png" alt="logo Enlace CRM" class="logo-main" />
-      <Heading :mensaje="'Hola, Administrador'" />
+      <!-- <Heading :mensaje="'Hola, Administrador'" /> -->
     </section>
+       <p class="titulo">Hola, Administrador enlaceCRM</p>
 
     <section class="content">
       <div class="logout">
@@ -70,6 +71,12 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+.titulo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color:white;
+  margin-bottom: 10px;
+}
 .logout {
   display: flex;
   justify-content: center;

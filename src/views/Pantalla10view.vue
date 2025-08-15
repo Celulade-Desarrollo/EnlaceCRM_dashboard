@@ -75,14 +75,15 @@ onMounted(async () => {
 
 async function downloadExcel() {
   try {
-    const response = await fetch('/api/excel', {
-        headers: {  
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json"
-        }
-      });
-    if (!response.ok) throw new Error('Error al obtener datos');
-    const data = await response.json();
+    // se hace la petición al backend
+    const response = await axios.get('api/excel', {
+      headers: {  
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json"
+      }
+    });
+
+    const data = response.data;
 
     // Si data no es un array, lo envolvemos en uno
     const dataArray = Array.isArray(data) ? data : [data];
@@ -90,10 +91,10 @@ async function downloadExcel() {
     // se quita el campo id
     const dataTransformada = dataArray.map(({ Id, Estado, Estado_Scoring, ...rest }) => {
       return {
-      ...rest,
-      Estatus: Estado_Scoring, // nuevo estatus en el Excel
+        ...rest,
+        Estatus: Estado_Scoring, // nuevo estatus en el Excel
       };
-  })
+    });
 
     // crear la hoja excel
     const worksheet = XLSX.utils.json_to_sheet(dataTransformada);
@@ -101,7 +102,6 @@ async function downloadExcel() {
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Datos');
 
     // Generar archivo Excel en buffer
-
     const excelBuffer = XLSX.write(workbook, {
       bookType: 'xlsx',
       type: 'array',
@@ -112,20 +112,20 @@ async function downloadExcel() {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     });
 
-    //toma el Blob (archivo en memoria) que se genro antes y lo convierte en una URL temporal del navegador
+    // toma el Blob (archivo en memoria) que se generó antes y lo convierte en una URL temporal del navegador
     // que apunta a ese archivo.
     const url = window.URL.createObjectURL(blob);
 
     const link = document.createElement('a');
-    //Asigna la URL del blob
+    // Asigna la URL del blob
     link.href = url;
-    //esto le dice al navegador no abras el archivo, descargalo
+    // esto le dice al navegador no abras el archivo, descárgalo
     link.setAttribute('download', 'historicoUsuarios.xlsx');
-     //agrega el enlace temporalmente al DOM (al documento HTML).
-    //esto es necesario para poder hacerle clic desde el script.
+    // agrega el enlace temporalmente al DOM (al documento HTML).
+    // esto es necesario para poder hacerle clic desde el script.
     document.body.appendChild(link);
     link.click();
-    //elimina el enlace del DOM para que no se quede ahí ocupando memoria.
+    // elimina el enlace del DOM para que no se quede ahí ocupando memoria.
     document.body.removeChild(link);
     window.URL.revokeObjectURL(url);
 
@@ -134,6 +134,7 @@ async function downloadExcel() {
     alert('No se pudo descargar el archivo');
   }
 }
+
 
 </script>
 <template>
@@ -146,10 +147,10 @@ async function downloadExcel() {
       />
     </section>
 
-    <Heading
+    <!-- <Heading
        :mensaje=" 'Hola, Administrador'"
-    />
-
+    /> -->
+      <p class="titulo">Hola, Administrador banco w</p>
     <div class="descargar-container">
       <button  @click="downloadExcel" class="boton">
         Descargar Excel
@@ -171,6 +172,12 @@ async function downloadExcel() {
 </template>
 
 <style scoped>
+.titulo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color:white;
+  margin-bottom: 10px;
+}
 .logout {
   display: flex;
   justify-content: right;
