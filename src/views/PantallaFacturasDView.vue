@@ -106,53 +106,78 @@ watch(totalFacturasSeleccionadas, (nuevoTotal) => {
 });
 onMounted(async () => {
   try {
-    const facturasResponse = await axios.post("/api/pagos/facturas-pendientes",
-      { identificadorTendero: datosCuenta.Cedula_Cliente }, 
+    // 1. Obtener facturas pendientes
+    const facturasResponse = await axios.post(
+      "/api/pagos/facturas-pendientes",
+      { identificadorTendero: datosCuenta.Cedula_Cliente },
       {
-        headers: {  
+        headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json"
         }
       }
     );
-    facturasDisponibles.value = facturasResponse.data;
-    console.log("Facturas:", facturasResponse.data);
-    
-     const estadoCuentaResponse = await axios.get(
-       "/api/pagos/estado-cuenta",
-         {
-         params: { identificadorTendero: datosCuenta.Cedula_Cliente },
-         headers: {
-           Authorization: `Bearer ${token}`,
-           "Content-Type": "application/json"
-         }
-       }
-     );
-       estadoCuenta.value = estadoCuentaResponse.data;
 
-    // Verifica si existe al menos un movimiento con bloqueo por mora para bloquear el boton
-    //    const hayBloqueo = estadoCuenta.value.movimientos.some(
-    //    (mov) => mov.BloqueoMora === true
-    //  )
-    bloquearBotones.value = datosCuenta.BloqueoPorMora
+    const todasFacturas = facturasResponse.data;
 
-    // console.log("¿Bloquear botones?", hayBloqueo) 
-     console.log("Estado de cuenta:", estadoCuentaResponse.data);
+    // 2. Obtener estado de cuenta (para verificar pagos ya realizados)
+    const estadoCuentaResponse = await axios.get(
+      "/api/pagos/estado-cuenta",
+      {
+        params: { identificadorTendero: datosCuenta.Cedula_Cliente },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      }
+    );
 
-    // Filtra los movimientos en estadoCuenta para obtener solo los que tienen bloqueo por mora
-       if (estadoCuenta.value?.movimientos) {
-         facturasEnMora.value = estadoCuenta.value.movimientos.filter(
-         (mov) => mov.BloqueoMora === true
-         );
-       } 
+    estadoCuenta.value = estadoCuentaResponse.data;
+    bloquearBotones.value = datosCuenta.BloqueoPorMora;
+
+    // 3. Agrupar montos pagados por factura (solo movimientos de tipo 1)
+    const movimientos = estadoCuenta.value?.movimientos || [];
+    const montosPagadosPorFactura = movimientos.reduce((acc, mov) => {
+      if (mov.IdTipoMovimiento === 1 && mov.NroFacturaAlpina) {
+        const factura = mov.NroFacturaAlpina;
+        acc[factura] = (acc[factura] || 0) + mov.Monto;
+      }
+      return acc;
+    }, {});
+
+    // 4. Enriquecer facturas con pagado y faltante, y filtrar las ya saldadas
+    const facturasPendientesFiltradas = todasFacturas
+      .map(factura => {
+        const pagado = montosPagadosPorFactura[factura.factura] || 0;
+        const faltante = factura.valor - pagado;
+        return {
+          ...factura,
+          pagado,
+          faltante
+        };
+      })
+      .filter(f => f.faltante > 0); // Mostrar solo facturas con saldo pendiente
+
+    facturasDisponibles.value = facturasPendientesFiltradas;
+
+    // 5. Obtener facturas en mora si existen
+    if (estadoCuenta.value?.movimientos) {
+      facturasEnMora.value = estadoCuenta.value.movimientos.filter(
+        (mov) => mov.BloqueoMora === true
+      );
+    }
+
+    console.log("Facturas pendientes:", facturasDisponibles.value);
+    console.log("Estado de cuenta:", estadoCuentaResponse.data);
 
   } catch (error) {
     console.error("Error al cargar facturas o el estado de cuenta:", error);
-  }finally {
+  } finally {
     isLoading.value = false;
   }
-
 });
+
+
 
 </script>
 
@@ -177,9 +202,13 @@ onMounted(async () => {
           <p>Cargando facturas...</p>
         </div>
 
-       <div v-else>
-  <div class="contenido-centrado">
-    <FacturasDisponibles :facturas="facturasDisponibles" @update-total="actualizarTotal" />
+      <div v-else>
+    <div class="contenido-centrado">
+       <template v-if="facturasDisponibles.length > 0">
+      <FacturasDisponibles
+        :facturas="facturasDisponibles"
+        @update-total="actualizarTotal"
+      />
 
     <div class="form-group">
       <label for="valor" class="input-label">
@@ -223,10 +252,13 @@ onMounted(async () => {
             {{ errorMessage }}
           </p>
         </div>
+        </template>
+        <template v-else>
+          <p>No hay facturas pendientes de pago.</p>
+        </template>
       </div>
     </div>
-      </div>
-
+    </div>
     </section>
   </motion.div>
 </template>
