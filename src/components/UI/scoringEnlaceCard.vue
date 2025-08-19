@@ -35,7 +35,6 @@ const id = props.data.Id;
     IdFlujoRegistro: id,
     Cedula_Cliente: props.data.Cedula_Cliente.toString(),
     Numero_Cliente: props.data.Numero_Celular.toString(),
-    
 };
 const payloadput = {Estado: "aprobado"};
  try {
@@ -85,7 +84,6 @@ function formatCurrency(event) {
     <div class="tarjeta-header">
       <p class="cedula">Cédula: {{ data.Cedula_Cliente }}</p>
     </div>
-
     <div class="etapas-container">
       <div class="etapa">Género: {{ data.Genero }}</div>
       <div class="etapa">Estado Civil: {{ data.Estado_Civil }}</div>
