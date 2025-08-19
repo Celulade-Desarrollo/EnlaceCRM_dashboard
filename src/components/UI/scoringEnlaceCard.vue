@@ -37,7 +37,7 @@ const id = props.data.Id;
     Numero_Cliente: props.data.Numero_Celular.toString(),
     
 };
-const payloadput = {Estado: "completado"};
+const payloadput = {Estado: "aprobado"};
  try {
      const response = await axios.post('/api/scoring', payload,
       {
