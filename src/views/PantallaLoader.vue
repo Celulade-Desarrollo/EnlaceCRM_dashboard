@@ -37,8 +37,9 @@ onMounted(async () => {
       localStorage.setItem("idUsuario", data.idUsuario);
       localStorage.setItem("datosCuenta", JSON.stringify(data.cuenta));
       router.push("/Pantalla1View");
-    } else {
-      redirigirAFormulario(datos);
+    } else if(response.status === 207) {
+        window.location.href = `https://enlace-crm.com/Terminado`;
+      console.log("Estado pendiente, redirigiendo a pantalla de pendiente");
     }
 
   } catch (error) {
@@ -59,7 +60,6 @@ function redirigirAFormulario(datos) {
 
   window.location.href = `https://enlace-crm.com/?${params}`;
 }
-
 </script>
 
 <style scoped>
