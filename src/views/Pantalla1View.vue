@@ -14,9 +14,12 @@ const estadoCuenta = ref({
   FechaPagoProgramado: '',
   deudaTotal: ''
 });
+
+const fechaPago = ref('');
  
 const datosCuenta = JSON.parse(localStorage.getItem("datosCuenta")) || {};
 onMounted(async () => {
+  const cedula = datosCuenta.Cedula_Cliente;
   const IdUsuario = localStorage.getItem("idUsuario");
   // Obtener el token del localStorage
   const token = localStorage.getItem("token");
@@ -29,7 +32,15 @@ onMounted(async () => {
         },
       }
     );
- 
+    const responseFecha = await axios.get(
+      `/api/pagos/estado-cuenta?identificadorTendero=${cedula}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    fechaPago.value = responseFecha.data.fechaSiguienteAbono;
     estadoCuenta.value = response.data;
  
     const cupoFinal = parseInt(estadoCuenta.value.CupoFinal.replace(/\./g, ''));
@@ -83,7 +94,7 @@ const goToPantalla5 = () => {
       <CardAbonoCupos
         :cupoTotal="estadoCuenta.CupoFinal"
         :cupoDisp="estadoCuenta.CupoDisponible"
-        :fechaAbono="estadoCuenta.FechaPagoProgramado"
+        :fechaAbono="fechaPago"
         :deudaTotal="estadoCuenta.deudaTotal"
         @abonar="goToPantallaAbonar"
         @movimientos="goToPantalla5"
