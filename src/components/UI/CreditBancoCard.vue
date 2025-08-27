@@ -36,6 +36,7 @@ const mensajeError = ref("");
 const botonAprobado = true;
 const camposBloqueados = ref(false);
 const token = localStorage.getItem("token");
+const payloadPut = { Estado: ""};
 
 const precargado = {
   bancoListas: ref(false),
@@ -174,10 +175,9 @@ const handleNoClick = async () => {
 
 const handleAprobadoClick = async () => {
     if (
-    !bancoListas.value ||
-    !cupoAprobado.value 
+    !cupoAprobado.value
   ) {
-     mensajeError.value = "Por favor, completa los campos banco listas y cupo aprobado";
+     mensajeError.value = "Por favor, completa el campo cupo aprobado";
     return;
   }
    mensajeError.value = "";
@@ -185,40 +185,46 @@ const handleAprobadoClick = async () => {
    
    const payloadAprobado = {
     IdFlujoRegistro: props.data.IdFlujoRegistro,
-    Validacion_Banco_listas: bancoListas.value,
+    //Validacion_Banco_listas: bancoListas.value,
     Aprobacion_Cupo_sugerido: cupoAprobado.value,
-    Pagare_Digital_Firmado: pagareDigital.value,
-    Creacion_Core_Bancario: creacionCoreBancario.value
+    // Pagare_Digital_Firmado: pagareDigital.value,
+    // Creacion_Core_Bancario: creacionCoreBancario.value
     
   };
       console.log("Payload que se va a enviar:", payloadAprobado,);
 
-  const payloadPut = {
-    Estado: "aprobado",
-  }
-  try{
-      const postInfo = await axios.post('api/bancow', 
-        payloadAprobado,
-        {
-          headers: {  
-            Authorization: `Bearer ${props.token}`,
-            "Content-Type": "application/json"
-          }
-        }
-      );
-      const putInfo = await axios.put(`api/scoring/estado/update/${id}`, 
-        payloadPut,
-        {
-          headers: {  
-            Authorization: `Bearer ${props.token}`,
-            "Content-Type": "application/json"
-          }
-        })
-      window.location.reload();
+    if (cupoAprobado.value === 'si') {
+      payloadPut.Estado = "aprobado";
+    } else {
+      payloadPut.Estado = "negado";
+    }
+    console.log("Payload que se va a enviar al put:", payloadPut,);
+  // const payloadPut = {
+  //   Estado: "aprobado",
+  // }
+   try{
+       const postInfo = await axios.post('api/bancow', 
+         payloadAprobado,
+         {
+           headers: {  
+             Authorization: `Bearer ${props.token}`,
+             "Content-Type": "application/json"
+           }
+         }
+       );
+       const putInfo = await axios.put(`api/scoring/estado/update/${id}`, 
+         payloadPut,
+         {
+           headers: {  
+             Authorization: `Bearer ${props.token}`,
+             "Content-Type": "application/json"
+           }
+         })
+       window.location.reload();
 
-  }catch(error){
-    console.error("Error en alguno de los pasos:", error);
-  }
+   }catch(error){
+     console.error("Error en alguno de los pasos:", error);
+   }
 };
 
 </script>
@@ -250,7 +256,7 @@ const handleAprobadoClick = async () => {
     </div>
 
     <div class="form-inputs-container">
-      <label for="banco-listas" class="input-label main-input">
+      <!-- <label for="banco-listas" class="input-label main-input">
         <select
           class="form-control text-center"
           id="banco-listas"
@@ -262,9 +268,11 @@ const handleAprobadoClick = async () => {
           <option value="no">No</option>
         </select>
         <span class="floating-label">Banco listas</span>
-      </label>
+      </label> -->
 
-      <label for="aprobacion-cupo-sugerido" class="input-label main-input">
+      <label for="aprobacion-cupo-sugerido" class="input-label main-input" 
+        v-if="props.data.Estado === 'pendiente'"
+       >
         <select
           class="form-control text-center"
           id="aprobacion-cupo-sugerido"
@@ -277,7 +285,13 @@ const handleAprobadoClick = async () => {
         </select>
         <span class="floating-label">Cupo aprobado</span>
       </label>
-      <label for="pagare-digital" class="input-label main-input">
+
+        <p class="mensajeConfirmar" 
+        v-if="props.data.Estado === 'aprobado'"
+       >
+          Cliente pendiente por confirmar cupo asignado 
+      </p>
+      <!-- <label for="pagare-digital" class="input-label main-input">
         <select
           class="form-control text-center"
           id="pagare-digital"
@@ -289,9 +303,9 @@ const handleAprobadoClick = async () => {
           <option value="no">No</option>
         </select>
         <span class="floating-label">Pagare digital firmado</span>
-      </label>
+      </label> -->
 
-      <label for="creacion-core-bancario" class="input-label main-input">
+      <!-- <label for="creacion-core-bancario" class="input-label main-input">
         <select
           class="form-control text-center"
           id="creacion-core-bancario"
@@ -317,14 +331,22 @@ const handleAprobadoClick = async () => {
           <option value="no">No</option>
         </select>
         <span class="floating-label">Usuario creado</span>
-      </label>
+      </label> -->
     </div>
     <div v-if="mensajeError" style="color: red; margin-bottom: 1rem; text-align: center;">
       {{ mensajeError }}
     </div>
     <div class="button-group">
       <div class="action-buttons-left">
-        <button
+        <button 
+          v-if="props.data.Estado === 'pendiente'"
+          type="button" 
+          class="btn-si"
+          @click="handleAprobadoClick"
+        >
+          Guardar
+        </button>
+        <!-- <button
           v-if="props.data.Estado === 'pendiente'"
           type="button"
           class="btn-si"
@@ -351,7 +373,7 @@ const handleAprobadoClick = async () => {
           @click="handleNoClick"
         >
            Cupo negado
-        </button>
+        </button> -->
       </div>
     </div>
   </div>
