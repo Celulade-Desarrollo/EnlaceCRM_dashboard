@@ -29,49 +29,36 @@ const logout = () => {
 onMounted(async () => {
   if (!token || company !== "bancow" || company == null) {
     router.push("/LoginView");
-    return
+    return;
   }
+
   try {
-      const [pendientesRes, bancowRes] = await Promise.all([
-      axios.get('api/scoring/estado/pendiente-aprobado',
-         {
-        headers: {  
+    const pendientesRes = await axios.get(
+      'http://localhost:3000/api/scoring/estado/pendiente-aprobado-confirmado',
+      {
+        headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json"
-        }
+          'Content-Type': 'application/json',
+        },
       }
-      ),
-      axios.get('api/bancow',
-       {
-        headers: {  
+    );
+
+    const bancowRes = await axios.get(
+      '/api/bancow',
+      {
+        headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json"
-        }
+          'Content-Type': 'application/json',
+        },
       }
-      ),
-      axios.get('api/scoring/estado/pendiente-aprobado',
-        {
-        headers: {  
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json"
-        }
-      }
-      ),
-      axios.get('api/bancow',
-         {
-        headers: {  
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json"
-        }
-      }
-      )
-    ]);
+    );
+
     creditDataRecords.value = pendientesRes.data;
     bancowData.value = bancowRes.data;
   } catch (error) {
-    console.error('Error cargando datos:', error)
+    console.error('Error cargando datos:', error);
   }
-})
+});
 
 async function downloadExcel() {
   try {

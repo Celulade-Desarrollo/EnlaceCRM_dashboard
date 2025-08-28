@@ -30,7 +30,7 @@ console.log("Data w:", props.bancowData);
 const bancoListas = ref("");
 const cupoAprobado = ref("");
 const pagareDigital = ref("");
-const creacionCoreBancario = ref("");
+const pagareEnviado = ref("");
 const usuarioAprobado = ref("");
 const mensajeError = ref("");
 const botonAprobado = true;
@@ -56,13 +56,13 @@ onMounted(() => {
     precargado.cupoAprobado.value = !!registro.Aprobacion_Cupo_sugerido;
 
     pagareDigital.value = "";
-    creacionCoreBancario.value = "";
+    pagareEnviado.value = "";
     usuarioAprobado.value = "";
   }
 });
 
 const isFieldDisabled = (campo) => {
-  const camposFinales = ['pagareDigital', 'creacionCoreBancario', 'usuarioAprobado'];
+  const camposFinales = ['pagareDigital', 'pagareEnviado', 'usuarioAprobado'];
 
   if (camposFinales.includes(campo) && props.data.Estado === 'pendiente') {
     return true;
@@ -81,7 +81,7 @@ const isFieldDisabled = (campo) => {
 const handleSiClick = async () => {
     if (
     !pagareDigital.value ||
-    !creacionCoreBancario.value ||
+    !pagareEnviado.value ||
     !usuarioAprobado.value
   ) {
      mensajeError.value = "Por favor, completa todos los campos ";
@@ -93,9 +93,9 @@ const handleSiClick = async () => {
   const payloadPost= {
     //IdFlujoRegistro: props.data.IdFlujoRegistro,
     //Validacion_Banco_listas: bancoListas.value,
-   // Aprobacion_Cupo_sugerido: cupoAprobado.value,
+    // Aprobacion_Cupo_sugerido: cupoAprobado.value,
     Pagare_Digital_Firmado: pagareDigital.value,
-    Creacion_Core_Bancario: creacionCoreBancario.value,
+    Pagare_Digital_Enviado: pagareEnviado.value,
     UsuarioAprobado: usuarioAprobado.value,
   };
  const payloadPut = {
@@ -291,7 +291,22 @@ const handleAprobadoClick = async () => {
        >
           Cliente pendiente por confirmar cupo asignado 
       </p>
-      <!-- <label for="pagare-digital" class="input-label main-input">
+    </div>
+       <div v-if="props.data.Estado === 'confirmado'" class="form-inputs-container">
+         <label for="pagareEnviado" class="input-label main-input">
+        <select
+          class="form-control text-center"
+          id="pagareEnviado"
+          v-model="pagareEnviado"
+          :disabled="isFieldDisabled('pagareEnviado')"
+        >
+          <option value="">Selecciona</option>
+          <option value="si">Sí</option>
+          <option value="no">No</option>
+        </select>
+        <span class="floating-label">Pagare digital enviado</span>
+      </label>
+       <label for="pagare-digital" class="input-label main-input">
         <select
           class="form-control text-center"
           id="pagare-digital"
@@ -303,20 +318,6 @@ const handleAprobadoClick = async () => {
           <option value="no">No</option>
         </select>
         <span class="floating-label">Pagare digital firmado</span>
-      </label> -->
-
-      <!-- <label for="creacion-core-bancario" class="input-label main-input">
-        <select
-          class="form-control text-center"
-          id="creacion-core-bancario"
-          v-model="creacionCoreBancario"
-          :disabled="isFieldDisabled('creacionCoreBancario')"
-        >
-          <option value="">Selecciona</option>
-          <option value="si">Sí</option>
-          <option value="no">No</option>
-        </select>
-        <span class="floating-label">Creación core bancario</span>
       </label>
 
       <label for="usuario-aprobado" class="input-label main-input">
@@ -331,7 +332,7 @@ const handleAprobadoClick = async () => {
           <option value="no">No</option>
         </select>
         <span class="floating-label">Usuario creado</span>
-      </label> -->
+      </label>
     </div>
     <div v-if="mensajeError" style="color: red; margin-bottom: 1rem; text-align: center;">
       {{ mensajeError }}
@@ -343,6 +344,14 @@ const handleAprobadoClick = async () => {
           type="button" 
           class="btn-si"
           @click="handleAprobadoClick"
+        >
+          Guardar
+        </button>
+         <button 
+          v-if="props.data.Estado === 'confirmado'"
+          type="button" 
+          class="btn-si"
+          @click="handleSiClick"
         >
           Guardar
         </button>
