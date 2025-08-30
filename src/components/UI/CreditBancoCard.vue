@@ -55,9 +55,9 @@ onMounted(() => {
     cupoAprobado.value = registro.Aprobacion_Cupo_sugerido || "";
     precargado.cupoAprobado.value = !!registro.Aprobacion_Cupo_sugerido;
 
-    pagareDigital.value = "";
-    pagareEnviado.value = "";
-    usuarioAprobado.value = "";
+    pagareDigital.value = registro.Pagare_Digital_Firmado || "";
+    pagareEnviado.value = registro.Pagare_Digital_Enviado || "";
+    usuarioAprobado.value = registro.UsuarioAprobado || "";
   }
 });
 
@@ -79,67 +79,67 @@ const isFieldDisabled = (campo) => {
 // put estado cambia a completado 
 // 2 post creamos un usuario final
 const handleSiClick = async () => {
-    if (
-    !pagareDigital.value ||
-    !pagareEnviado.value ||
+  if (
+    !pagareDigital.value &&
+    !pagareEnviado.value &&
     !usuarioAprobado.value
   ) {
-     mensajeError.value = "Por favor, completa todos los campos ";
+    mensajeError.value = "Por favor, completa al menos un campo para guardar";
     return;
   }
+
   mensajeError.value = "";
   const id = props.data.IdFlujoRegistro;
 
-  const payloadPost= {
-    //IdFlujoRegistro: props.data.IdFlujoRegistro,
-    //Validacion_Banco_listas: bancoListas.value,
-    // Aprobacion_Cupo_sugerido: cupoAprobado.value,
+  const payloadPost = {
     Pagare_Digital_Firmado: pagareDigital.value,
     Pagare_Digital_Enviado: pagareEnviado.value,
     UsuarioAprobado: usuarioAprobado.value,
   };
- const payloadPut = {
-    Estado: "creado",
-  };
+
   const usuarioCupoFinal = {
     IdFlujoRegistro: id,
     CupoFinal: props.data.Cupo,
-    Numero_Cliente:props.data.Numero_Cliente,
+    Numero_Cliente: props.data.Numero_Cliente,
     Cedula_Usuario: props.data.Cedula_Cliente,
     CupoDisponible: Number(props.data.Cupo.replace(/\./g, '')),
-  }
-  console.log("CupoDisponible tipo:", typeof usuarioCupoFinal.CupoDisponible );
-     try {
-       const postInfo = await axios.put(`api/coreBancario/${id}`, payloadPost,
-          {
-             headers: {  
-               Authorization: `Bearer ${props.token}`,
-               "Content-Type": "application/json"
-             }
-           }
-       );
-       const putInfo = await axios.put(`api/scoring/estado/update/${id}`, payloadPut,
-          {
-             headers: {  
-               Authorization: `Bearer ${props.token}`,
-               "Content-Type": "application/json"
-             }
-           }
-       )
-       const postUser = await axios.post('api/user', usuarioCupoFinal,
-          {
-             headers: {  
-               Authorization: `Bearer ${props.token}`,
-               "Content-Type": "application/json"
-             }
-           }
-       )
-       window.location.reload();
+  };
 
-     } catch (error) {
-       console.error("Error en alguno de los pasos:", error);
-     }
+  try {
+    // Guardar los campos del pagaré
+    await axios.put(`api/coreBancario/${id}`, payloadPost, {
+      headers: {
+        Authorization: `Bearer ${props.token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    // Solo si se va a crear el usuario, se actualiza el estado
+    if (usuarioAprobado.value === "si") {
+      await axios.post("api/user", usuarioCupoFinal, {
+        headers: {
+          Authorization: `Bearer ${props.token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      await axios.put(`api/scoring/estado/update/${id}`, {
+        Estado: "creado",
+      }, {
+        headers: {
+          Authorization: `Bearer ${props.token}`,
+          "Content-Type": "application/json",
+        },
+      });
+    }
+
+    window.location.reload();
+  } catch (error) {
+    console.error("Error en alguno de los pasos:", error);
+  }
 };
+
+
 
 //funcion boton no aprobado
 // put actualizamos el estado a rechazado
