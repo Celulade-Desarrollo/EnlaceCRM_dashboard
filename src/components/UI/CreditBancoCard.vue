@@ -41,6 +41,9 @@ const payloadPut = { Estado: ""};
 const precargado = {
   bancoListas: ref(false),
   cupoAprobado: ref(false),
+  pagareDigital: ref(false),
+  pagareEnviado: ref(false),
+  usuarioAprobado: ref(false),
 };
 
 onMounted(() => {
@@ -56,21 +59,35 @@ onMounted(() => {
     precargado.cupoAprobado.value = !!registro.Aprobacion_Cupo_sugerido;
 
     pagareDigital.value = registro.Pagare_Digital_Firmado || "";
+    precargado.pagareDigital.value = !!registro.Pagare_Digital_Firmado;
+
     pagareEnviado.value = registro.Pagare_Digital_Enviado || "";
+    precargado.pagareEnviado.value = !!registro.Pagare_Digital_Enviado;
+
     usuarioAprobado.value = registro.UsuarioAprobado || "";
+    precargado.usuarioAprobado.value = !!registro.UsuarioAprobado;
   }
 });
+
 
 const isFieldDisabled = (campo) => {
   const camposFinales = ['pagareDigital', 'pagareEnviado', 'usuarioAprobado'];
 
-  if (camposFinales.includes(campo) && props.data.Estado === 'pendiente') {
-    return true;
-  }
- 
   if (precargado[campo] && precargado[campo].value) {
     return true;
   }
+
+  if (campo === 'usuarioAprobado') {
+    return (
+      pagareDigital.value !== 'si' ||
+      pagareEnviado.value !== 'si' ||
+      camposBloqueados.value
+    );
+  }
+  if (camposFinales.includes(campo) && props.data.Estado === 'pendiente') {
+    return true;
+  }
+
   return camposBloqueados.value;
 };
 
@@ -302,7 +319,6 @@ const handleAprobadoClick = async () => {
         >
           <option value="">Selecciona</option>
           <option value="si">Sí</option>
-          <option value="no">No</option>
         </select>
         <span class="floating-label">Pagare digital enviado</span>
       </label>
@@ -315,7 +331,6 @@ const handleAprobadoClick = async () => {
         >
           <option value="">Selecciona</option>
           <option value="si">Sí</option>
-          <option value="no">No</option>
         </select>
         <span class="floating-label">Pagare digital firmado</span>
       </label>
@@ -329,7 +344,6 @@ const handleAprobadoClick = async () => {
         >
           <option value="">Selecciona</option>
           <option value="si">Sí</option>
-          <option value="no">No</option>
         </select>
         <span class="floating-label">Usuario creado</span>
       </label>
@@ -389,7 +403,10 @@ const handleAprobadoClick = async () => {
 </template>
 
 <style scoped>
-
+select:disabled {
+  color: #b4b2b2;
+  opacity: 1;
+}
 .btn-no:disabled {
   background-color: #ccc !important;
   color: #666 !important;
