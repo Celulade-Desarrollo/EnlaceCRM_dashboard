@@ -30,16 +30,20 @@ console.log("Data w:", props.bancowData);
 const bancoListas = ref("");
 const cupoAprobado = ref("");
 const pagareDigital = ref("");
-const creacionCoreBancario = ref("");
+const pagareEnviado = ref("");
 const usuarioAprobado = ref("");
 const mensajeError = ref("");
 const botonAprobado = true;
 const camposBloqueados = ref(false);
 const token = localStorage.getItem("token");
+const payloadPut = { Estado: ""};
 
 const precargado = {
   bancoListas: ref(false),
   cupoAprobado: ref(false),
+  pagareDigital: ref(false),
+  pagareEnviado: ref(false),
+  usuarioAprobado: ref(false),
 };
 
 onMounted(() => {
@@ -54,22 +58,36 @@ onMounted(() => {
     cupoAprobado.value = registro.Aprobacion_Cupo_sugerido || "";
     precargado.cupoAprobado.value = !!registro.Aprobacion_Cupo_sugerido;
 
-    pagareDigital.value = "";
-    creacionCoreBancario.value = "";
-    usuarioAprobado.value = "";
+    pagareDigital.value = registro.Pagare_Digital_Firmado || "";
+    precargado.pagareDigital.value = !!registro.Pagare_Digital_Firmado;
+
+    pagareEnviado.value = registro.Pagare_Digital_Enviado || "";
+    precargado.pagareEnviado.value = !!registro.Pagare_Digital_Enviado;
+
+    usuarioAprobado.value = registro.UsuarioAprobado || "";
+    precargado.usuarioAprobado.value = !!registro.UsuarioAprobado;
   }
 });
 
-const isFieldDisabled = (campo) => {
-  const camposFinales = ['pagareDigital', 'creacionCoreBancario', 'usuarioAprobado'];
 
-  if (camposFinales.includes(campo) && props.data.Estado === 'pendiente') {
-    return true;
-  }
- 
+const isFieldDisabled = (campo) => {
+  const camposFinales = ['pagareDigital', 'pagareEnviado', 'usuarioAprobado'];
+
   if (precargado[campo] && precargado[campo].value) {
     return true;
   }
+
+  if (campo === 'usuarioAprobado') {
+    return (
+      pagareDigital.value !== 'si' ||
+      pagareEnviado.value !== 'si' ||
+      camposBloqueados.value
+    );
+  }
+  if (camposFinales.includes(campo) && props.data.Estado === 'pendiente') {
+    return true;
+  }
+
   return camposBloqueados.value;
 };
 
@@ -78,67 +96,67 @@ const isFieldDisabled = (campo) => {
 // put estado cambia a completado 
 // 2 post creamos un usuario final
 const handleSiClick = async () => {
-    if (
-    !pagareDigital.value ||
-    !creacionCoreBancario.value ||
+  if (
+    !pagareDigital.value &&
+    !pagareEnviado.value &&
     !usuarioAprobado.value
   ) {
-     mensajeError.value = "Por favor, completa todos los campos ";
+    mensajeError.value = "Por favor, completa al menos un campo para guardar";
     return;
   }
+
   mensajeError.value = "";
   const id = props.data.IdFlujoRegistro;
 
-  const payloadPost= {
-    //IdFlujoRegistro: props.data.IdFlujoRegistro,
-    //Validacion_Banco_listas: bancoListas.value,
-   // Aprobacion_Cupo_sugerido: cupoAprobado.value,
+  const payloadPost = {
     Pagare_Digital_Firmado: pagareDigital.value,
-    Creacion_Core_Bancario: creacionCoreBancario.value,
+    Pagare_Digital_Enviado: pagareEnviado.value,
     UsuarioAprobado: usuarioAprobado.value,
   };
- const payloadPut = {
-    Estado: "creado",
-  };
+
   const usuarioCupoFinal = {
     IdFlujoRegistro: id,
     CupoFinal: props.data.Cupo,
-    Numero_Cliente:props.data.Numero_Cliente,
+    Numero_Cliente: props.data.Numero_Cliente,
     Cedula_Usuario: props.data.Cedula_Cliente,
     CupoDisponible: Number(props.data.Cupo.replace(/\./g, '')),
-  }
-  console.log("CupoDisponible tipo:", typeof usuarioCupoFinal.CupoDisponible );
-     try {
-       const postInfo = await axios.put(`api/coreBancario/${id}`, payloadPost,
-          {
-             headers: {  
-               Authorization: `Bearer ${props.token}`,
-               "Content-Type": "application/json"
-             }
-           }
-       );
-       const putInfo = await axios.put(`api/scoring/estado/update/${id}`, payloadPut,
-          {
-             headers: {  
-               Authorization: `Bearer ${props.token}`,
-               "Content-Type": "application/json"
-             }
-           }
-       )
-       const postUser = await axios.post('api/user', usuarioCupoFinal,
-          {
-             headers: {  
-               Authorization: `Bearer ${props.token}`,
-               "Content-Type": "application/json"
-             }
-           }
-       )
-       window.location.reload();
+  };
 
-     } catch (error) {
-       console.error("Error en alguno de los pasos:", error);
-     }
+  try {
+    // Guardar los campos del pagaré
+    await axios.put(`api/coreBancario/${id}`, payloadPost, {
+      headers: {
+        Authorization: `Bearer ${props.token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    // Solo si se va a crear el usuario, se actualiza el estado
+    if (usuarioAprobado.value === "si") {
+      await axios.post("api/user", usuarioCupoFinal, {
+        headers: {
+          Authorization: `Bearer ${props.token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      await axios.put(`api/scoring/estado/update/${id}`, {
+        Estado: "creado",
+      }, {
+        headers: {
+          Authorization: `Bearer ${props.token}`,
+          "Content-Type": "application/json",
+        },
+      });
+    }
+
+    window.location.reload();
+  } catch (error) {
+    console.error("Error en alguno de los pasos:", error);
+  }
 };
+
+
 
 //funcion boton no aprobado
 // put actualizamos el estado a rechazado
@@ -174,10 +192,9 @@ const handleNoClick = async () => {
 
 const handleAprobadoClick = async () => {
     if (
-    !bancoListas.value ||
-    !cupoAprobado.value 
+    !cupoAprobado.value
   ) {
-     mensajeError.value = "Por favor, completa los campos banco listas y cupo aprobado";
+     mensajeError.value = "Por favor, completa el campo cupo aprobado";
     return;
   }
    mensajeError.value = "";
@@ -185,40 +202,46 @@ const handleAprobadoClick = async () => {
    
    const payloadAprobado = {
     IdFlujoRegistro: props.data.IdFlujoRegistro,
-    Validacion_Banco_listas: bancoListas.value,
+    //Validacion_Banco_listas: bancoListas.value,
     Aprobacion_Cupo_sugerido: cupoAprobado.value,
-    Pagare_Digital_Firmado: pagareDigital.value,
-    Creacion_Core_Bancario: creacionCoreBancario.value
+    // Pagare_Digital_Firmado: pagareDigital.value,
+    // Creacion_Core_Bancario: creacionCoreBancario.value
     
   };
       console.log("Payload que se va a enviar:", payloadAprobado,);
 
-  const payloadPut = {
-    Estado: "aprobado",
-  }
-  try{
-      const postInfo = await axios.post('api/bancow', 
-        payloadAprobado,
-        {
-          headers: {  
-            Authorization: `Bearer ${props.token}`,
-            "Content-Type": "application/json"
-          }
-        }
-      );
-      const putInfo = await axios.put(`api/scoring/estado/update/${id}`, 
-        payloadPut,
-        {
-          headers: {  
-            Authorization: `Bearer ${props.token}`,
-            "Content-Type": "application/json"
-          }
-        })
-      window.location.reload();
+    if (cupoAprobado.value === 'si') {
+      payloadPut.Estado = "aprobado";
+    } else {
+      payloadPut.Estado = "negado";
+    }
+    console.log("Payload que se va a enviar al put:", payloadPut,);
+  // const payloadPut = {
+  //   Estado: "aprobado",
+  // }
+   try{
+       const postInfo = await axios.post('api/bancow', 
+         payloadAprobado,
+         {
+           headers: {  
+             Authorization: `Bearer ${props.token}`,
+             "Content-Type": "application/json"
+           }
+         }
+       );
+       const putInfo = await axios.put(`api/scoring/estado/update/${id}`, 
+         payloadPut,
+         {
+           headers: {  
+             Authorization: `Bearer ${props.token}`,
+             "Content-Type": "application/json"
+           }
+         })
+       window.location.reload();
 
-  }catch(error){
-    console.error("Error en alguno de los pasos:", error);
-  }
+   }catch(error){
+     console.error("Error en alguno de los pasos:", error);
+   }
 };
 
 </script>
@@ -250,7 +273,7 @@ const handleAprobadoClick = async () => {
     </div>
 
     <div class="form-inputs-container">
-      <label for="banco-listas" class="input-label main-input">
+      <!-- <label for="banco-listas" class="input-label main-input">
         <select
           class="form-control text-center"
           id="banco-listas"
@@ -262,9 +285,11 @@ const handleAprobadoClick = async () => {
           <option value="no">No</option>
         </select>
         <span class="floating-label">Banco listas</span>
-      </label>
+      </label> -->
 
-      <label for="aprobacion-cupo-sugerido" class="input-label main-input">
+      <label for="aprobacion-cupo-sugerido" class="input-label main-input" 
+        v-if="props.data.Estado === 'pendiente'"
+       >
         <select
           class="form-control text-center"
           id="aprobacion-cupo-sugerido"
@@ -277,7 +302,27 @@ const handleAprobadoClick = async () => {
         </select>
         <span class="floating-label">Cupo aprobado</span>
       </label>
-      <label for="pagare-digital" class="input-label main-input">
+
+        <p class="mensajeConfirmar" 
+        v-if="props.data.Estado === 'aprobado'"
+       >
+          Cliente pendiente por confirmar cupo asignado 
+      </p>
+    </div>
+       <div v-if="props.data.Estado === 'confirmado'" class="form-inputs-container">
+         <label for="pagareEnviado" class="input-label main-input">
+        <select
+          class="form-control text-center"
+          id="pagareEnviado"
+          v-model="pagareEnviado"
+          :disabled="isFieldDisabled('pagareEnviado')"
+        >
+          <option value="">Selecciona</option>
+          <option value="si">Sí</option>
+        </select>
+        <span class="floating-label">Pagare digital enviado</span>
+      </label>
+       <label for="pagare-digital" class="input-label main-input">
         <select
           class="form-control text-center"
           id="pagare-digital"
@@ -286,23 +331,8 @@ const handleAprobadoClick = async () => {
         >
           <option value="">Selecciona</option>
           <option value="si">Sí</option>
-          <option value="no">No</option>
         </select>
         <span class="floating-label">Pagare digital firmado</span>
-      </label>
-
-      <label for="creacion-core-bancario" class="input-label main-input">
-        <select
-          class="form-control text-center"
-          id="creacion-core-bancario"
-          v-model="creacionCoreBancario"
-          :disabled="isFieldDisabled('creacionCoreBancario')"
-        >
-          <option value="">Selecciona</option>
-          <option value="si">Sí</option>
-          <option value="no">No</option>
-        </select>
-        <span class="floating-label">Creación core bancario</span>
       </label>
 
       <label for="usuario-aprobado" class="input-label main-input">
@@ -314,7 +344,6 @@ const handleAprobadoClick = async () => {
         >
           <option value="">Selecciona</option>
           <option value="si">Sí</option>
-          <option value="no">No</option>
         </select>
         <span class="floating-label">Usuario creado</span>
       </label>
@@ -324,7 +353,23 @@ const handleAprobadoClick = async () => {
     </div>
     <div class="button-group">
       <div class="action-buttons-left">
-        <button
+        <button 
+          v-if="props.data.Estado === 'pendiente'"
+          type="button" 
+          class="btn-si"
+          @click="handleAprobadoClick"
+        >
+          Guardar
+        </button>
+         <button 
+          v-if="props.data.Estado === 'confirmado'"
+          type="button" 
+          class="btn-si"
+          @click="handleSiClick"
+        >
+          Guardar
+        </button>
+        <!-- <button
           v-if="props.data.Estado === 'pendiente'"
           type="button"
           class="btn-si"
@@ -351,14 +396,17 @@ const handleAprobadoClick = async () => {
           @click="handleNoClick"
         >
            Cupo negado
-        </button>
+        </button> -->
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-
+select:disabled {
+  color: #b4b2b2;
+  opacity: 1;
+}
 .btn-no:disabled {
   background-color: #ccc !important;
   color: #666 !important;
