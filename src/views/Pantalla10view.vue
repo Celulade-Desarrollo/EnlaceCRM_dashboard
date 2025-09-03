@@ -34,7 +34,7 @@ onMounted(async () => {
 
   try {
     const pendientesRes = await axios.get(
-      'api/scoring/estado/pendiente-aprobado-confirmado',
+      'http://localhost:3000/api/scoring/estado/pendiente-aprobado-confirmado',
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -44,7 +44,7 @@ onMounted(async () => {
     );
 
     const bancowRes = await axios.get(
-      '/api/bancow',
+      'http://localhost:3000/api/bancow',
       {
         headers: {
           Authorization: `Bearer ${token}`,

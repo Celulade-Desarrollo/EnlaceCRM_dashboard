@@ -45,7 +45,7 @@ const precargado = {
   pagareEnviado: ref(false),
   usuarioAprobado: ref(false),
 };
-
+console.log("bancowdata en card:", props.bancowData);
 onMounted(() => {
   const registro = props.bancowData.find(
     item => item.IdFlujoRegistro === props.data.IdFlujoRegistro
@@ -68,7 +68,6 @@ onMounted(() => {
     precargado.usuarioAprobado.value = !!registro.UsuarioAprobado;
   }
 });
-
 
 const isFieldDisabled = (campo) => {
   const camposFinales = ['pagareDigital', 'pagareEnviado', 'usuarioAprobado'];

@@ -9,7 +9,7 @@ import { motion } from 'motion-v'
 const clientes = ref([])
 const creditDataRecords = ref([])
 const router = useRouter()
-
+const scoringData = ref([]);
 const token = localStorage.getItem("admin_token");
 const company = localStorage.getItem("company");
 
@@ -34,13 +34,24 @@ onMounted(async () => {
   }
 
   try {
-    const response = await axios.get('/api/flujoRegistroEnlace/estado/pendiente', {
+    const response = await axios.get('http://localhost:3000/api/flujoRegistroEnlace/estado/pendiente-aprobado', {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json"
       }
-    })
+    });
 
+    const scoringRes = await axios.get(
+      'http://localhost:3000/api/scoring',
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    scoringData.value = scoringRes.data;
     creditDataRecords.value = response.data
   } catch (error) {
     console.error('Error cargando datos:', error)
@@ -65,6 +76,7 @@ onMounted(async () => {
         :key="record.id"
         :data="record"
         :token = "token"
+        :scoringData="scoringData"
       />
     </section>
   </motion.div>

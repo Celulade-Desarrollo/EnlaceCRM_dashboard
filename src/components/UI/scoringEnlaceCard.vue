@@ -1,83 +1,103 @@
 <script setup>
 import axios from 'axios';
-import { defineProps, defineEmits, ref, watch } from 'vue';
+import { defineProps, ref, onMounted } from 'vue';
 
 const props = defineProps({
-      data: {
+  data: {
     type: Object,
     required: true,
-    default: () => ({
-      cedula: "",
-    }),
+    default: () => ({ cedula: "" }),
   },
- token: {
+  token: {
     type: String,
+    required: true,
+  },
+  scoringData: {
+    type: Array,
     required: true
   }
 });
-console.log("Data recibida en Card:", props.data);
-console.log("tokenProp:", props.token);
 
-const handleclick =async ()=> {
-   if (
+// Refs principales
+const localScoring = ref("");
+const localCupo = ref("");
+const mensajeError = ref("");
+
+// Precargado flags
+const precargado = {
+  localScoring: ref(false),
+  localCupo: ref(false),
+};
+console.log("Props data:", props.data);
+console.log("scoringData en card:", props.scoringData);
+
+onMounted(() => {
+  const registro = props.scoringData.find(
+    item => String(item.IdFlujoRegistro) === String(props.data.Id)
+  );
+
+  if (registro) {
+    localScoring.value = registro.Scoring || "";
+    precargado.localScoring.value = !!registro.Scoring;
+
+    localCupo.value = registro.Cupo || "";
+    precargado.localCupo.value = !!registro.Cupo;
+
+  } 
+});
+
+const handleclick = async () => {
+  if (
     !localScoring.value ||
     !localCupo.value
   ) {
-     mensajeError.value = "Por favor, completa todos los campos";
+    mensajeError.value = "Por favor, completa todos los campos";
     return;
   }
-    mensajeError.value = "";
 
-const id = props.data.Id;
-    const payload= {
+  mensajeError.value = "";
+
+  const id = props.data.Id;
+  const payload = {
     Scoring: localScoring.value.toString(),
     Cupo: localCupo.value.toString(),
     IdFlujoRegistro: id,
     Cedula_Cliente: props.data.Cedula_Cliente.toString(),
     Numero_Cliente: props.data.Numero_Celular.toString(),
+  };
+
+  const payloadput = { Estado: "aprobado" };
+
+  try {
+    await axios.post('/api/scoring', payload, {
+      headers: {
+        Authorization: `Bearer ${props.token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    await axios.put(`/api/flujoRegistroEnlace/estado/pendiente/${id}`, payloadput, {
+      headers: {
+        Authorization: `Bearer ${props.token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    window.location.reload();
+  } catch (error) {
+    console.error('Error al enviar al banco:', error);
+  }
 };
-const payloadput = {Estado: "aprobado"};
- try {
-     const response = await axios.post('/api/scoring', payload,
-      {
-        headers: {  
-          Authorization: `Bearer ${props.token}`,
-          "Content-Type": "application/json"
-        }
-      }
-     );
-     const padding = await axios.put(`/api/flujoRegistroEnlace/estado/pendiente/${id}`, payloadput,
-      {
-        headers: {  
-          Authorization: `Bearer ${props.token}`,
-          "Content-Type": "application/json"
-        }
-      }
-     );
-     window.location.reload();
-   } catch (error) {
-     console.error('Error al enviar al banco:', error);
-   }
-};
-const localScoring = ref("");
-const localCupo = ref("");
-const mensajeError = ref("");
 
 function formatCurrency(event) {
   let input = event.target;
-
-  // Eliminar todo lo que no sea número
   let digits = input.value.replace(/\D/g, '');
-
-  // Formatear con puntos de miles
   let formatted = digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-
-  // Actualizar el input visualmente
   input.value = formatted;
   localCupo.value = formatted;
 }
-
 </script>
+
 
 <template>
   <div class="tarjeta">
@@ -104,26 +124,37 @@ function formatCurrency(event) {
           <tr>
             <th>Scoring</th>
             <th>Cupo</th>
+            <th>Usuario confirmo</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>
+            <td :disabled="precargado.localCupo.value">
               <input
                 v-model="localScoring"
                 class="tabla-input"
                 type="number"
-                placeholder="Ej: 720"
+                :disabled="precargado.localScoring.value"
+                placeholder="Ej: 40"
               />
             </td>
-            <td>
+            <td :disabled="precargado.localCupo.value">
               <input
                 v-model="localCupo"
                 class="tabla-input"
                 type="text"
-                placeholder="Ej: 2500000"
                 @input="formatCurrency"
+                :disabled="precargado.localCupo.value"
+                placeholder="Ej: 1.000.000"
               />
+            </td>
+            <td>
+              <select class="tabla-input">
+                <option value="" selected>Selecciona una opción</option>
+                <option value="si">Si</option>
+                <option value="no">No</option>
+
+              </select>
             </td>
           </tr>
         </tbody>
@@ -139,6 +170,12 @@ function formatCurrency(event) {
 </template>
 
 <style scoped>
+input:disabled {
+  color: #6b6a6a;
+  background-color: #f0f0f0;
+  border: 2px solid #ccc !important;
+  box-shadow: none !important;
+}
 /* Logo */
 .logo-container {
   text-align: center;
