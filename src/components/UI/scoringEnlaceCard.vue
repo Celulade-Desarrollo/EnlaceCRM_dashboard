@@ -1,6 +1,6 @@
 <script setup>
 import axios from 'axios';
-import { defineProps, ref, onMounted } from 'vue';
+import { defineProps, ref, onMounted, computed } from 'vue';
 
 const props = defineProps({
   data: {
@@ -15,6 +15,10 @@ const props = defineProps({
   scoringData: {
     type: Array,
     required: true
+  },
+  bancowData: {
+    type: Array,
+    required: true
   }
 });
 
@@ -22,7 +26,7 @@ const props = defineProps({
 const localScoring = ref("");
 const localCupo = ref("");
 const mensajeError = ref("");
-
+const confirmado = ref("")
 // Precargado flags
 const precargado = {
   localScoring: ref(false),
@@ -30,38 +34,103 @@ const precargado = {
 };
 console.log("Props data:", props.data);
 console.log("scoringData en card:", props.scoringData);
-
+console.log("bancowData en card:", props.bancowData);
 onMounted(() => {
   const registro = props.scoringData.find(
     item => String(item.IdFlujoRegistro) === String(props.data.Id)
   );
 
   if (registro) {
-    localScoring.value = registro.Scoring || "";
-    precargado.localScoring.value = !!registro.Scoring;
+    if (registro.Scoring) {
+      localScoring.value = registro.Scoring;
+      precargado.localScoring.value = true;
+    }
 
-    localCupo.value = registro.Cupo || "";
-    precargado.localCupo.value = !!registro.Cupo;
-
-  } 
+    if (registro.Cupo) {
+      localCupo.value = registro.Cupo;
+      precargado.localCupo.value = true;
+    }
+  }
 });
 
-const handleclick = async () => {
+const puedeConfirmar = computed(() => {
+  const camposLlenos = precargado.localScoring.value && precargado.localCupo.value;
+
+  const bancoRegistro = props.bancowData.find(
+    item => String(item.IdFlujoRegistro) === String(props.data.Id)
+  );
+
+  const aprobadoBanco = bancoRegistro?.Aprobacion_Cupo_sugerido === "si";
+
+  return camposLlenos && aprobadoBanco;
+});
+
+const handleconfirmado = async () => {
   if (
-    !localScoring.value ||
-    !localCupo.value
+    !confirmado.value
   ) {
-    mensajeError.value = "Por favor, completa todos los campos";
+    mensajeError.value = "Por favor, confirma si el usuario acepto el cupo";
     return;
   }
 
   mensajeError.value = "";
 
   const id = props.data.Id;
+
   const payload = {
     Scoring: localScoring.value.toString(),
     Cupo: localCupo.value.toString(),
     IdFlujoRegistro: id,
+    Cliente_Acepto: confirmado.value,
+    Cedula_Cliente: props.data.Cedula_Cliente.toString(),
+    Numero_Cliente: props.data.Numero_Celular.toString(),
+  };
+
+  const payloadput = { Estado: "confirmado" };
+
+  try {
+    if (confirmado.value === "si" && localScoring.value && localCupo.value)   {
+      
+       await axios.put(`/api/flujoRegistroEnlace/estado/pendiente/${id}`, payloadput, {
+      headers: {
+        Authorization: `Bearer ${props.token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    }
+    await axios.put(`api/scoring/estado/update/${id}`, 
+      payloadput, 
+      {
+        headers: {
+          Authorization: `Bearer ${props.token}`,
+          "Content-Type": "application/json",
+        },
+    });
+
+    window.location.reload();
+  } catch (error) {
+    console.error('Error al enviar al banco:', error);
+  }
+};
+
+const handleScoringCupo = async () => {
+  if (
+    !localScoring.value ||
+    !localCupo.value
+  ) {
+    mensajeError.value = "Por favor, completa los campos scoring y cupo para guardar";
+    return;
+  }
+
+  mensajeError.value = "";
+
+  const id = props.data.Id;
+
+  const payload = {
+    Scoring: localScoring.value.toString(),
+    Cupo: localCupo.value.toString(),
+    IdFlujoRegistro: id,
+    Cliente_Acepto: confirmado.value,
     Cedula_Cliente: props.data.Cedula_Cliente.toString(),
     Numero_Cliente: props.data.Numero_Celular.toString(),
   };
@@ -69,14 +138,14 @@ const handleclick = async () => {
   const payloadput = { Estado: "aprobado" };
 
   try {
-    await axios.post('/api/scoring', payload, {
+    await axios.put(`/api/flujoRegistroEnlace/estado/pendiente/${id}`, payloadput, {
       headers: {
         Authorization: `Bearer ${props.token}`,
         "Content-Type": "application/json",
       },
     });
 
-    await axios.put(`/api/flujoRegistroEnlace/estado/pendiente/${id}`, payloadput, {
+    await axios.post('/api/scoring', payload, {
       headers: {
         Authorization: `Bearer ${props.token}`,
         "Content-Type": "application/json",
@@ -88,6 +157,7 @@ const handleclick = async () => {
     console.error('Error al enviar al banco:', error);
   }
 };
+
 
 function formatCurrency(event) {
   let input = event.target;
@@ -149,12 +219,16 @@ function formatCurrency(event) {
               />
             </td>
             <td>
-              <select class="tabla-input">
+              <select
+                class="tabla-input" 
+                v-model="confirmado"
+                :disabled="!puedeConfirmar">
                 <option value="" selected>Selecciona una opción</option>
                 <option value="si">Si</option>
-                <option value="no">No</option>
-
               </select>
+            <p v-if="!puedeConfirmar" style="color: #999; font-size: 0.85rem;">
+               Asegúrate de guardar Scoring y Cupo, y que el banco haya aprobado el cupo sugerido.
+            </p>
             </td>
           </tr>
         </tbody>
@@ -164,7 +238,20 @@ function formatCurrency(event) {
       {{ mensajeError }}
     </div>
     <div class="tarjeta-acciones">
-      <button class="boton-enviar" @click="handleclick">Enviar</button>
+      <button 
+          v-if="props.data.Estado === 'pendiente'"
+          class="boton-enviar"
+          @click="handleScoringCupo"
+        >
+          Guardar
+        </button>
+         <button 
+          v-if="props.data.Estado === 'aprobado'"
+          class="boton-enviar"
+          @click="handleconfirmado"
+        >
+          Guardar
+        </button>
     </div>
   </div>
 </template>

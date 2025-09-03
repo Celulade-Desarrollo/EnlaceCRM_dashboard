@@ -12,7 +12,8 @@ const router = useRouter()
 const scoringData = ref([]);
 const token = localStorage.getItem("admin_token");
 const company = localStorage.getItem("company");
-
+const bancowData = ref([])
+  
 console.log("Token:", token);
 console.log("Company:", company);
 
@@ -42,7 +43,7 @@ onMounted(async () => {
     });
 
     const scoringRes = await axios.get(
-      'http://localhost:3000/api/scoring',
+      'api/scoring',
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -51,8 +52,19 @@ onMounted(async () => {
       }
     );
 
+       const bancowRes = await axios.get(
+      'http://localhost:3000/api/bancow',
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+  
     scoringData.value = scoringRes.data;
     creditDataRecords.value = response.data
+    bancowData.value = bancowRes.data;
   } catch (error) {
     console.error('Error cargando datos:', error)
   }
@@ -75,7 +87,8 @@ onMounted(async () => {
         v-for="record in creditDataRecords"
         :key="record.id"
         :data="record"
-        :token = "token"
+        :token= "token"
+        :bancowData= "bancowData"
         :scoringData="scoringData"
       />
     </section>
