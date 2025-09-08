@@ -35,7 +35,7 @@ onMounted(async () => {
   }
 
   try {
-    const response = await axios.get('http://localhost:3000/api/flujoRegistroEnlace/estado/pendiente-aprobado', {
+    const response = await axios.get('api/flujoRegistroEnlace/estado/pendiente-aprobado', {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json"
@@ -53,7 +53,7 @@ onMounted(async () => {
     );
 
        const bancowRes = await axios.get(
-      'http://localhost:3000/api/bancow',
+      'api/bancow',
       {
         headers: {
           Authorization: `Bearer ${token}`,
