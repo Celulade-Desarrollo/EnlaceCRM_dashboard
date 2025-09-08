@@ -9,10 +9,11 @@ import { motion } from 'motion-v'
 const clientes = ref([])
 const creditDataRecords = ref([])
 const router = useRouter()
-
+const scoringData = ref([]);
 const token = localStorage.getItem("admin_token");
 const company = localStorage.getItem("company");
-
+const bancowData = ref([])
+  
 console.log("Token:", token);
 console.log("Company:", company);
 
@@ -34,14 +35,36 @@ onMounted(async () => {
   }
 
   try {
-    const response = await axios.get('/api/flujoRegistroEnlace/estado/pendiente', {
+    const response = await axios.get('api/flujoRegistroEnlace/estado/pendiente-aprobado', {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json"
       }
-    })
+    });
 
+    const scoringRes = await axios.get(
+      'api/scoring',
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+       const bancowRes = await axios.get(
+      'api/bancow',
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+  
+    scoringData.value = scoringRes.data;
     creditDataRecords.value = response.data
+    bancowData.value = bancowRes.data;
   } catch (error) {
     console.error('Error cargando datos:', error)
   }
@@ -64,7 +87,9 @@ onMounted(async () => {
         v-for="record in creditDataRecords"
         :key="record.id"
         :data="record"
-        :token = "token"
+        :token= "token"
+        :bancowData= "bancowData"
+        :scoringData="scoringData"
       />
     </section>
   </motion.div>
