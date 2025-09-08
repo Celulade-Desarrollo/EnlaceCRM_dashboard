@@ -44,7 +44,7 @@ onMounted(async () => {
     );
 
     const bancowRes = await axios.get(
-      '/api/bancow',
+      'api/bancow',
       {
         headers: {
           Authorization: `Bearer ${token}`,
