@@ -2,7 +2,7 @@ name: Deploy EnlaceCRM dashboard en servidor windows automatico
 
 on:
   push:
-    branches: [main]
+    branches: [develop]
 
 jobs:
   deploy:
@@ -21,7 +21,7 @@ jobs:
       - name: Copiar archivos compilados a ruta de Nginx
         shell: powershell
         run: |
-          $destino = "C:\EnlaceCRM\EnlaceCRM_dashboard\dist"
+          $destino = "C:\EnlaceCRM\\EnlaceCRM_desarrollo\EnlaceCRM_dashboard\dist"
           if (Test-Path $destino) {
             Remove-Item -Recurse -Force "$destino\*"
           } else {
