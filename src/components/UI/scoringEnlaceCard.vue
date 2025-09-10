@@ -87,17 +87,16 @@ const handleconfirmado = async () => {
   };
 
   const payloadput = { Estado: "confirmado" };
-
+  const paylaodClienteAcepto = { respuestaCliente: confirmado.value };
   try {
     if (confirmado.value === "si" && localScoring.value && localCupo.value)   {
       
-       await axios.put(`/api/flujoRegistroEnlace/estado/pendiente/${id}`, payloadput, {
+       await axios.put(`api/flujoRegistroEnlace/estado/pendiente/${id}`, payloadput, {
       headers: {
         Authorization: `Bearer ${props.token}`,
         "Content-Type": "application/json",
       },
     });
-    }
     await axios.put(`api/scoring/estado/update/${id}`, 
       payloadput, 
       {
@@ -106,7 +105,15 @@ const handleconfirmado = async () => {
           "Content-Type": "application/json",
         },
     });
-
+    await axios.put(`api/flujoRegistroEnlace/clienteAcepto/${id}`, 
+      paylaodClienteAcepto, 
+      {
+        headers: {
+          Authorization: `Bearer ${props.token}`,
+          "Content-Type": "application/json",
+        },
+    });
+    }
     window.location.reload();
   } catch (error) {
     console.error('Error al enviar al banco:', error);
