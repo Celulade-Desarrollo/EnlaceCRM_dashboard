@@ -1,4 +1,4 @@
-name: Deploy EnlaceCRM dashboard en servidor windows automatico 
+name: Deploy EnlaceCRM dashboard en servidor windows automatico
 
 on:
   push:
@@ -9,25 +9,41 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      - name: Clonar repositorio
-        uses: actions/checkout@v3
+      - name: Clonar repositorio en la ruta destino
+        shell: powershell
+        run: |
+          $destino = "C:\EnlaceCRM\EnlaceCRM_dashboard"
+          if (Test-Path $destino) {
+            Set-Location $destino
+            git fetch --all
+            git reset --hard origin/main
+          } else {
+            git clone https://github.com/TU_ORG/TU_REPO.git $destino
+          }
 
       - name: Instalar dependencias
-        run: npm install
+        shell: powershell
+        run: |
+          Set-Location "C:\EnlaceCRM\EnlaceCRM_dashboard"
+          npm install
 
       - name: Compilar Vue app
-        run: npm run build
+        shell: powershell
+        run: |
+          Set-Location "C:\EnlaceCRM\EnlaceCRM_dashboard"
+          npm run build
 
       - name: Copiar archivos compilados a ruta de Nginx
         shell: powershell
         run: |
-          $destino = "C:\EnlaceCRM\EnlaceCRM_dashboard\dist"
+          $origen = "C:\EnlaceCRM\EnlaceCRM_dashboard\dist"
+          $destino = "C:\Nginx\html\EnlaceCRM_dashboard"
           if (Test-Path $destino) {
             Remove-Item -Recurse -Force "$destino\*"
           } else {
             New-Item -ItemType Directory -Path $destino | Out-Null
           }
-          Copy-Item -Path "dist\*" -Destination $destino -Recurse
+          Copy-Item -Path "$origen\*" -Destination $destino -Recurse
 
       - name: Reiniciar Nginx
         shell: powershell
