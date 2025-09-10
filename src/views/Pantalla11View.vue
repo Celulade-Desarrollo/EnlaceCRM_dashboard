@@ -30,7 +30,7 @@ const logout = () => {
 onMounted(async () => {
   // si no hay token o el company no es "enlace", redirige
   if (!token || company !== "enlace" || company == null) {
-    router.push("/LoginView");
+    router.push("/LoginView"); 
     return
   }
 
