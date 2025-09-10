@@ -29,7 +29,7 @@ const handleSubmit = async (event) => {
   };
 
   try {
-    const response = await axios.post("api/admin/login", dataLogin);
+    const response = await axios.post("/api/admin/login", dataLogin);
 
     if (response.data?.state !== "Authenticated") {
       errorMessage.value = "Cédula o contraseña incorrecta";
