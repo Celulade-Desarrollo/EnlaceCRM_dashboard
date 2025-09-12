@@ -48,7 +48,7 @@ const handleSubmit = async (event) => {
     if (response.data.company === "enlace") {
       router.push("/Pantalla11View");
     } else if (response.data.company === "bancow") {
-      router.push("/Pantalla10View");
+      router.push("/Pantalla13View");
     } else {
       errorMessage.value = "Empresa no reconocida";
       setTimeout(() => (errorMessage.value = ""), 3000);
