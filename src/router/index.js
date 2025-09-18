@@ -11,6 +11,21 @@ const routes = [
     component: () => import("../views/PantallaAyudaView.vue"),
     meta: { requiresAuth: true },
   },
+
+{
+    path: "/Pantalla13View",
+    name: "Comunicacion",
+    component: () => import("../views/PantallaComunicacioView.vue"),
+    meta: { requiresAuth: true },
+  },
+
+{
+    path: "/PantallaPagos",
+    name: "Pagos",
+    component: () => import("../views/PantallaPagosView.vue"),
+    meta: { requiresAuth: true },
+  },
+
   {
     path: "/Pantalla1View",
     name: "pantalla1",
@@ -77,13 +92,32 @@ const routes = [
     name: "PantallaAbono",
     component: () => import("../views/PantallaAbonoView.vue"),
     meta: { requiresAuth: true,  role: "usuario" },
+  }, 
+  {
+    path: "/PantallasubirExcelView",
+    name: "PantallasubirExcel",
+    component: () => import("../views/pantallaSubirExcelView.vue"),
+    meta: { requiresAuth: true,  role: "admin" },
   },
     {
   path: "/PantallaCorresponsalView",
   name: "PantallaCorresponsal",
   component: () => import("../views/PantallaCorresponsalView.vue"),
   meta: { requiresAuth: true,  role: "usuario" },
+  },
+  {
+  path: "/Pantalla14View",
+  name: "PantallaBajarExcel",
+  component: () => import("../views/Pantalla14View.vue"),
+  meta: { requiresAuth: true,  role: "admin" },
+  },
+  {
+  path: "/PantallaBajarExcelView",
+  name: "PantallaBajarExcelV",
+  component: () => import("../views/PantallaBajarExcelView.vue"),
+  meta: { requiresAuth: true,  role: "admin" },
   }
+  
 ];
 
 const router = createRouter({

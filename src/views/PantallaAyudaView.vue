@@ -218,7 +218,7 @@ function toggleCategoria(categoria) {
 
 .whatsapp-btn {
   margin-top: auto;
-  background-color: #25d366;
+  background-color: #1ebe5b;
   color: white;
   text-decoration: none;
   font-weight: bold;
@@ -232,7 +232,7 @@ function toggleCategoria(categoria) {
 }
 
 .whatsapp-btn:hover {
-  background-color: #1ebe5b;
+  background-color: #19974a;
 }
 
 .whatsapp-logo {
