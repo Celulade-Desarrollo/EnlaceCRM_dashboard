@@ -1,13 +1,14 @@
 <script setup>
 import axios from "axios";
 import * as XLSX from "xlsx";
+import { motion } from "motion-v";
 
 const token = localStorage.getItem("admin_token");
 const company = localStorage.getItem("company");
 
 async function downloadAbonosExcel() {
   try {
-    const response = await axios.get("http://localhost:3000/api/bajarAbonos", {
+    const response = await axios.get("api/bajarAbonos", {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
@@ -16,30 +17,19 @@ async function downloadAbonosExcel() {
 
     const data = response.data;
 
-    // Verificamos que venga como array
     const dataArray = Array.isArray(data) ? data : [data];
 
-    // Si quieres transformar los datos antes de exportar, lo puedes hacer aquí
-    const dataTransformada = dataArray.map((row) => {
-      return {
-        ...row,
-        // Ejemplo: renombrar o quitar campos
-        // NuevoCampo: row.algo
-      };
-    });
+    const dataTransformada = dataArray.map((row) => ({ ...row }));
 
-    // Crear la hoja excel
     const worksheet = XLSX.utils.json_to_sheet(dataTransformada);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Abonos");
 
-    // Generar archivo Excel en buffer
     const excelBuffer = XLSX.write(workbook, {
       bookType: "xlsx",
       type: "array",
     });
 
-    // Crear blob para descargar
     const blob = new Blob([excelBuffer], {
       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
@@ -60,20 +50,53 @@ async function downloadAbonosExcel() {
 </script>
 
 <template>
-  <div class="subir-excel">
+  <motion.div v-bind="fadeInUp" class="page-container">
+    <section class="logo-container">
+      <img
+        src="/public/enlaceFiado.png"
+        alt="logo Enlace CRM"
+        class="logo-main"
+      />
+    </section>
+    <p class="titulo">Hola, Administrador enlaceCRM</p>
     <div class="boton-container">
       <button class="boton" @click="downloadAbonosExcel">
         Descargar Abonos
       </button>
     </div>
-  </div>
+  </motion.div>
 </template>
 
 <style scoped>
+/* Contenedor principal que centra todo */
+.page-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* centra vertical */
+  align-items: center;     /* centra horizontal */
+  min-height: 100vh;       /* ocupa toda la pantalla */
+  text-align: center;
+}
+
+.logo-main {
+  width: min(180px, 80%);
+  height: auto;
+  display: inline;
+  margin-bottom: 1rem;
+}
+
+.titulo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 20px;
+}
+
 .boton-container {
   text-align: center;
-  margin: 30px 0;
+  margin-top: 20px;
 }
+
 .boton {
   background-color: #dd3590;
   color: white;
@@ -90,3 +113,4 @@ async function downloadAbonosExcel() {
   background-color: #f15bab;
 }
 </style>
+
