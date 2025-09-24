@@ -5,6 +5,8 @@ import Heading from "../components/UI/Heading.vue";
 import { motion } from "motion-v";
 import { fadeInUp } from "../motion/pageAnimation";
 import { useRouter } from "vue-router";
+import SesionExpirada from "../components/SesionExpirada.vue";
+import { activarSesionExpirada } from "../stores/session.js";
 const router = useRouter();
 // Datos iniciales
 const datosCuentaUser = JSON.parse(localStorage.getItem("datosCuenta")) || {};
@@ -75,13 +77,18 @@ onMounted(async () => {
      movimientos.value = resMov.data;
   } catch (error) {
     console.error("Error al obtener datos:", error);
+  if (error.response?.status === 401) {
+      activarSesionExpirada();
+    }
   }
+
+    document.body.style.backgroundColor = "#2e008b";
 });
 </script>
 <template>
 
   <Heading :mensaje="'Hola, ' + datosCuentaUser.Nombres" :showBackButton="true" />
-
+  <motion.div v-bind="fadeInUp">
     <section class="container banners py-4">
       <div class="d-flex flex-column align-items-center">
         <!-- Tarjeta de deuda y cupo -->
@@ -140,7 +147,9 @@ onMounted(async () => {
           </div>
         </div>
       </div>
+      <SesionExpirada /> 
     </section>
+    </motion.div>
 </template>
 
 

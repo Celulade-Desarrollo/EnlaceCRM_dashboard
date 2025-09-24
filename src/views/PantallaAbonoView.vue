@@ -5,6 +5,8 @@ import { motion } from "motion-v";
 import { ref, onMounted, computed } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
+import SesionExpirada from "../components/SesionExpirada.vue";
+import { activarSesionExpirada } from "../stores/session.js";
 
 const router = useRouter();
 const datosCuenta = JSON.parse(localStorage.getItem("datosCuenta")) || {};
@@ -44,8 +46,11 @@ onMounted(async () => {
     estadoCuenta.value.deudaTotal = deuda;
     console.log("estadoCuenta", estadoCuenta.value);
   } catch (error) {
-    console.error("Error al obtener el estado de cuenta:", error);
+    if (error.response?.status === 401) {
+      activarSesionExpirada();
+    }
   }
+   document.body.style.backgroundColor = "#2e008b";
   try{
     const response = await axios.get(
       `/api/pagos/estado-cuenta?identificadorTendero=${cedula}`,
@@ -60,8 +65,11 @@ onMounted(async () => {
 
   }catch (error) {
     console.error("Error al obtener el estado de cuenta-pago:", error);
+     if (error.response?.status === 401) {
+      activarSesionExpirada();
+    }
   }
-
+   document.body.style.backgroundColor = "#2e008b";
 });
 const goToPantallaCorresponsal = () => {
   router.push("/PantallaCorresponsalView");
@@ -164,6 +172,7 @@ const proximoPagoMonto = computed(() => {
         </div>
       </div>
     </section>
+    <SesionExpirada />
   </motion.div>
 </template>
 
