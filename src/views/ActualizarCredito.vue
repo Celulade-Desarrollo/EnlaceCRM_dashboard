@@ -1,5 +1,10 @@
 <template>
   <div class="movimientos-container">
+    <section class="logo-container">
+      <img src="/public/enlaceFiado.png" alt="logo Enlace CRM" class="logo-main" />
+      <!-- <Heading :mensaje="'Hola, Administrador'" /> -->
+    </section>
+    
     <div v-for="movimiento in movimientos" :key="movimiento.IdMovimiento" class="movimiento-card">
       <div class="card-header">
         <h3>Movimiento #{{ movimiento.IdMovimiento }}</h3>
@@ -117,6 +122,42 @@ export default {
 </script>
 
 <style scoped>
+
+.titulo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color:white;
+  margin-bottom: 10px;
+}
+.logout {
+  display: flex;
+  justify-content: right;
+  margin-top: 1rem;
+}
+.boton-logout {
+  padding: 10px 30px;
+  font-size: 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  background: #dd3590;
+  color: #fff;
+  outline: none;
+  border: none;
+}
+.boton-logout:hover {
+  background-color: #f15bab;
+}
+.logo-container {
+  text-align: center;
+  margin-block: 1.5rem;
+}
+
+.logo-main {
+  width: min(180px, 80%);
+  height: auto;
+  display: inline;
+}
 .movimientos-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
