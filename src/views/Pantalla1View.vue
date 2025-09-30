@@ -7,7 +7,9 @@ const router = useRouter();
 import { fadeInUp } from "../motion/pageAnimation";
 import { motion } from "motion-v";
 import CardAbonoCupos from "../components/UI/CardAbonoCupos.vue";
- 
+import SesionExpirada from "../components/UI/SesionExpirada.vue";
+import { activarSesionExpirada } from "../stores/session.js";
+
 const estadoCuenta = ref({
   CupoFinal: '',
   CupoDisponible: '',
@@ -49,9 +51,14 @@ onMounted(async () => {
     estadoCuenta.value.deudaTotal = deuda;
  
     console.log("deudatotal",estadoCuenta.value);
-  } catch (error) {
+  }catch (error) {
     console.error("Error al obtener el estado de cuenta:", error);
+    if (error.response?.status === 401) {
+      activarSesionExpirada();
+    }
   }
+
+    document.body.style.backgroundColor = "#2e008b";
  
   const tipo = localStorage.getItem("tipo");
   const idUsuario = localStorage.getItem("idUsuario");
@@ -60,8 +67,6 @@ onMounted(async () => {
   console.log("localStorage tipo:", tipo);
   console.log("idUsuario",idUsuario);
   console.log("datosCuenta", datosCuenta);
-  // Establece fondo morado al cargar esta pantalla
-  document.body.style.backgroundColor = "#2e008b";
  
   // const data = localStorage.getItem("data");
   // if (data) {
@@ -112,9 +117,9 @@ const goToPantalla5 = () => {
         </div>
         </div>
     </section>
+    <SesionExpirada />
   </motion.div>
 </template>
- 
  
 <style scoped>
 .logo-container {

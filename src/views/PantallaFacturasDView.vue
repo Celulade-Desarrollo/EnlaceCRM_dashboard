@@ -6,6 +6,8 @@ import { fadeInUp } from "../motion/pageAnimation";
 import { motion } from "motion-v";
 import FacturasDisponibles from '../components/UI/FacturasDisponibles.vue';
 import axios from 'axios';
+import SesionExpirada from "../components/UI/SesionExpirada.vue";
+import { activarSesionExpirada } from "../stores/session.js";
 
 // Variables reactivas
 const pagar = ref("");
@@ -170,12 +172,13 @@ onMounted(async () => {
 
   } catch (error) {
     console.error("Error al cargar facturas o el estado de cuenta:", error);
+    if (error.response?.status === 401) {
+      activarSesionExpirada();
+    }
   } finally {
     isLoading.value = false;
   }
 });
-
-
 
 </script>
 
@@ -258,6 +261,7 @@ onMounted(async () => {
     </div>
     </div>
     </section>
+    <SesionExpirada />
   </motion.div>
 </template>
 
