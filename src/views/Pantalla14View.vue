@@ -6,7 +6,6 @@ const router = useRouter();
 const goToRegistro = () => {
   router.push("/Pantalla11View"); 
 };
-
 const goToAbonos = () => {
   router.push("/PantallaBajarExcelView"); 
 };

@@ -5,6 +5,8 @@ import Heading from "../components/UI/Heading.vue";
 import { fadeInUp } from "../motion/pageAnimation";
 import { motion } from "motion-v";
 import axios from "axios";
+import SesionExpirada from "../components/UI/SesionExpirada.vue";
+import { activarSesionExpirada } from "../stores/session.js";
 
 // Instancia de Vue Router
   const router = useRouter();
@@ -131,6 +133,7 @@ function formatPesos(valor) {
         </div>
       </div>
     </section>
+    <SesionExpirada />
   </motion.div>
 </template>
 
