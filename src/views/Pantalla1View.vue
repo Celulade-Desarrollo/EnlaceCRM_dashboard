@@ -7,7 +7,7 @@ const router = useRouter();
 import { fadeInUp } from "../motion/pageAnimation";
 import { motion } from "motion-v";
 import CardAbonoCupos from "../components/UI/CardAbonoCupos.vue";
-import SesionExpirada from "../components/SesionExpirada.vue";
+import SesionExpirada from "../components/UI/SesionExpirada.vue";
 import { activarSesionExpirada } from "../stores/session.js";
 
 const estadoCuenta = ref({

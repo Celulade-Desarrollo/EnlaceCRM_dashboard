@@ -5,7 +5,7 @@ import { motion } from "motion-v";
 import { ref, onMounted, computed } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
-import SesionExpirada from "../components/SesionExpirada.vue";
+import SesionExpirada from "../components/UI/SesionExpirada.vue";
 import { activarSesionExpirada } from "../stores/session.js";
 
 const router = useRouter();

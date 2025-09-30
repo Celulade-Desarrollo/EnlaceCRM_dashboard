@@ -7,6 +7,8 @@ import { motion } from "motion-v";
 import * as XLSX from 'xlsx';
 import CreditBancoCard from "../components/UI/CreditBancoCard.vue";
 import axios from "axios";
+import SesionExpiradaLogin from "../components/UI/SesionExpiradaLogin.vue";
+import { activarSesionExpirada } from "../stores/session.js";
 
 const creditDataRecords = ref([])
 const bancowData = ref([]);
@@ -57,6 +59,9 @@ onMounted(async () => {
     bancowData.value = bancowRes.data;
   } catch (error) {
     console.error('Error cargando datos:', error);
+     if (error.response?.status === 401) {
+      activarSesionExpirada();
+    }
   }
 });
 
@@ -119,9 +124,11 @@ async function downloadExcel() {
   } catch (error) {
     console.error('Error al generar Excel:', error);
     alert('No se pudo descargar el archivo');
+     if (error.response?.status === 401) {
+      activarSesionExpirada();
+    }
   }
 }
-
 
 </script>
 <template>
@@ -155,6 +162,7 @@ async function downloadExcel() {
         :token="token"
       />
     </section>
+    <SesionExpiradaLogin />
   </motion.div>
 </template>
 

@@ -5,7 +5,7 @@ import Heading from "../components/UI/Heading.vue";
 import { motion } from "motion-v";
 import { fadeInUp } from "../motion/pageAnimation";
 import { useRouter } from "vue-router";
-import SesionExpirada from "../components/SesionExpirada.vue";
+import SesionExpirada from "../components/UI/SesionExpirada.vue";
 import { activarSesionExpirada } from "../stores/session.js";
 const router = useRouter();
 // Datos iniciales

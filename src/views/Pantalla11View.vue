@@ -5,6 +5,8 @@ import ScoringEnlaceCard from '../components/UI/scoringEnlaceCard.vue'
 import Heading from '../components/UI/Heading.vue'
 import { useRouter } from 'vue-router'
 import { motion } from 'motion-v'
+import SesionExpiradaLogin from "../components/UI/SesionExpiradaLogin.vue";
+import { activarSesionExpirada } from "../stores/session.js";
 
 const clientes = ref([])
 const creditDataRecords = ref([])
@@ -30,7 +32,7 @@ const logout = () => {
 onMounted(async () => {
   // si no hay token o el company no es "enlace", redirige
   if (!token || company !== "enlace" || company == null) {
-    router.push("/LoginView");
+    router.push("/LoginView"); 
     return
   }
 
@@ -67,6 +69,9 @@ onMounted(async () => {
     bancowData.value = bancowRes.data;
   } catch (error) {
     console.error('Error cargando datos:', error)
+    if (error.response?.status === 401) {
+      activarSesionExpirada();
+    }
   }
 })
 </script>
@@ -92,6 +97,7 @@ onMounted(async () => {
         :scoringData="scoringData"
       />
     </section>
+    <SesionExpiradaLogin />
   </motion.div>
 </template>
 
