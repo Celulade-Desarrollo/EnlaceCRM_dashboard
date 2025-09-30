@@ -92,13 +92,32 @@ const routes = [
     name: "PantallaAbono",
     component: () => import("../views/PantallaAbonoView.vue"),
     meta: { requiresAuth: true,  role: "usuario" },
+  }, 
+  {
+    path: "/PantallasubirExcelView",
+    name: "PantallasubirExcel",
+    component: () => import("../views/pantallaSubirExcelView.vue"),
+    meta: { requiresAuth: true,  role: "admin" },
   },
     {
   path: "/PantallaCorresponsalView",
   name: "PantallaCorresponsal",
   component: () => import("../views/PantallaCorresponsalView.vue"),
   meta: { requiresAuth: true,  role: "usuario" },
+  },
+  {
+  path: "/Pantalla14View",
+  name: "PantallaBajarExcel",
+  component: () => import("../views/Pantalla14View.vue"),
+  meta: { requiresAuth: true,  role: "admin" },
+  },
+  {
+  path: "/PantallaBajarExcelView",
+  name: "PantallaBajarExcelV",
+  component: () => import("../views/PantallaBajarExcelView.vue"),
+  meta: { requiresAuth: true,  role: "admin" },
   }
+  
 ];
 
 const router = createRouter({

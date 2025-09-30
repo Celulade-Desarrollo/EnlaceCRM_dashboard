@@ -29,7 +29,7 @@ const handleSubmit = async (event) => {
   };
 
   try {
-    const response = await axios.post("api/admin/login", dataLogin);
+    const response = await axios.post("/api/admin/login", dataLogin);
 
     if (response.data?.state !== "Authenticated") {
       errorMessage.value = "Cédula o contraseña incorrecta";
@@ -46,7 +46,7 @@ const handleSubmit = async (event) => {
 
     // Redirigir según la compañía
     if (response.data.company === "enlace") {
-      router.push("/Pantalla11View");
+      router.push("/Pantalla14View");
     } else if (response.data.company === "bancow") {
       router.push("/Pantalla13View");
     } else {

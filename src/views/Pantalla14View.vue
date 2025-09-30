@@ -4,20 +4,16 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 
 const goToRegistro = () => {
-  router.push("/Pantalla10View"); 
-};
-const goToPagos = () => {
-  router.push("/PantallaPagos"); 
+  router.push("/Pantalla11View"); 
 };
 const goToAbonos = () => {
-  router.push("/PantallasubirExcelView"); 
+  router.push("/PantallaBajarExcelView"); 
 };
 </script>
 
 <template>
   <div class="container">
     <button class="btn" @click="goToRegistro">Registro</button>
-    <button class="btn" @click="goToPagos">Utilización</button>
     <button class="btn" @click="goToAbonos">Abonos a Crédito</button>
   </div>
 </template>
