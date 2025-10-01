@@ -61,12 +61,12 @@ const fechaFormateada = computed(() => {
     <div class="flex w-full justify-center gap-2">
   <div class="button-banner w-[50%]">
     <button type="button" id="boton-abonar" class="w-full" @click="$emit('abonar')">
-      Abonar
+      Pagar mi cuota 
     </button>
   </div>
   <div class="button-banner w-[50%]">
     <button type="button" id="boton-movimientos" class="w-full" @click="$emit('movimientos')">
-      Movimientos 
+      Pagar mis Movimientos 
     </button>
     </div>
   </div>
