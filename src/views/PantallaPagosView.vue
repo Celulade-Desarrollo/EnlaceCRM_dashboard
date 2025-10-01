@@ -1,98 +1,114 @@
 <script setup>
 import { ref } from "vue";
-import * as XLSX from "xlsx";
+import axios from "axios";
 
-const datos = ref([
-  { cedula: "71378171", transaccion: "123456789", factura: "FV823474", valor: "$88.200", fecha: "5/09/2025", hora: "10:05:24" }
-]);
+// Token almacenado
+const token = localStorage.getItem("admin_token");
 
-// 🔹 Descargar como Excel
-const exportarExcel = () => {
-  const hoja = XLSX.utils.json_to_sheet(datos.value);
-  const libro = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(libro, hoja, "Hoja1");
-  XLSX.writeFile(libro, "tabla.xlsx");
+// Configuración de Axios
+const api = axios.create({
+  baseURL: "http://localhost:3000/api",
+  headers: { 
+    Authorization: `Bearer ${token}`,
+    'Content-Type': 'application/json'
+  },
+});
+
+// Descargar Excel
+const exportarExcel = async () => {
+  try {
+    const res = await api.get("/transacciones/excel", {
+      responseType: "blob",
+    });
+
+    // Crear enlace temporal para descargar
+    const url = window.URL.createObjectURL(new Blob([res.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "transacciones.xlsx");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url); // Liberar memoria
+  } catch (error) {
+    console.error("Error al descargar el Excel:", error);
+    alert("No se pudo descargar el archivo Excel.");
+  }
 };
 
-// 🔹 Refrescar (ejemplo: cambia los datos)
-const refrescar = () => {
-  datos.value = [
-    { cedula: "98765432", transaccion: "555666777", factura: "FV999888", valor: "$120.000", fecha: "6/09/2025", hora: "11:30:45" }
-  ];
+// Refrescar / ver todas transacciones
+const cargarTransacciones = async () => {
+  try {
+    const res = await api.get("/transacciones");
+    console.log("Transacciones:", res.data); // opcional, ver en consola
+    alert("Se actualizaron los datos.");
+  } catch (error) {
+    console.error("Error al refrescar:", error);
+    alert("No se pudo refrescar.");
+  }
 };
 </script>
 
 <template>
-  <div class="container">
-    <h2>Pagos Autorizados</h2>
-    
-    <table border="1" class="tabla">
-      <thead>
-        <tr>
-          <th>Código Tendero (Cédula)</th>
-          <th>Código Transacción</th>
-          <th>Código Factura</th>
-          <th>Valor Autorizado Pago</th>
-          <th>Fecha</th>
-          <th>Hora</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(fila, index) in datos" :key="index">
-          <td>{{ fila.cedula }}</td>
-          <td>{{ fila.transaccion }}</td>
-          <td>{{ fila.factura }}</td>
-          <td>{{ fila.valor }}</td>
-          <td>{{ fila.fecha }}</td>
-          <td>{{ fila.hora }}</td>
-        </tr>
-      </tbody>
-    </table>
+  <section class="logo-container">
+    <img
+      src="/public/enlaceFiado.png"
+      alt="logo Enlace CRM"
+      class="logo-main"
+    />
+  </section>
+         <p class="titulo">Hola, Administrador banco w</p>
 
-    <div class="botones">
-      <button @click="refrescar">🔄 Refrescar</button>
-      <button @click="exportarExcel">⬇️ Descargar Excel</button>
-    </div>
+  <div class="botones-container">
+    <button class="btn" @click="cargarTransacciones">Refrescar</button>
+    <button class="btn" @click="exportarExcel">Descargar Excel</button>
   </div>
 </template>
 
 <style scoped>
-.container {
-  padding: 20px;
-  text-align: center;
-}
 
-.tabla {
-  margin: 20px auto;
-  border-collapse: collapse;
-  width: 95%;
-}
-
-.tabla th, .tabla td {
-  padding: 10px;
-  text-align: center;
-}
-
-.botones {
-  margin-top: 20px;
-  display: flex;
-  gap: 15px;
-  justify-content: center;
-}
-
-button {
-  background: #2a6fa1;
-  color: white;
-  border: none;
-  padding: 12px 25px;
-  border-radius: 8px;
+.titulo {
+  font-size: 1.5rem;
   font-weight: bold;
-  cursor: pointer;
-  transition: 0.3s;
+  color:white;
+  margin-bottom: 10px;
+  margin-left: -200px;
+    margin-top: 20px;
+  
 }
 
-button:hover {
-  background: #368cc4;
-  transform: scale(1.05);
+.botones-container {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.logo-main {
+  width: min(195px, 80%);
+  height: auto;
+  display: block;
+  margin: 20px auto 0 auto;
+    margin-top: 100px;
+}
+
+.btn {
+  background-color: #dd3590;
+  color: white;
+  font-size: 1.25rem;
+  font-weight: normal;
+  padding: 1rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  border-radius: 25px;
+  min-width: 250px;
+  text-align: center;
+
+}
+
+.btn:hover {
+  background-color: #dd3590;
 }
 </style>
