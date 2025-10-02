@@ -77,15 +77,14 @@ onMounted(() => {
           />
         </picture>
         <h2 class="proveedores mb-4" id="pagado">
-          Su pago por <span>{{ formatPesos(pagarValor) }}</span> para Alpina <br />ha sido
-          recibido
+         Tu pago por <span>{{ formatPesos(pagarValor) }}</span> para Alpina <br />ha sido recibido exitosamente
         </h2>
         <h1 class="proveedores mb-4" id="cantidad-pagar">
           <strong>¡Muchas gracias!</strong>
         </h1>
       </div>
       <div class="button-inicio" @click="handlePago1Click">
-        <button type="button" class="button">Inicio</button>
+        <button type="button" class="button">Volver al inicio</button>
       </div>
     </div>
   </section>

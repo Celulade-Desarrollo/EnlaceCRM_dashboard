@@ -162,10 +162,10 @@ const proximoPagoMonto = computed(() => {
               class="no-underline flex items-center justify-between bg-gray-100 rounded-lg shadow w-72 h-20 px-4 mt-4"
             >
               <span class="no-underline flex flex-col text-left font-bold text-gray-700 text-lg leading-tight">
-                Pago en corresponsal
+                Pago en Corresponsales y oficinas
               </span>
               <button class="button" @click="goToPantallaCorresponsal">
-                Info
+                ver mapa
               </button>
             </div>
           </div>
@@ -195,12 +195,12 @@ const proximoPagoMonto = computed(() => {
   background-color: #dd3590;
   color: white;
   border: none;
-  padding: 10px 24px;
+  padding: 1px 25px;
   border-radius: 25px;
   font-weight: bold;
   cursor: pointer;
   width: 200px;
-  margin-left: auto;
+  margin-left: 8px;
   display: block;
   text-align: center;
   margin-top: 1rem;
