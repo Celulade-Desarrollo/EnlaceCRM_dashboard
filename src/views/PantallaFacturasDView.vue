@@ -28,46 +28,70 @@ const router = useRouter();
 
 //console.log("datosCuenta", datosCuenta);
 
-// Función para manejar el clic en el botón "Pagar"
 const handleContinuarClick = () => {
-
-  const valorPago = pagar.value;
+  const valorPagoStr = pagar.value;
   const regex = /^\d{5,}$/; // Mínimo 5 dígitos, solo números
 
-   if (!valorPago || isNaN(valorPago) || !regex.test(valorPago)) {
-     errorMessage.value =
-       "Ingrese un valor válido de al menos 5 dígitos sin puntos ni comas";
-     return;
-   }else {
-     errorMessage.value = "";
-   }
-    if (valorPago < 20000) {
+  // Validación básica de formato
+  if (!valorPagoStr || isNaN(valorPagoStr) || !regex.test(valorPagoStr)) {
+    errorMessage.value = "Ingrese un valor válido de al menos 5 dígitos sin puntos ni comas";
+    return;
+  }
+
+  const valorPago = Number(valorPagoStr);
+  const totalFacturas = Number(totalFacturasSeleccionadas.value);
+
+  // 🧼 Limpiar cupo monetario
+  function limpiarValorMonetario(valor) {
+    if (typeof valor === 'string') {
+      return Number(valor.replace(/\$|\s|\.|,/g, ""));
+    }
+    return Number(valor);
+  }
+
+  const cupoDisponible = limpiarValorMonetario(datosCuenta.CupoDisponible);
+  const cupoFinal = limpiarValorMonetario(datosCuenta.CupoFinal);
+
+  // Para verificar en consola (opcional)
+  console.log("valorPago:", valorPago);
+  console.log("totalFacturas:", totalFacturas);
+  console.log("Cupo Disponible:", cupoDisponible);
+  console.log("Cupo Final:", cupoFinal);
+
+  // Validaciones de negocio
+  if (valorPago < 20000) {
     errorMessage.value = "El valor mínimo permitido para el pago es de $20.000";
     return;
-   }
-     if (totalFacturasSeleccionadas.value === 0) {
+  }
+
+  if (totalFacturas === 0) {
     errorMessage.value = "Debe seleccionar al menos una factura antes de continuar";
     return;
   }
-   if (valorPago > totalFacturasSeleccionadas.value) {
-    errorMessage.value =
-      "No puede ingresar un valor mayor al total de las facturas seleccionadas";
+
+  if (valorPago > totalFacturas) {
+    errorMessage.value = "No puede ingresar un valor mayor al total de las facturas seleccionadas";
     return;
   }
-   if (valorPago > datosCuenta.CupoDisponible || valorPago > datosCuenta.CupoFinal) {
-    errorMessage.value =
-      "No puede ingresar un valor mayor al total del cupo disponible o cupo total";
+
+  if (valorPago > cupoDisponible || valorPago > cupoFinal) {
+    errorMessage.value = "No puede ingresar un valor mayor al total del cupo disponible o cupo total";
     return;
   }
+
+  // Si todo está bien, continuar
   errorMessage.value = "";
   localStorage.setItem("pagarValor", valorPago);
   localStorage.setItem("datosCuenta", JSON.stringify(datosCuenta));
   localStorage.setItem("token", token);
+
   const numerosFacturas = facturasSeleccionadas.value.map(f => f.factura);
   localStorage.setItem("numeroFactura", JSON.stringify(numerosFacturas));
 
   window.open("/Pantalla3View", "_parent");
 };
+
+
 // Observa cambios en totalFacturasSeleccionadas y actualiza pagar automáticamente
     watch(totalFacturasSeleccionadas, (nuevoTotal) => {
       pagar.value = nuevoTotal;
