@@ -5,20 +5,14 @@ import axios from "axios";
 // Token almacenado
 const token = localStorage.getItem("admin_token");
 
-// Configuración de Axios
-const api = axios.create({
-  baseURL: "http://localhost:3000/api",
-  headers: { 
-    Authorization: `Bearer ${token}`,
-    'Content-Type': 'application/json'
-  },
-});
-
 // Descargar Excel
 const exportarExcel = async () => {
   try {
-    const res = await api.get("/transacciones/excel", {
+    const res = await axios.get("/api/transacciones/excel", {
       responseType: "blob",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
 
     // Crear enlace temporal para descargar
@@ -39,14 +33,20 @@ const exportarExcel = async () => {
 // Refrescar / ver todas transacciones
 const cargarTransacciones = async () => {
   try {
-    const res = await api.get("/transacciones");
+    const res = await axios.get("/api/transacciones", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     console.log("Transacciones:", res.data); // opcional, ver en consola
     alert("Se actualizaron los datos.");
   } catch (error) {
     console.error("Error al refrescar:", error);
     alert("No se pudo refrescar.");
   }
+
 };
+
 </script>
 
 <template>
