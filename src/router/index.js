@@ -6,6 +6,12 @@ const routes = [
     component: () => import("../views/PantallaLoader.vue"),
   },
   {
+    path: "/actualizar-saldos",
+    name: "actualizar-saldos",  
+    component: () => import("../views/ActualizarCredito.vue"),
+     meta: { requiresAuth: true, role: "admin", empresa: "enlace"}
+  },
+  {
     path: "/ayuda",
     name: "ayuda",
     component: () => import("../views/PantallaAyudaView.vue"),

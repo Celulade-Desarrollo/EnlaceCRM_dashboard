@@ -9,12 +9,18 @@ const goToRegistro = () => {
 const goToAbonos = () => {
   router.push("/PantallaBajarExcelView"); 
 };
+
+const goToActualizar = () => {
+  router.push("/actualizar-saldos"); 
+};
 </script>
 
 <template>
   <div class="container">
     <button class="btn" @click="goToRegistro">Registro</button>
     <button class="btn" @click="goToAbonos">Abonos a Crédito</button>
+    <button class="btn" @click="goToActualizar">Actualizar saldos</button>
+
   </div>
 </template>
 

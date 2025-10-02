@@ -113,7 +113,7 @@ onMounted(async () => {
 
         <!-- Botón abonar -->
         <div class="button-banner mb-1">
-          <button type="button" class="button" @click="goToPantallaAbonar()">Abonar</button>
+          <button type="button" class="button" @click="goToPantallaAbonar()">Pagar mi cuota</button>
         </div>
 
         <!-- Lista de movimientos -->

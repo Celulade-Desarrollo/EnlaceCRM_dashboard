@@ -46,6 +46,7 @@ const fechaFormateada = computed(() => {
 <motion.div v-bind="fadeInUp">
 <section>
   <div class="card">
+    <h3 class="font-bold text-lg">Estado de mi Mi crédito</h3>
     <div class="flex gap-3 flex-column mb-3">
       <h3 class="flex gap-2">
         Cupo total  $
@@ -53,7 +54,8 @@ const fechaFormateada = computed(() => {
       </h3>
       <h3 class="flex gap-2"> Cupo disponible $ <p class="font-bold">{{ formatoMiles(props.cupoDisp) }}</p></h3>
 
-      <h2 class="text-xl flex gap-3 mt-4 " >Deuda total $<p class="font-bold">{{formatoMiles(deudaTotal) }}</p></h2>
+      <h3 class="font-bold text-lg mt-3">Facturas disponibles para pagar</h3>
+      <h2 class="text-xl flex gap-3 mt-1 " >Deuda total $<p class="font-bold">{{formatoMiles(deudaTotal) }}</p></h2>
 
       <h3 class=" flex text-[13px]"> Fecha del siguiente abono:  <p class="font-bold">{{ fechaFormateada }}</p></h3>
      <p v-if="bloqueoMora" id="bloqueo" class="text-danger mt-1"> Bloqueo por mora !</p>
@@ -61,12 +63,12 @@ const fechaFormateada = computed(() => {
     <div class="flex w-full justify-center gap-2">
   <div class="button-banner w-[50%]">
     <button type="button" id="boton-abonar" class="w-full" @click="$emit('abonar')">
-      Pagar mi cuota 
+    pagar mi cuota
     </button>
   </div>
   <div class="button-banner w-[50%]">
     <button type="button" id="boton-movimientos" class="w-full" @click="$emit('movimientos')">
-      Pagar mis Movimientos 
+      Mis Movimientos 
     </button>
     </div>
   </div>
@@ -83,7 +85,7 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 
 button {
-  padding: 10px 30px;
+  padding: 8px 15px;
   border-radius: 6.25rem;
   background: #dd3590;
   color: white;
@@ -99,6 +101,7 @@ button {
   outline: none;
   align-items: center;
   font-weight: bold;
+  font-size: 13px;
 }
 button:hover {
   background-color: #f15bab;
@@ -131,7 +134,7 @@ button:focus {
 .card {
   background: #fff;
   border-radius: 15px;
-  padding: 1.5rem;
+  padding: 1.8rem;
   max-width: 500px;
   width: 100%;
   text-align: left;
