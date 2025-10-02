@@ -100,7 +100,7 @@ function formatPesos(valor) {
         <div class="header-container">
           <img src="/Alpina.png" alt="Alpina" class="alpina-logo-outside" />
         </div>
-        <h2 class="proveedores">¿Está seguro que desea pagar?</h2>
+        <h2 class="proveedores">¿Estás seguro que deseas pagar?</h2>
         <h1 class="proveedores mb-4" id="cantidad-pagar">
           <span>{{ formatPesos(pagarValor) }}</span> a Alpina
         </h1>
@@ -122,7 +122,7 @@ function formatPesos(valor) {
               aria-describedby="error-pagar"
             />
             <span class="floating-label"
-              >Ingresa el teléfono del transportista</span
+              >Ingresa el teléfono de tu transportista</span
             >
           </label>
         </div>

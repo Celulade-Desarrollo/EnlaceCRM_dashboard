@@ -71,7 +71,7 @@ onMounted(async () => {
                 Fecha del siguiente abono: <span class="bold-text">{{ formatFecha(estadoCuenta.FechaPagoProgramado) }}</span>
               </h3>
             </div>
-            <h2 class="centered-title">Corresponsales Bancarios cerca a ti</h2>
+            <h2 class="centered-title">Corresponsales y oficinas cerca de ti</h2>
           </div>
         </div>
       </div>

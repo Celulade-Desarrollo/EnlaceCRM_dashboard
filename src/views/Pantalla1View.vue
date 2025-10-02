@@ -110,9 +110,13 @@ const goToPantalla5 = () => {
         <div class="provider-content">
           <img src="/Alpina.png" alt="Alpina" class="alpina-img" />
           <div class="text-center">
-            <button class="button" @click="goToPantallaFacturasDisponibles" id="Pantalla2">
-              Pagar
-            </button>
+<button 
+  class="button px-4 py-3 text-sm w-auto min-w-[130px]" 
+  @click="goToPantallaFacturasDisponibles" 
+  id="Pantalla2"
+>
+  Pagar factura
+</button>
           </div>
         </div>
         </div>
