@@ -14,7 +14,8 @@ const estadoCuenta = ref({
   CupoFinal: '',
   CupoDisponible: '',
   FechaPagoProgramado: '',
-  deudaTotal: ''
+  deudaTotal: '',
+  facturaDisponiblePago: ''
 });
 
 const fechaPago = ref('');
@@ -34,7 +35,7 @@ onMounted(async () => {
         },
       }
     );
-    const responseFecha = await axios.get(
+    const responseEstadoCuenta = await axios.get(
       `/api/pagos/estado-cuenta?identificadorTendero=${cedula}`,
       {
         headers: {
@@ -42,14 +43,15 @@ onMounted(async () => {
         },
       }
     );
-    fechaPago.value = responseFecha.data.fechaSiguienteAbono;
+    fechaPago.value = responseEstadoCuenta.data.fechaSiguienteAbono;
     estadoCuenta.value = response.data;
  
     const cupoFinal = parseInt(estadoCuenta.value.CupoFinal.replace(/\./g, ''));
     const cupoDisponible = parseInt(estadoCuenta.value.CupoDisponible);
     const deuda = cupoFinal - cupoDisponible;
     estadoCuenta.value.deudaTotal = deuda;
- 
+     
+    console.log("responseEstadoCuenta",responseEstadoCuenta);
     console.log("deudatotal",estadoCuenta.value);
   }catch (error) {
     console.error("Error al obtener el estado de cuenta:", error);
@@ -101,6 +103,7 @@ const goToPantalla5 = () => {
         :cupoDisp="estadoCuenta.CupoDisponible"
         :fechaAbono="fechaPago"
         :deudaTotal="estadoCuenta.deudaTotal"
+        :facturaDisponiblePago= "estadoCuenta.facturaDisponiblePago"
         @abonar="goToPantallaAbonar"
         @movimientos="goToPantalla5"
       />
