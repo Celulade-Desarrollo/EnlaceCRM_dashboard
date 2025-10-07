@@ -316,7 +316,7 @@ const handleAprobadoClick = async () => {
           v-model="pagareEnviado"
           :disabled="isFieldDisabled('pagareEnviado')"
         >
-          <option value="">Selecciona</option>
+          <option value="">No</option>
           <option value="si">Sí</option>
         </select>
         <span class="floating-label">Pagare digital enviado</span>
@@ -328,7 +328,7 @@ const handleAprobadoClick = async () => {
           v-model="pagareDigital"
           :disabled="isFieldDisabled('pagareDigital')"
         >
-          <option value="">Selecciona</option>
+          <option value="">No</option>
           <option value="si">Sí</option>
         </select>
         <span class="floating-label">Pagare digital firmado</span>
@@ -341,7 +341,7 @@ const handleAprobadoClick = async () => {
           v-model="usuarioAprobado"
           :disabled="isFieldDisabled('usuarioAprobado')"
         >
-          <option value="">Selecciona</option>
+          <option value="">No</option>
           <option value="si">Sí</option>
         </select>
         <span class="floating-label">Usuario creado</span>
