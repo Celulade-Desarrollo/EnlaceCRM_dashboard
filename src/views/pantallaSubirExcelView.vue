@@ -4,14 +4,23 @@ import * as XLSX from 'xlsx'
 import axios from 'axios'
 import { motion } from "motion-v";
 import { fadeInUp } from "../motion/pageAnimation";
+import BotonAtras from "../components/UI/BotonAtras.vue";
+import { useRouter } from "vue-router";
 
 const token = localStorage.getItem("admin_token");
 const excelData = ref([])
 const fileLoaded = ref(false) // estado para saber si hay archivo cargado
+const router = useRouter();
 
 const triggerFileInput = () => {
   document.getElementById('fileUpload').click()
 }
+
+const logout = () => {
+  localStorage.removeItem("admin_token");
+  router.push("/LoginView"); // redirige usando vue-router
+};
+
 
 const handleFileUpload = (event) => {
   const file = event.target.files[0]
@@ -73,6 +82,7 @@ const enviarCSV = async () => {
 </script>
 
 <template>
+      <BotonAtras />
   <motion.div v-bind="fadeInUp" class="page-container">
     <section class="logo-container">
       <img
@@ -95,6 +105,9 @@ const enviarCSV = async () => {
         />
         <button class="boton" @click="triggerFileInput">Subir Archivo</button>
       </div>
+              <div class="logout">
+      <button class="boton-logout" @click="logout">Cerrar sesión</button>
+    </div>
 
       <p v-if="fileLoaded" class="mensaje">Archivo cargado y listo para enviar</p>
       <p v-else class="mensaje">Ningún archivo cargado</p>
@@ -138,6 +151,24 @@ const enviarCSV = async () => {
   color: white;
   margin: 15px 0;
 }
+
+.boton-logout {
+  background-color: #dd3590;
+  color: white;
+  padding: 12px 50px;
+  border: none;
+  border-radius: 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  outline: none;
+  box-shadow: none;
+  margin: 10px 0;
+}
+.boton-logout:hover {
+  background-color: #f15bab;
+}
+
 
 .boton-container {
   text-align: center;

@@ -1,10 +1,12 @@
 <script setup>
 import { ref } from "vue";
 import axios from "axios";
+import BotonAtras from "../components/UI/BotonAtras.vue";
+import { useRouter } from "vue-router";
 
 // Token almacenado
 const token = localStorage.getItem("admin_token");
-
+const router = useRouter();
 // Descargar Excel
 const exportarExcel = async () => {
   try {
@@ -30,6 +32,11 @@ const exportarExcel = async () => {
   }
 };
 
+const logout = () => {
+  localStorage.removeItem("admin_token");
+  router.push("/LoginView"); // redirige usando vue-router
+};
+
 // Refrescar / ver todas transacciones
 const cargarTransacciones = async () => {
   try {
@@ -50,6 +57,8 @@ const cargarTransacciones = async () => {
 </script>
 
 <template>
+    <BotonAtras />
+
   <section class="logo-container">
     <img
       src="/public/enlaceFiado.png"
@@ -62,6 +71,10 @@ const cargarTransacciones = async () => {
   <div class="botones-container">
     <button class="btn" @click="cargarTransacciones">Refrescar</button>
     <button class="btn" @click="exportarExcel">Descargar Excel</button>
+        <div class="logout">
+      <button class="boton-logout" @click="logout">Cerrar sesión</button>
+    </div>
+
   </div>
 </template>
 
@@ -75,6 +88,28 @@ const cargarTransacciones = async () => {
   margin-left: -200px;
     margin-top: 20px;
   
+}
+
+.logout {
+  display: flex;
+  justify-content: right;
+  margin-top: 1rem;
+}
+.boton-logout {
+  padding: 10px 30px;
+  font-size: 15px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 600;
+  background: #dd3590;
+  color: #fff;
+  outline: none;
+  border: none;
+  transform: translateY(80px);
+  margin-left: -100px;
+}
+.boton-logout:hover {
+  background-color: #f15bab;
 }
 
 .botones-container {
@@ -109,6 +144,6 @@ const cargarTransacciones = async () => {
 }
 
 .btn:hover {
-  background-color: #dd3590;
+  background-color: #f15bab;
 }
 </style>

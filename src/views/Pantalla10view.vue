@@ -9,6 +9,7 @@ import CreditBancoCard from "../components/UI/CreditBancoCard.vue";
 import axios from "axios";
 import SesionExpiradaLogin from "../components/UI/SesionExpiradaLogin.vue";
 import { activarSesionExpirada } from "../stores/session.js";
+import BotonAtras from "../components/UI/BotonAtras.vue";
 
 const creditDataRecords = ref([])
 const bancowData = ref([]);
@@ -132,6 +133,8 @@ async function downloadExcel() {
 
 </script>
 <template>
+      <BotonAtras />
+
   <motion.div v-bind="fadeInUp">
     <section class="logo-container">
       <img
@@ -180,8 +183,8 @@ async function downloadExcel() {
 }
 .boton-logout {
   padding: 10px 30px;
-  font-size: 15px;
-  border-radius: 8px;
+  font-size: 16px;
+  border-radius: 20px;
   cursor: pointer;
   font-weight: 600;
   background: #dd3590;
