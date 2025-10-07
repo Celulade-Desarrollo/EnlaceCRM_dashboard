@@ -46,7 +46,7 @@ const fechaFormateada = computed(() => {
 <motion.div v-bind="fadeInUp">
 <section>
   <div class="card">
-    <h3 class="font-bold text-lg">Estado de mi Mi crédito</h3>
+    <h3 class="font-bold text-lg">Estado de Mi crédito</h3>
     <div class="flex gap-3 flex-column mb-3">
       <h3 class="flex gap-2">
         Cupo total  $
