@@ -81,8 +81,10 @@ async function downloadExcel() {
     // Si data no es un array, lo envolvemos en uno
     const dataArray = Array.isArray(data) ? data : [data];
 
-    // se quita el campo id
-    const dataTransformada = dataArray.map(({ Id, Estado, Estado_Scoring, ...rest }) => {
+    // se quitan campos
+    const dataTransformada = dataArray.map(({ 
+      Id, Estado, Estado_Scoring, Numero_de_Cliente_Alpina,nbCliente,nbAgenteComercial,
+      ...rest }) => {
       return {
         ...rest,
         Estatus: Estado_Scoring, // nuevo estatus en el Excel
