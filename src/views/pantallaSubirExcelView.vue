@@ -18,9 +18,8 @@ const triggerFileInput = () => {
 
 const logout = () => {
   localStorage.removeItem("admin_token");
-  router.push("/LoginView"); // redirige usando vue-router
+  router.push("/LoginView");
 };
-
 
 const handleFileUpload = (event) => {
   const file = event.target.files[0]
@@ -61,7 +60,7 @@ const handleFileUpload = (event) => {
 
 const enviarCSV = async () => {
   try {
-    await axios.post(
+    const response = await axios.post(
       "api/abonos/upload",
       { data: excelData.value },
       {
@@ -71,6 +70,7 @@ const enviarCSV = async () => {
         },
       }
     );
+    alert("Archivo cargando correctamente");
     fileLoaded.value = false;
     window.location.reload();
   } catch (err) {
@@ -78,11 +78,10 @@ const enviarCSV = async () => {
     alert("Error al cargar archivo");
   }
 };
-
 </script>
 
 <template>
-      <BotonAtras />
+  <BotonAtras />
   <motion.div v-bind="fadeInUp" class="page-container">
     <section class="logo-container">
       <img
@@ -105,9 +104,9 @@ const enviarCSV = async () => {
         />
         <button class="boton" @click="triggerFileInput">Subir Archivo</button>
       </div>
-              <div class="logout">
-      <button class="boton-logout" @click="logout">Cerrar sesión</button>
-    </div>
+      <div class="logout">
+        <button class="boton-logout" @click="logout">Cerrar sesión</button>
+      </div>
 
       <p v-if="fileLoaded" class="mensaje">Archivo cargado y listo para enviar</p>
       <p v-else class="mensaje">Ningún archivo cargado</p>
