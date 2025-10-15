@@ -19,13 +19,14 @@ const estadoCuenta = ref({
 });
 
 const fechaPago = ref('');
- 
+
 const datosCuenta = JSON.parse(localStorage.getItem("datosCuenta")) || {};
+
 onMounted(async () => {
   const cedula = datosCuenta.Cedula_Cliente;
   const IdUsuario = localStorage.getItem("idUsuario");
-  // Obtener el token del localStorage
   const token = localStorage.getItem("token");
+
   try {
     const response = await axios.get(
       `/api/user/estado-cuenta/${IdUsuario}`,
@@ -35,6 +36,7 @@ onMounted(async () => {
         },
       }
     );
+
     const responseEstadoCuenta = await axios.get(
       `/api/pagos/estado-cuenta?identificadorTendero=${cedula}`,
       {
@@ -45,54 +47,53 @@ onMounted(async () => {
     );
     fechaPago.value = responseEstadoCuenta.data.fechaSiguienteAbono;
     estadoCuenta.value = response.data;
- 
-    const cupoFinal = parseInt(estadoCuenta.value.CupoFinal.replace(/\./g, ''));
-    const cupoDisponible = parseInt(estadoCuenta.value.CupoDisponible);
-    const deuda = cupoFinal - cupoDisponible;
-    estadoCuenta.value.deudaTotal = deuda;
-     
-    console.log("responseEstadoCuenta",responseEstadoCuenta);
-    console.log("deudatotal",estadoCuenta.value);
-  }catch (error) {
+
+    // Buscar el movimiento tipo 1 (pago de factura) con MontoMasIntereses
+    const movimientoConInteres = responseEstadoCuenta.data.movimientos.find(
+      (mov) => mov.IdTipoMovimiento === 1 && mov.MontoMasIntereses !== null
+    );
+
+    if (movimientoConInteres) {
+      estadoCuenta.value.deudaTotal = movimientoConInteres.MontoMasIntereses;
+    } else {
+      const cupoFinal = parseInt(estadoCuenta.value.CupoFinal.replace(/\./g, ''));
+      const cupoDisponible = parseInt(estadoCuenta.value.CupoDisponible);
+      estadoCuenta.value.deudaTotal = cupoFinal - cupoDisponible;
+    }
+
+    console.log("responseEstadoCuenta", responseEstadoCuenta);
+    console.log("deudatotal", estadoCuenta.value);
+
+  } catch (error) {
     console.error("Error al obtener el estado de cuenta:", error);
     if (error.response?.status === 401) {
       activarSesionExpirada();
     }
   }
 
-    document.body.style.backgroundColor = "#2e008b";
- 
+  document.body.style.backgroundColor = "#2e008b";
+
   const tipo = localStorage.getItem("tipo");
   const idUsuario = localStorage.getItem("idUsuario");
- 
+
   console.log("localStorage token:", token);
   console.log("localStorage tipo:", tipo);
-  console.log("idUsuario",idUsuario);
+  console.log("idUsuario", idUsuario);
   console.log("datosCuenta", datosCuenta);
- 
-  // const data = localStorage.getItem("data");
-  // if (data) {
-  //   try {
-  //     dataInfoapp.value = JSON.parse(data);
-  //   } catch (e) {
-  //     console.error("Error al parsear data desde localStorage:", e);
-  //   }
-  // }
 });
- 
+
 const goToPantallaAbonar = () => {
   router.push("/PantallaAbonoView");
 };
- 
+
 const goToPantallaFacturasDisponibles = () => {
-   router.push("/PantallaFacturasView");
+  router.push("/PantallaFacturasView");
 };
- 
+
 const goToPantalla5 = () => {
   router.push("/Pantalla5View");
 };
 </script>
- 
 <template>
   <Heading :mensaje="'Hola, ' + datosCuenta.Nombres" />
  
