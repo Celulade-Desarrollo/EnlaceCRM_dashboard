@@ -13,6 +13,9 @@ const goToAbonos = () => {
 const goToActualizar = () => {
   router.push("/actualizar-saldos"); 
 };
+const goToActualizarIntereses = () => {
+  router.push("/actualizar-intereses"); 
+};
 </script>
 
 <template>
@@ -20,17 +23,19 @@ const goToActualizar = () => {
     <button class="btn" @click="goToRegistro">Registro</button>
     <button class="btn" @click="goToAbonos">Abonos a Crédito</button>
     <button class="btn" @click="goToActualizar">Actualizar saldos</button>
-
+    <button class="btn" @click="goToActualizarIntereses">Actualizar intereses</button>
   </div>
 </template>
 
 <style scoped>
 .container {
+  display: flex;
+  flex-direction: column;
   height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 60px;
+  gap: 20px;
   background-color: #251786;
 }
 
