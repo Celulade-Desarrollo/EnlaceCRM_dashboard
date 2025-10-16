@@ -56,9 +56,34 @@ const handleFileUpload = (event) => {
   }
 
   reader.readAsArrayBuffer(file)
-}
+} 
+
+  const camposObligatorios =  [
+    "Operacion", "CuentaCliente", "NumeroID", "Persona",
+  "IdEstadoProducto", "FecTransaccion", "CAPITAL", "TOTAL_PAGADO"
+  ];
+
+  const validarDatos = (data) => {
+    const errores = [];
+
+    data.forEach((fila, index) => {
+      camposObligatorios.forEach((campo) => {
+        if (fila[campo] === null || fila[campo] === undefined || fila[campo] === "") {
+          errores.push(`Fila ${index + 2}: El campo "${campo}" es obligatorio.`);
+        }
+      });
+    });
+
+    return errores;
+  };
 
 const enviarCSV = async () => {
+  const errores = validarDatos(excelData.value);
+
+  if (errores.length > 0){
+    alert("Errores encontrados:\n" + errores.join("\n"));
+    return;
+  }
   try {
     const response = await axios.post(
       "api/abonos/upload",
