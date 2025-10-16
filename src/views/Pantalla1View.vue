@@ -37,7 +37,7 @@ onMounted(async () => {
       }
     );
 
-    const responseEstadoCuenta = await axios.get(
+      const responseEstadoCuenta = await axios.get(
       `/api/pagos/estado-cuenta?identificadorTendero=${cedula}`,
       {
         headers: {
@@ -50,17 +50,21 @@ onMounted(async () => {
 
     const movimientos = responseEstadoCuenta.data.movimientos;
 
-    const movimientoFactura = movimientos.find(
-      (mov) => mov.IdTipoMovimiento === 1 && mov.Monto !== null && mov.AbonoUsuario !== null
-    );
+    const movimientoFactura = [...movimientos]
+      .reverse()
+      .find((mov) =>
+        mov.IdTipoMovimiento === 1 &&
+        mov.MontoMasIntereses !== null
+      );
+
+    console.log("Movimiento factura encontrado:", movimientoFactura);
+
     if (movimientoFactura) {
-      const montoFactura = parseFloat(movimientoFactura.Monto.toString().replace(',', '.'));
-      const totalAbonado = parseFloat(movimientoFactura.AbonoUsuario.toString().replace(',', '.'));
+      const monto = parseFloat(movimientoFactura.Monto.toString().replace(',', '.'));
+      const abono = parseFloat((movimientoFactura.AbonoUsuario || '0').toString().replace(',', '.'));
+      const montoConIntereses = parseFloat(movimientoFactura.MontoMasIntereses.toString().replace(',', '.'));
 
-      // La deuda solo existe si aún no se ha pagado el total del capital
-      const deuda = totalAbonado >= montoFactura ? 0 : montoFactura - totalAbonado;
-
-      estadoCuenta.value.deudaTotal = deuda.toFixed(2);
+      estadoCuenta.value.deudaTotal = abono >= monto ? 0 : montoConIntereses.toFixed(2);
     } else {
       const cupoFinal = parseInt(estadoCuenta.value.CupoFinal.replace(/\./g, ''));
       const cupoDisponible = parseInt(estadoCuenta.value.CupoDisponible);
