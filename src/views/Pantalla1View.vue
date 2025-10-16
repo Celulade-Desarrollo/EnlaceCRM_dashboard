@@ -48,17 +48,23 @@ onMounted(async () => {
     fechaPago.value = responseEstadoCuenta.data.fechaSiguienteAbono;
     estadoCuenta.value = response.data;
 
-    // Buscar el movimiento tipo 1 (pago de factura) con MontoMasIntereses
-    const movimientoConInteres = responseEstadoCuenta.data.movimientos.find(
-      (mov) => mov.IdTipoMovimiento === 1 && mov.MontoMasIntereses !== null
-    );
+    const movimientos = responseEstadoCuenta.data.movimientos;
 
-    if (movimientoConInteres) {
-      estadoCuenta.value.deudaTotal = movimientoConInteres.MontoMasIntereses;
+    const movimientoFactura = movimientos.find(
+      (mov) => mov.IdTipoMovimiento === 1 && mov.Monto !== null && mov.AbonoUsuario !== null
+    );
+    if (movimientoFactura) {
+      const montoFactura = parseFloat(movimientoFactura.Monto.toString().replace(',', '.'));
+      const totalAbonado = parseFloat(movimientoFactura.AbonoUsuario.toString().replace(',', '.'));
+
+      // La deuda solo existe si aún no se ha pagado el total del capital
+      const deuda = totalAbonado >= montoFactura ? 0 : montoFactura - totalAbonado;
+
+      estadoCuenta.value.deudaTotal = deuda.toFixed(2);
     } else {
       const cupoFinal = parseInt(estadoCuenta.value.CupoFinal.replace(/\./g, ''));
       const cupoDisponible = parseInt(estadoCuenta.value.CupoDisponible);
-      estadoCuenta.value.deudaTotal = cupoFinal - cupoDisponible;
+      estadoCuenta.value.deudaTotal = (cupoFinal - cupoDisponible).toFixed(2);
     }
 
     console.log("responseEstadoCuenta", responseEstadoCuenta);
@@ -95,8 +101,8 @@ const goToPantalla5 = () => {
 };
 </script>
 <template>
+
   <Heading :mensaje="'Hola, ' + datosCuenta.Nombres" />
- 
   <motion.div v-bind="fadeInUp">
     <section class="content">
       <CardAbonoCupos
@@ -111,16 +117,17 @@ const goToPantalla5 = () => {
      
       <!-- Tarjeta de proveedor -->
       <div class="card">
+        <h3 class="font-bold text-lg mt-3">Facturas disponibles para pagar</h3>
         <div class="provider-content">
           <img src="/Alpina.png" alt="Alpina" class="alpina-img" />
           <div class="text-center">
-<button 
-  class="button px-4 py-3 text-sm w-auto min-w-[130px]" 
-  @click="goToPantallaFacturasDisponibles" 
-  id="Pantalla2"
->
-  Pagar factura
-</button>
+          <button 
+            class="button px-4 py-3 text-sm w-auto min-w-[130px]" 
+            @click="goToPantallaFacturasDisponibles" 
+            id="Pantalla2"
+          >
+            Pagar factura
+          </button>
           </div>
         </div>
         </div>
