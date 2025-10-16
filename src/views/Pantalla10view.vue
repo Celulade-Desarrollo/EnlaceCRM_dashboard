@@ -98,6 +98,7 @@ async function downloadExcel() {
       Operaciones_moneda_extranjera: rest.Operaciones_moneda_extranjera ? 'Sí' : 'No',
       Declaracion_de_nacionalidad_y_residencia_fiscal_en_Colombia: rest.Declaracion_de_nacionalidad_y_residencia_fiscal_en_Colombia ? 'Sí' : 'No',
       Estado: Estado
+      
     };
   });
     // crear la hoja excel

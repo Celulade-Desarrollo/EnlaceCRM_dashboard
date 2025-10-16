@@ -54,10 +54,10 @@ const fechaFormateada = computed(() => {
       </h3>
       <h3 class="flex gap-2"> Cupo disponible $ <p class="font-bold">{{ formatoMiles(props.cupoDisp) }}</p></h3>
 
-      <h3 class="font-bold text-lg mt-3">Facturas disponibles para pagar</h3>
+      
       <h2 class="text-xl flex gap-3 mt-1 " >Deuda total $<p class="font-bold">{{formatoMiles(deudaTotal) }}</p></h2>
 
-      <h3 v-if="deudaTotal !== 0" class=" flex text-[13px]"> Fecha del siguiente abono:  <p class="font-bold">{{ fechaFormateada }}</p></h3>
+      <h3 v-if="Number(deudaTotal) > 0" class=" flex text-[13px]"> Fecha del siguiente abono:  <p class="font-bold">{{ fechaFormateada }}</p></h3>
      <p v-if="bloqueoMora" id="bloqueo" class="text-danger mt-1"> Bloqueo por mora !</p>
     </div>
     <div class="flex w-full justify-center gap-2">
