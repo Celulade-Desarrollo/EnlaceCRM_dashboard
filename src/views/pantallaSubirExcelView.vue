@@ -6,6 +6,8 @@ import { motion } from "motion-v";
 import { fadeInUp } from "../motion/pageAnimation";
 import BotonAtras from "../components/UI/BotonAtras.vue";
 import { useRouter } from "vue-router";
+import SesionExpiradaLogin from "../components/UI/SesionExpiradaLogin.vue";
+import { activarSesionExpirada } from "../stores/session.js";
 
 const token = localStorage.getItem("admin_token");
 const excelData = ref([])
@@ -56,9 +58,34 @@ const handleFileUpload = (event) => {
   }
 
   reader.readAsArrayBuffer(file)
-}
+} 
+
+  const camposObligatorios =  [
+    "Operacion", "CuentaCliente", "NumeroID", "Persona",
+  "IdEstadoProducto", "FecTransaccion", "CAPITAL", "TOTAL_PAGADO"
+  ];
+
+  const validarDatos = (data) => {
+    const errores = [];
+
+    data.forEach((fila, index) => {
+      camposObligatorios.forEach((campo) => {
+        if (fila[campo] === null || fila[campo] === undefined || fila[campo] === "") {
+          errores.push(`Fila ${index + 2}: El campo "${campo}" es obligatorio.`);
+        }
+      });
+    });
+
+    return errores;
+  };
 
 const enviarCSV = async () => {
+  const errores = validarDatos(excelData.value);
+
+  if (errores.length > 0){
+    alert("Errores encontrados:\n" + errores.join("\n"));
+    return;
+  }
   try {
     const response = await axios.post(
       "api/abonos/upload",
@@ -76,6 +103,9 @@ const enviarCSV = async () => {
   } catch (err) {
     console.error(err);
     alert("Error al cargar archivo");
+    if (error.response?.status === 401) {
+      activarSesionExpirada();
+    }
   }
 };
 </script>
@@ -115,6 +145,7 @@ const enviarCSV = async () => {
         <button class="boton" @click="enviarCSV">Enviar</button>
       </div>
     </div>
+    <SesionExpiradaLogin />
   </motion.div>
 </template>
 
