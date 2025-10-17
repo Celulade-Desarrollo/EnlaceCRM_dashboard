@@ -6,6 +6,8 @@ import { motion } from "motion-v";
 import { fadeInUp } from "../motion/pageAnimation";
 import BotonAtras from "../components/UI/BotonAtras.vue";
 import { useRouter } from "vue-router";
+import SesionExpiradaLogin from "../components/UI/SesionExpiradaLogin.vue";
+import { activarSesionExpirada } from "../stores/session.js";
 
 const token = localStorage.getItem("admin_token");
 const excelData = ref([])
@@ -101,6 +103,9 @@ const enviarCSV = async () => {
   } catch (err) {
     console.error(err);
     alert("Error al cargar archivo");
+    if (error.response?.status === 401) {
+      activarSesionExpirada();
+    }
   }
 };
 </script>
@@ -140,6 +145,7 @@ const enviarCSV = async () => {
         <button class="boton" @click="enviarCSV">Enviar</button>
       </div>
     </div>
+    <SesionExpiradaLogin />
   </motion.div>
 </template>
 

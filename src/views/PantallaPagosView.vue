@@ -3,9 +3,11 @@ import { ref } from "vue";
 import axios from "axios";
 import BotonAtras from "../components/UI/BotonAtras.vue";
 import { useRouter } from "vue-router";
+import SesionExpiradaLogin from "../components/UI/SesionExpiradaLogin.vue";
+import { activarSesionExpirada } from "../stores/session.js";
 
-// Token almacenado
 const token = localStorage.getItem("admin_token");
+
 const router = useRouter();
 // Descargar Excel
 const exportarExcel = async () => {
@@ -29,12 +31,15 @@ const exportarExcel = async () => {
   } catch (error) {
     console.error("Error al descargar el Excel:", error);
     alert("No se pudo descargar el archivo Excel.");
+    if (error.response?.status === 401) {
+      activarSesionExpirada();
+    }
   }
 };
 
 const logout = () => {
   localStorage.removeItem("admin_token");
-  router.push("/LoginView"); // redirige usando vue-router
+  router.push("/LoginView");
 };
 
 // Refrescar / ver todas transacciones
@@ -45,11 +50,14 @@ const cargarTransacciones = async () => {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log("Transacciones:", res.data); // opcional, ver en consola
+    console.log("Transacciones:", res.data);
     alert("Se actualizaron los datos.");
   } catch (error) {
     console.error("Error al refrescar:", error);
     alert("No se pudo refrescar.");
+    if (error.response?.status === 401) {
+      activarSesionExpirada();
+    }
   }
 
 };
@@ -76,6 +84,7 @@ const cargarTransacciones = async () => {
     </div>
 
   </div>
+  <SesionExpiradaLogin />
 </template>
 
 <style scoped>

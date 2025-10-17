@@ -2,6 +2,8 @@
 import axios from "axios";
 import * as XLSX from "xlsx";
 import { motion } from "motion-v";
+import SesionExpiradaLogin from "../components/UI/SesionExpiradaLogin.vue";
+import { activarSesionExpirada } from "../stores/session.js";
 
 const token = localStorage.getItem("admin_token");
 const company = localStorage.getItem("company");
@@ -45,6 +47,9 @@ async function downloadAbonosExcel() {
   } catch (error) {
     console.error("Error al descargar Abonos:", error);
     alert("No se pudo descargar el archivo de abonos");
+    if (error.response?.status === 401) {
+      activarSesionExpirada();
+    }
   }
 }
 </script>
@@ -64,6 +69,7 @@ async function downloadAbonosExcel() {
         Descargar Abonos
       </button>
     </div>
+    <SesionExpiradaLogin />
   </motion.div>
 </template>
 
