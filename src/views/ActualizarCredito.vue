@@ -26,17 +26,21 @@
           </template>
         </p>
         <p>
-          <strong>Saldo Capital:</strong>
+          <strong>Saldo Capital + Intereses:</strong>
           <template v-if="movimiento.editando">
             <input 
               type="number" 
-              v-model.number="movimiento.abonoCapital"
-              class="saldo-capital-input"
+              v-model.number="movimiento.MontoMasIntereses" 
+              class="monto-input"
             >
           </template>
           <template v-else>
-            ${{ calcularSaldoCapital(movimiento) }}
+            ${{ formatearMonto(getDsiplayMontoMasIntereses(movimiento)) }}
           </template>
+        </p>
+        <p>
+          <strong>Saldo Capital:</strong>
+          ${{ calcularSaldoCapital(movimiento) }}
         </p>
         <p>
           <strong>Saldo total:</strong>
@@ -72,6 +76,10 @@
         </p>
 
       -->
+         <p class="bg-yellow-200">
+          <strong>Total Abono:</strong>
+          ${{ calcularTotalAbono(movimiento) }}
+        </p>
         <p class="bg-green-200">
           <strong>Abono Capital:</strong>
           <template v-if="movimiento.editando">
@@ -85,7 +93,7 @@
             ${{ formatearMonto(movimiento.abonoCapital) }}
           </template>
         </p>
-      <!-- 
+      
 
          <p class="bg-green-200">
           <strong>Abono Intereses:</strong>
@@ -100,7 +108,7 @@
             ${{ formatearMonto(movimiento.abonoIntereses) }}
           </template>
         </p>
-
+        <!-- 
          <p>
           <strong>Cobro fees:</strong>
           <template v-if="movimiento.editando">
@@ -114,9 +122,9 @@
             ${{ formatearMonto(movimiento.cobroFees) }}
           </template>
         </p>
-
+-->
          <p class="bg-green-200">
-          <strong>Abono fees:</strong>
+          <strong>Seguro (fees):</strong>
           <template v-if="movimiento.editando">
             <input 
               type="number" 
@@ -128,7 +136,7 @@
             ${{ formatearMonto(movimiento.abonoFees) }}
           </template>
         </p>
-        -->
+      
         <p><strong>Descripción:</strong> {{ movimiento.Descripcion }}</p>
         <p><strong>Fecha de Pago Programado:</strong> {{ formatearFecha(movimiento.FechaPagoProgramado) }}</p>
         
@@ -171,6 +179,8 @@ const formatearFecha = (fecha) => {
   })
 }
 
+
+
 const formatearMonto = (monto) => {
   if (isNaN(monto) || monto == null) return '0'
   return Number(monto).toLocaleString('es-CO')
@@ -179,7 +189,28 @@ const formatearMonto = (monto) => {
 
 const getDisplayMonto = (movimiento) => {
   if (!movimiento) return 0
-  return movimiento.Monto
+  return movimiento.Monto 
+}
+
+const getDsiplayMontoMasIntereses = (movimiento) => {
+  if (!movimiento) return 0
+  const totalAbono = totalAbonoValue(movimiento)
+  return movimiento.MontoMasIntereses - Number(movimiento.AbonoUsuario || 0) - totalAbono
+}
+
+const calcularTotalAbono = (movimiento) => {
+  const abonoCapital = Number(movimiento.abonoCapital || 0)
+  const abonoIntereses = Number(movimiento.abonoIntereses || 0)
+  const abonoFees = Number(movimiento.abonoFees || 0)
+  return formatearMonto(abonoCapital + abonoIntereses + abonoFees)
+}
+
+const totalAbonoValue = (movimiento) => {
+  return (
+    Number(movimiento.abonoCapital || 0) +
+    Number(movimiento.abonoIntereses || 0) +
+    Number(movimiento.abonoFees || 0)
+  )
 }
 
 const calcularSaldoCapital = (movimiento) => {
@@ -218,8 +249,6 @@ const obtenerMovimientos = async () => {
 
         const response = await axios.get('/api/listar/enlace/movimientos')
         const data = response.data   
-    
-
   try {
 
     movimientos.value = data.map((mov) => ({
