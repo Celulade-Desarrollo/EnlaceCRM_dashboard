@@ -17,7 +17,7 @@
           <template v-if="movimiento.editando">
             <input 
               type="number" 
-              v-model.number="movimiento.nuevoMonto" 
+              v-model="movimiento.nuevoMonto" 
               class="monto-input"
             >
           </template>
@@ -26,27 +26,23 @@
           </template>
         </p>
         <p>
-          <strong>Saldo Capital + Intereses:</strong>
+          <strong>Saldo Capital:</strong>
           <template v-if="movimiento.editando">
             <input 
               type="number" 
-              v-model.number="movimiento.MontoMasIntereses" 
-              class="monto-input"
+              v-model.number="movimiento.abonoCapital"
+              class="saldo-capital-input"
             >
           </template>
           <template v-else>
-            ${{ formatearMonto(getDsiplayMontoMasIntereses(movimiento)) }}
+            ${{ formatearMonto(calcularSaldoCapital(movimiento)) }}
           </template>
-        </p>
-        <p>
-          <strong>Saldo Capital:</strong>
-          ${{ calcularSaldoCapital(movimiento) }}
         </p>
         <p>
           <strong>Saldo total:</strong>
           ${{ formatearMonto(calcularSaldoTotal(movimiento)) }}
         </p>
-        <!-- 
+        
         <p class="bg-green-200">
           <strong>Interes corriente:</strong>
           <template v-if="movimiento.editando">
@@ -75,11 +71,7 @@
           </template>
         </p>
 
-      -->
-         <p class="bg-yellow-200">
-          <strong>Total Abono:</strong>
-          ${{ calcularTotalAbono(movimiento) }}
-        </p>
+    <!-- 
         <p class="bg-green-200">
           <strong>Abono Capital:</strong>
           <template v-if="movimiento.editando">
@@ -93,8 +85,6 @@
             ${{ formatearMonto(movimiento.abonoCapital) }}
           </template>
         </p>
-      
-
          <p class="bg-green-200">
           <strong>Abono Intereses:</strong>
           <template v-if="movimiento.editando">
@@ -108,7 +98,8 @@
             ${{ formatearMonto(movimiento.abonoIntereses) }}
           </template>
         </p>
-        <!-- 
+-->
+
          <p>
           <strong>Cobro fees:</strong>
           <template v-if="movimiento.editando">
@@ -122,9 +113,10 @@
             ${{ formatearMonto(movimiento.cobroFees) }}
           </template>
         </p>
--->
+
+        <!-- 
          <p class="bg-green-200">
-          <strong>Seguro (fees):</strong>
+          <strong>Abono fees:</strong>
           <template v-if="movimiento.editando">
             <input 
               type="number" 
@@ -136,23 +128,20 @@
             ${{ formatearMonto(movimiento.abonoFees) }}
           </template>
         </p>
-      
+        -->
         <p><strong>Descripción:</strong> {{ movimiento.Descripcion }}</p>
         <p><strong>Fecha de Pago Programado:</strong> {{ formatearFecha(movimiento.FechaPagoProgramado) }}</p>
         
         <div class="botones">
           <template v-if="movimiento.editando">
-            <button @click="actualizarMonto( movimiento.Cedula_Usuario, movimiento.abonoCapital, movimiento.NroFacturaAlpina, movimiento.IdMovimiento )" class="p-2 bg-green-400 rounded-xl pl-3 pr-3 text-green-800">Realizar Abono</button>
+           <!-- <button @click="actualizarMonto( movimiento.Cedula_Usuario, actualizarSaldo.abonoCapital )" class="p-2 bg-green-400 rounded-xl pl-3 pr-3 text-green-800">Realizar Abono</button>-->
+            <button @click="actualizarIntereses( movimiento.IdMovimiento, calcularSaldoTotal(movimiento))" class="p-2 bg-yellow-400 rounded-xl pl-3 pr-3 text-yellow-800">Actualizar Intereses</button> 
 
+      
             <button @click="cancelarEdicion(movimiento)" class="text-gray-400 p-2 border-2 rounded-xl border-solid border-gray-400">Cancelar</button>
           </template>
           <template v-else>
-            <button 
-              @click="iniciarEdicion(movimiento)" 
-              :disabled="saldoCapitalValue(movimiento) === 0"
-              class="bg-[#dd3590] text-white p-2 pl-4 pr-4 rounded-xl"
-            >Actualizar Saldo</button>
-            <span v-if="saldoCapitalValue(movimiento) === 0" class="no-edit-note">Saldo capital es 0 — no editable</span>
+            <button @click="iniciarEdicion(movimiento)" class="bg-[#dd3590] text-white p-2 pl-4 pr-4 rounded-xl">Actualizar Saldo</button>
           </template>
         </div>
       </div>
@@ -168,7 +157,7 @@ import axios from 'axios'
 const movimientos = ref([])
 
 // Eliminamos el estado global 'actualizarSaldo'.
-// Cada movimiento tendrá su propio estado inicializado en obtenerMovimientos.
+// Cada movimiento tendrá sus propios campos editables inicializados al obtener los movimientos.
 
 
 const formatearFecha = (fecha) => {
@@ -179,93 +168,69 @@ const formatearFecha = (fecha) => {
   })
 }
 
-
-
 const formatearMonto = (monto) => {
   if (isNaN(monto) || monto == null) return '0'
   return Number(monto).toLocaleString('es-CO')
 }
 
-
 const getDisplayMonto = (movimiento) => {
-  if (!movimiento) return 0
-  return movimiento.Monto 
+  // Si existe MontoMasIntereses (no null/undefined) usarlo, si no usar Monto
+  if (movimiento == null) return 0
+  return movimiento.MontoMasIntereses != null ? movimiento.MontoMasIntereses : movimiento.Monto
 }
 
-const getDsiplayMontoMasIntereses = (movimiento) => {
-  if (!movimiento) return 0
-  const totalAbono = totalAbonoValue(movimiento)
-  return movimiento.MontoMasIntereses - Number(movimiento.AbonoUsuario || 0) - totalAbono
-}
-
-const calcularTotalAbono = (movimiento) => {
-  const abonoCapital = Number(movimiento.abonoCapital || 0)
-  const abonoIntereses = Number(movimiento.abonoIntereses || 0)
-  const abonoFees = Number(movimiento.abonoFees || 0)
-  return formatearMonto(abonoCapital + abonoIntereses + abonoFees)
-}
-
-const totalAbonoValue = (movimiento) => {
-  return (
-    Number(movimiento.abonoCapital || 0) +
-    Number(movimiento.abonoIntereses || 0) +
-    Number(movimiento.abonoFees || 0)
-  )
-}
 
 const calcularSaldoCapital = (movimiento) => {
-  const abonoCapital = Number(movimiento.abonoCapital || 0)
   const pago = Number(getDisplayMonto(movimiento) || 0)
-
-  if(movimiento.AbonoUsuario != null){
-    const AbonoUsuario = Number(movimiento.AbonoUsuario || 0)
-    return formatearMonto(pago - AbonoUsuario)
-  }
-  return formatearMonto(pago - abonoCapital)
+  const abonoCapital = Number(movimiento.abonoCapital || 0)
+  return pago - abonoCapital
 }
 
 const calcularSaldoTotal = (movimiento) => {
-  const pago = Number(getDisplayMonto(movimiento) || 0)
-  const abonoCapital = Number(movimiento.abonoCapital || 0)
-  if(movimiento.AbonoUsuario != null){
-    const AbonoUsuario = Number(movimiento.AbonoUsuario || 0)
-    const pago = Number(getDisplayMonto(movimiento) || 0)
-    const resultado = pago - AbonoUsuario
-    return resultado - abonoCapital
-  }
-}
+  const B = calcularSaldoCapital(movimiento)
+  const D = Number(movimiento.interesCorriente || 0)
+  const E = Number(movimiento.interesMora || 0)
+  const H = Number(movimiento.cobroFees ?? 500)
 
-const saldoCapitalValue = (movimiento) => {
-  const pago = Number(getDisplayMonto(movimiento) || 0)
-  const abonoCapital = Number(movimiento.abonoCapital || 0)
-  if (movimiento.AbonoUsuario != null) {
-    return pago - Number(movimiento.AbonoUsuario || 0)
-  }
-  return pago - abonoCapital
+  return B + D + E + H 
 }
 
 
 const obtenerMovimientos = async () => {
 
         const response = await axios.get('/api/listar/enlace/movimientos')
-        const data = response.data   
+        const data = response.data
+        console.log(data)
+    
+
   try {
+    const dataPrueba = [
+      {
+        IdMovimiento: 18674,
+        IdUsuarioFinal: 54,
+        FechaHoraMovimiento: "2025-10-06T18:04:30.495Z",
+        IdTipoMovimiento: 1,
+        Monto: 30000,
+        Descripcion: "testing",
+        Cedula_Usuario: "1111480601",
+      },
+    ]
 
     movimientos.value = data.map((mov) => ({
       ...mov,
       editando: false,
       nuevoMonto: mov.MontoMasIntereses != null ? mov.MontoMasIntereses : mov.Monto,
-      // estado por movimiento
+      // Campos por movimiento (estado local)
       interesCorriente: 0,
       interesMora: 0,
       abonoCapital: 0,
       abonoIntereses: 0,
       abonoFees: 0,
-      cobroFees: 0,
+      cobroFees: 500,
     }))
 
   
-  // Los cálculos ahora se realizan por movimiento en el template.
+  // No inicializamos valores globales; cada movimiento mantiene sus cálculos al renderizar.
   } catch (error) {
     console.error('Error al obtener movimientos:', error)
   }
@@ -274,17 +239,19 @@ const obtenerMovimientos = async () => {
 const iniciarEdicion = (movimiento) => {
   movimiento.editando = true
   movimiento.nuevoMonto = getDisplayMonto(movimiento)
+  // asegurarnos que los campos existen (por si se añadieron dinámicamente)
   movimiento.interesCorriente = movimiento.interesCorriente ?? 0
   movimiento.interesMora = movimiento.interesMora ?? 0
   movimiento.abonoCapital = movimiento.abonoCapital ?? 0
   movimiento.abonoIntereses = movimiento.abonoIntereses ?? 0
   movimiento.abonoFees = movimiento.abonoFees ?? 0
-  movimiento.cobroFees = movimiento.cobroFees ?? 0
+  movimiento.cobroFees = movimiento.cobroFees ?? 500
 }
 
 const cancelarEdicion = (movimiento) => {
   movimiento.editando = false
-  movimiento.nuevoMonto = getDisplayMonto(movimiento)
+  movimiento.nuevoMonto = movimiento.Monto
+  // opcional: resetear campos editables si se desea
 }
 
 const movimientoInfo ={
@@ -294,25 +261,32 @@ const movimientoInfo ={
   descripcion: "pago de credito",
   fechaPagoProgramado: "",
   idMedioPago: 2,
+  nroFacturaAlpina: "string",
   telefonoTransportista: ""
 }
 
-const actualizarMonto = async (identificadorTendero, abono, nroFacturaAlpina, IdMovimiento) => {
+const actualizarMonto = async (identificadorTendero, abono) => {
   try {
     const payload = {
       ...movimientoInfo,
       identificadorTendero,
       monto: abono,
-      nroFacturaAlpina: nroFacturaAlpina,
-      IdMovimiento: IdMovimiento
     }
 
     await axios.post('/api/movimientos', payload)
-    await axios.put(`/api/actualizarAbono/${IdMovimiento}`, { nuevoMonto: abono })
 
     console.log('Movimiento actualizado correctamente')
   } catch (error) {
     console.error('Error al actualizar monto:', error)
+  }
+}
+
+
+const actualizarIntereses = async (IdMovimiento, valorConIntereses) => {
+  try {
+    await axios.put(`/api/actualizarIntereses/${IdMovimiento}`, { nuevoMonto: valorConIntereses })
+  } catch (error) {
+    console.error('Error al actualizar intereses:', error)
   }
 }
 
