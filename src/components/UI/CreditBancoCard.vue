@@ -147,6 +147,14 @@ const handleSiClick = async () => {
           "Content-Type": "application/json",
         },
       });
+      await axios.put(`api/flujoRegistroEnlace/estado/pendiente/${id}`, {
+        Estado: "creado",
+      }, {
+        headers: {
+          Authorization: `Bearer ${props.token}`,
+          "Content-Type": "application/json",
+        },
+      });
     }
 
     window.location.reload();
