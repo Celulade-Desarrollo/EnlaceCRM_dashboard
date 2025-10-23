@@ -24,60 +24,91 @@ const logout = () => {
 };
 
 const handleFileUpload = (event) => {
-  const file = event.target.files[0]
+  const file = event.target.files[0];
   if (!file) {
-    fileLoaded.value = false
-    return
+    fileLoaded.value = false;
+    return;
   }
 
-  const reader = new FileReader()
+  const reader = new FileReader();
 
   reader.onload = (e) => {
-    const data = new Uint8Array(e.target.result)
-    const workbook = XLSX.read(data, { type: 'array', cellDates: true })
-    const firstSheetName = workbook.SheetNames[0]
-    const worksheet = workbook.Sheets[firstSheetName]
+    const data = new Uint8Array(e.target.result);
+    const workbook = XLSX.read(data, { type: "array", cellDates: true });
+    const firstSheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[firstSheetName];
 
-    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 })
-    const headers = jsonData[0]
+    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+    const headers = jsonData[0];
 
-    const rows = jsonData.slice(1).map(row => {
-      let obj = {}
+    const rows = jsonData.slice(1).map((row) => {
+      const obj = {};
       headers.forEach((h, i) => {
-        let value = row[i] ?? null
-        if (value instanceof Date) {
-          value = value.toISOString().split("T")[0]
+        let value = row[i];
+        if (value === undefined || value === null) {
+          value = "";
         }
-        obj[h] = value
-      })
-      return obj
-    })
+        else if (value instanceof Date) {
+          value = value.toISOString().split("T")[0];
+        }
+        else if (typeof value === "number" && h.toLowerCase().includes("fec")) {
+          const dateValue = XLSX.SSF.parse_date_code(value);
+          if (dateValue && dateValue.y && dateValue.m && dateValue.d) {
+            const yyyy = dateValue.y;
+            const mm = String(dateValue.m).padStart(2, "0");
+            const dd = String(dateValue.d).padStart(2, "0");
+            value = `${yyyy}-${mm}-${dd}`;
+          } else {
+            value = "";
+          }
+        }
 
-    excelData.value = rows
-    fileLoaded.value = true
-  }
+        obj[h] = typeof value === "string" ? value.trim() : value;
+      });
+      return obj;
+    });
+    const filteredRows = rows.filter((fila) => {
+      return Object.values(fila).some(
+        (v) => v !== "" && v !== null && v !== undefined
+      );
+    });
 
-  reader.readAsArrayBuffer(file)
-} 
+    excelData.value = filteredRows;
+    fileLoaded.value = true;
+  };
+
+  reader.readAsArrayBuffer(file);
+};
 
   const camposObligatorios =  [
     "Operacion", "CuentaCliente", "NumeroID", "Persona",
   "IdEstadoProducto", "FecTransaccion", "CAPITAL", "TOTAL_PAGADO"
   ];
 
-  const validarDatos = (data) => {
-    const errores = [];
+const validarDatos = (data) => {
+  const errores = [];
 
-    data.forEach((fila, index) => {
-      camposObligatorios.forEach((campo) => {
-        if (fila[campo] === null || fila[campo] === undefined || fila[campo] === "") {
-          errores.push(`Fila ${index + 2}: El campo "${campo}" es obligatorio.`);
-        }
-      });
+  data.forEach((fila, index) => {
+    const camposFaltantes = camposObligatorios.filter((campo) => {
+      const valor = fila[campo];
+      const esVacio =
+        valor === null ||
+        valor === undefined ||
+        (typeof valor === "string" && valor.trim() === "") ||
+        (typeof valor === "number" && isNaN(valor));
+
+      return esVacio;
     });
 
-    return errores;
-  };
+    if (camposFaltantes.length > 0) {
+      errores.push(
+        `Fila ${index + 2}: Faltan los campos -> ${camposFaltantes.join(", ")}`
+      );
+    }
+  });
+
+  return errores;
+};
 
 const enviarCSV = async () => {
   const errores = validarDatos(excelData.value);
