@@ -85,7 +85,6 @@ onMounted(async () => {
   outline: none;
   box-shadow: none;
 }
-
 .card {
   background: #fff;
   padding: 1.5rem;
