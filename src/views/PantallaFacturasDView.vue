@@ -9,7 +9,6 @@ import axios from 'axios';
 import SesionExpirada from "../components/UI/SesionExpirada.vue";
 import { activarSesionExpirada } from "../stores/session.js";
 
-// Variables reactivas
 const pagar = ref("");
 const pagarFormateado = ref(""); 
 const facturasDisponibles = ref([]);
@@ -23,16 +22,14 @@ const bloquearBotones = ref(false);
 const isLoading = ref(true);
 const facturasEnMora = ref([]);
 
-// Instancia de Vue Router
 const router = useRouter();
 
-//console.log("datosCuenta", datosCuenta);
+const bloqueoMora = datosCuenta.BloqueoPorMora;
 
 const handleContinuarClick = () => {
   const valorPagoStr = pagar.value;
-  const regex = /^\d{5,}$/; // Mínimo 5 dígitos, solo números
+  const regex = /^\d{5,}$/;
 
-  // Validación básica de formato
   if (!valorPagoStr || isNaN(valorPagoStr) || !regex.test(valorPagoStr)) {
     errorMessage.value = "Ingrese un valor válido de al menos 5 dígitos sin puntos ni comas";
     return;
@@ -41,7 +38,6 @@ const handleContinuarClick = () => {
   const valorPago = Number(valorPagoStr);
   const totalFacturas = Number(totalFacturasSeleccionadas.value);
 
-  // 🧼 Limpiar cupo monetario
   function limpiarValorMonetario(valor) {
     if (typeof valor === 'string') {
       return Number(valor.replace(/\$|\s|\.|,/g, ""));
@@ -52,13 +48,11 @@ const handleContinuarClick = () => {
   const cupoDisponible = limpiarValorMonetario(datosCuenta.CupoDisponible);
   const cupoFinal = limpiarValorMonetario(datosCuenta.CupoFinal);
 
-  // Para verificar en consola (opcional)
   console.log("valorPago:", valorPago);
   console.log("totalFacturas:", totalFacturas);
   console.log("Cupo Disponible:", cupoDisponible);
   console.log("Cupo Final:", cupoFinal);
 
-  // Validaciones de negocio
   if (valorPago < 20000) {
     errorMessage.value = "El valor mínimo permitido para el pago es de $20.000";
     return;
@@ -79,7 +73,6 @@ const handleContinuarClick = () => {
     return;
   }
 
-  // Si todo está bien, continuar
   errorMessage.value = "";
   localStorage.setItem("pagarValor", valorPago);
   localStorage.setItem("datosCuenta", JSON.stringify(datosCuenta));
@@ -159,7 +152,7 @@ onMounted(async () => {
     estadoCuenta.value = estadoCuentaResponse.data;
     bloquearBotones.value = datosCuenta.BloqueoPorMora;
 
-    //  Agrupar montos pagados por factura (solo movimientos de tipo 1)
+    //  Agrupar montos pagados por factura
     const movimientos = estadoCuenta.value?.movimientos || [];
     const montosPagadosPorFactura = movimientos.reduce((acc, mov) => {
       if (mov.IdTipoMovimiento === 1 && mov.NroFacturaAlpina) {
@@ -168,7 +161,6 @@ onMounted(async () => {
       }
       return acc;
     }, {});
-
     
    const facturasPendientesFiltradas = todasFacturas
     .map(factura => {
@@ -184,7 +176,7 @@ onMounted(async () => {
 
     facturasDisponibles.value = facturasPendientesFiltradas;
 
-    // 5. Obtener facturas en mora si existen
+    // facturas en mora si existen
     if (estadoCuenta.value?.movimientos) {
       facturasEnMora.value = estadoCuenta.value.movimientos.filter(
         (mov) => mov.BloqueoMora === true
@@ -258,17 +250,8 @@ onMounted(async () => {
       <h3 class="header-text">Cupo disponible: {{ formatPesos(datosCuenta.CupoDisponible) }}</h3>
     </div>
 
-        <div v-if="facturasEnMora.length > 0" class="alert alert-danger mt-3">
-          <p><strong>⚠ Tiene factura(s) en mora que debe pagar antes de continuar:</strong></p>
-          <ul>
-            <li v-for="factura in facturasEnMora" :key="factura.IdMovimiento">
-              <p>
-                <strong>Factura N°:</strong> {{ factura.NroFacturaAlpina }}<br />
-                <strong>Monto:</strong> ${{ factura.Monto.toLocaleString() }}<br />
-                <strong>Fecha de pago programado:</strong> {{ factura.FechaPagoProgramado }}
-              </p>
-            </li>
-          </ul>
+        <div v-if="bloqueoMora" class="alert alert-danger mt-3">
+          <p><strong>⚠ Tiene factura(s) en mora que debe pagar antes de continuar</strong></p>
         </div>
 
         <div class="button-banner">
@@ -391,7 +374,6 @@ input[type="number"]::-webkit-inner-spin-button {
   white-space: nowrap;
 }
 
-
 .form-control:focus + .floating-label,
 .form-control:not(:placeholder-shown) + .floating-label {
   top: -15px;
@@ -445,7 +427,6 @@ button:focus {
   display: inline-block;
 }
 
-/* Contenido */
 .content {
 
   display: flex;
@@ -489,7 +470,7 @@ button:focus {
 #boton-pago:hover {
   background-color: #f15bab;
 }
-/* Proveedor */
+
 .provider-content {
   display: flex;
   align-items: center;
@@ -508,7 +489,6 @@ button:focus {
   text-align: center;
 }
 
-/* Formulario de pago */
 .form-group {
   display: flex;
   align-items: center;
@@ -534,7 +514,7 @@ button:focus {
 .header-container.align-left {
   display: flex;
   flex-direction: column;
-  align-items: flex-start; /* Alinea todo a la izquierda */
+  align-items: flex-start; 
   margin-bottom: 1rem;
 }
 
