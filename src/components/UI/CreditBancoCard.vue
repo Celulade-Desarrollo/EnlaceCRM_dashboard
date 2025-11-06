@@ -245,16 +245,6 @@ const handleAprobadoClick = async () => {
             <span class="info-field-label">Cupo:</span>
             <span class="info-field-value">{{ data.Cupo }}</span>
           </div>
-          <!-- 🆕 LATITUD -->
-          <div class="info-field">
-            <span class="info-field-label">Latitud:</span>
-            <span class="info-field-value">{{ data.Latitud || 'N/A' }}</span>
-          </div>
-          <!-- 🆕 LONGITUD -->
-          <div class="info-field">
-            <span class="info-field-label">Longitud:</span>
-            <span class="info-field-value">{{ data.Longitud || 'N/A' }}</span>
-          </div>
         </div>
       </div>
 
