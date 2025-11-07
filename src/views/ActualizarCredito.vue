@@ -136,15 +136,19 @@
         <p><strong>Fecha de Pago Programado:</strong> {{ formatearFecha(movimiento.FechaPagoProgramado) }}</p>
         
         <div class="botones">
-          <template v-if="movimiento.editando">
-            <button @click="actualizarMonto(movimiento, movimiento.Cedula_Usuario, movimiento.abonoCapital, movimiento.NroFacturaAlpina, movimiento.IdMovimiento)" :disabled="movimiento.cargando" class="p-2 bg-green-400 rounded-xl pl-3 pr-3 text-green-800">
+
+          <template v-if="movimiento.editando" class="edit-buttons">
+            <span v-if="!abonoCapitalValido(movimiento)" class="error-msg">El abono capital no puede ser mayor que el valor de la factura (pago).</span>
+            <button @click="actualizarMonto(movimiento, movimiento.Cedula_Usuario, movimiento.abonoCapital, movimiento.NroFacturaAlpina, movimiento.IdMovimiento)" :disabled="movimiento.cargando || !abonoCapitalValido(movimiento)" class="p-2 bg-green-400 rounded-xl pl-3 pr-3 text-green-800 mb-10">
               <span v-if="!movimiento.cargando">Realizar Abono</span>
               <span v-else class="spinner-inline" aria-hidden="true"></span>
+            
             </button>
 
-            <button @click="cancelarEdicion(movimiento)" :disabled="movimiento.cargando" class="text-gray-400 p-2 border-2 rounded-xl border-solid border-gray-400">Cancelar</button>
+            <button @click="cancelarEdicion(movimiento)" :disabled="movimiento.cargando" class="text-gray-400 p-2 border-2 rounded-xl border-solid border-gray-400 h-10">Cancelar</button>         
           </template>
           <template v-else>
+
             <button 
               @click="iniciarEdicion(movimiento)" 
               :disabled="saldoCapitalValue(movimiento) === 0"
@@ -219,6 +223,13 @@ const saldoCapitalValue = (movimiento) => {
   return pago - abonoCapital
 }
 
+// Validación: abonoCapital no puede ser mayor al valor de la factura (pago)
+const abonoCapitalValido = (movimiento) => {
+  const pago = Number(getDisplayMonto(movimiento) || 0)
+  const abonoCapital = Number(movimiento.abonoCapital || 0)
+  return abonoCapital <= pago
+}
+
 
 const obtenerMovimientos = async () => {
 
@@ -263,6 +274,8 @@ const iniciarEdicion = (movimiento) => {
 const cancelarEdicion = (movimiento) => {
   movimiento.editando = false
   movimiento.nuevoMonto = getDisplayMonto(movimiento)
+  // resetear abonoCapital para ocultar cualquier mensaje de validación
+  movimiento.abonoCapital = movimiento.AbonoUsuario != null ? Number(movimiento.AbonoUsuario || 0) : 0
 }
 
 const movimientoInfo ={
@@ -358,6 +371,7 @@ p{
   padding: 1rem;
   background-color: white;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
 }
 
 .card-header {
@@ -378,6 +392,7 @@ p{
 
 .card-body p {
   margin: 0.5rem 0;
+
 }
 
 strong {
@@ -453,6 +468,28 @@ button:hover {
   border: 2px solid rgba(0,0,0,0.08);
   border-top-color: #fff;
   animation: spin 0.8s linear infinite;
+}
+
+.error-msg {
+
+  color: #b91c1c; /* rojo */
+  font-size: 15px;
+  margin-left: 8px;
+  position: absolute;
+  bottom: 10px;
+}
+
+.edit-buttons {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.error-placeholder {
+  min-height: 48px; /* espacio reservado para el mensaje */
+  display: flex;
+  align-items: center;
 }
 
 @keyframes spin {
