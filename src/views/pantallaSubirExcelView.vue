@@ -11,11 +11,12 @@ import { activarSesionExpirada } from "../stores/session.js";
 
 const token = localStorage.getItem("admin_token");
 const excelData = ref([])
-const fileLoaded = ref(false) // estado para saber si hay archivo cargado
+const fileLoaded = ref(false)
 const router = useRouter();
+const fileInputRef = ref(null)
 
 const triggerFileInput = () => {
-  document.getElementById('fileUpload').click()
+   fileInputRef.value?.click()
 }
 
 const logout = () => {
@@ -82,7 +83,8 @@ const handleFileUpload = (event) => {
 
   const camposObligatorios =  [
     "Operacion", "CuentaCliente", "NumeroID", "Persona",
-  "IdEstadoProducto", "FecTransaccion", "CAPITAL", "TOTAL_PAGADO"
+    "IdEstadoProducto", "FecTransaccion", "CAPITAL", "TOTAL_PAGADO",
+    "INTERESES",	"INTERES_MORA",	"SEGUROS",	"TOTAL_PAGADO",	"DIAS_MORA"
   ];
 
 const validarDatos = (data) => {
@@ -113,13 +115,37 @@ const validarDatos = (data) => {
 const enviarCSV = async () => {
   const errores = validarDatos(excelData.value);
 
-  if (errores.length > 0){
+  if (errores.length > 0) {
     alert("Errores encontrados:\n" + errores.join("\n"));
     return;
   }
+
   try {
-    const response = await axios.post(
-      "api/abonos/upload",
+    const duplicadas = [];
+
+    for (const fila of excelData.value) {
+      const operacion = fila.Operacion;
+
+      const resp = await axios.get(`/api/abonos/existe/${operacion}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (resp.data.existe) {
+        duplicadas.push(operacion);
+      }
+    }
+
+    if (duplicadas.length > 0) {
+      alert(
+        "Operaciones duplicadas encontradas:\n" +
+        duplicadas.join(", ") +
+        "\nEstas operaciones ya existen y no se pueden repetir."
+      );
+      return;
+    }
+
+    await axios.post(
+      "/api/abonos/upload",
       { data: excelData.value },
       {
         headers: {
@@ -128,17 +154,20 @@ const enviarCSV = async () => {
         },
       }
     );
-    alert("Archivo cargando correctamente");
+
+    alert("Archivo cargado correctamente");
     fileLoaded.value = false;
     window.location.reload();
+
   } catch (err) {
     console.error(err);
     alert("Error al cargar archivo");
-    if (error.response?.status === 401) {
+    if (err.response?.status === 401) {
       activarSesionExpirada();
     }
   }
 };
+
 </script>
 
 <template>
@@ -157,8 +186,8 @@ const enviarCSV = async () => {
     <div class="subir-excel">
       <div class="boton-container">
         <input
+          ref="fileInputRef"
           type="file"
-          id="fileUpload"
           @change="handleFileUpload"
           accept=".xlsx, .xls, .csv"
           hidden
@@ -181,13 +210,13 @@ const enviarCSV = async () => {
 </template>
 
 <style scoped>
-/* Centrado en toda la pantalla */
+
 .page-container {
   display: flex;
   flex-direction: column;
-  justify-content: center; /* vertical */
-  align-items: center;     /* horizontal */
-  min-height: 100vh;       /* toda la pantalla */
+  justify-content: center; 
+  align-items: center;
+  min-height: 100vh;
   text-align: center;
 }
 
@@ -205,7 +234,6 @@ const enviarCSV = async () => {
   margin-bottom: 20px;
 }
 
-/* Los mensajes usan el mismo estilo del título */
 .mensaje {
   font-size: 1.5rem;
   font-weight: bold;
