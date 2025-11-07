@@ -11,6 +11,9 @@
         <span class="fecha"> Realizado el {{ formatearFecha(movimiento.FechaHoraMovimiento) }}</span>
       </div>
       <div class="card-body">
+        <div v-if="movimiento.cargando" class="card-overlay">
+          <div class="spinner"></div>
+        </div>
         <p><strong>Cédula:</strong> {{ movimiento.Cedula_Usuario }}</p>
         <p>
           <strong>Pago:</strong>
@@ -134,9 +137,12 @@
         
         <div class="botones">
           <template v-if="movimiento.editando">
-            <button @click="actualizarMonto( movimiento.Cedula_Usuario, movimiento.abonoCapital, movimiento.NroFacturaAlpina, movimiento.IdMovimiento )" class="p-2 bg-green-400 rounded-xl pl-3 pr-3 text-green-800">Realizar Abono</button>
+            <button @click="actualizarMonto(movimiento, movimiento.Cedula_Usuario, movimiento.abonoCapital, movimiento.NroFacturaAlpina, movimiento.IdMovimiento)" :disabled="movimiento.cargando" class="p-2 bg-green-400 rounded-xl pl-3 pr-3 text-green-800">
+              <span v-if="!movimiento.cargando">Realizar Abono</span>
+              <span v-else class="spinner-inline" aria-hidden="true"></span>
+            </button>
 
-            <button @click="cancelarEdicion(movimiento)" class="text-gray-400 p-2 border-2 rounded-xl border-solid border-gray-400">Cancelar</button>
+            <button @click="cancelarEdicion(movimiento)" :disabled="movimiento.cargando" class="text-gray-400 p-2 border-2 rounded-xl border-solid border-gray-400">Cancelar</button>
           </template>
           <template v-else>
             <button 
@@ -233,6 +239,7 @@ const obtenerMovimientos = async () => {
       abonoIntereses: 0,
       abonoFees: 0,
       cobroFees: 0,
+      cargando: false,
     }))
 
   
@@ -268,8 +275,10 @@ const movimientoInfo ={
   telefonoTransportista: ""
 }
 
-const actualizarMonto = async (identificadorTendero, abono, nroFacturaAlpina, IdMovimiento) => {
+// actualizarMonto con control de carga por movimiento
+const actualizarMonto = async (movimiento, identificadorTendero, abono, nroFacturaAlpina, IdMovimiento) => {
   try {
+    movimiento.cargando = true
     const payload = {
       ...movimientoInfo,
       identificadorTendero,
@@ -284,7 +293,11 @@ const actualizarMonto = async (identificadorTendero, abono, nroFacturaAlpina, Id
     console.log('Movimiento actualizado correctamente')
   } catch (error) {
     console.error('Error al actualizar monto:', error)
+  } finally {
+    movimiento.cargando = false
   }
+  // recargar para reflejar cambios en backend
+  window.location.reload()
 }
 
 onMounted(obtenerMovimientos)
@@ -412,4 +425,40 @@ strong {
 button:hover {
   opacity: 0.9;
 }
+
+/* Overlay sutil y spinner */
+.card-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  z-index: 10;
+}
+.spinner {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 4px solid rgba(0,0,0,0.08);
+  border-top-color: #2ecc71;
+  animation: spin 1s linear infinite;
+}
+.spinner-inline {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(0,0,0,0.08);
+  border-top-color: #fff;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Asegurar que la tarjeta sea position:relative para overlay */
+.movimiento-card { position: relative; }
 </style>
