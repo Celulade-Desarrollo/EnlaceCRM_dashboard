@@ -7,6 +7,9 @@ import { motion } from "motion-v";
 import axios from "axios";
 import SesionExpirada from "../components/UI/SesionExpirada.vue";
 import { activarSesionExpirada } from "../stores/session.js";
+import { io } from "socket.io-client";
+const socket = io("https://enlace-crm.com:4000/whatsapp")
+
 
 // Instancia de Vue Router
   const router = useRouter();
@@ -46,6 +49,11 @@ import { activarSesionExpirada } from "../stores/session.js";
       "nroFacturaAlpina": nroFacturaAlpina,
       "telefonoTransportista":String(numeroTransportista.value)
     }
+
+    const number = numeroTransportista.value;
+    const message = `envío un pago de la factura ${nroFacturaAlpina} por el valor de ${pagarValor} el dia ${fechaActual.toLocaleDateString()}.`;
+    socket.emit("sendNumber", {number, message})
+
     console.log("datosPagoFactura:", dataPagoFactura);
      try {
        const pagoFacturas = await axios.post("/api/movimientos",
