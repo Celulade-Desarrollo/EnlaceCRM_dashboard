@@ -8,7 +8,7 @@ import axios from "axios";
 import SesionExpirada from "../components/UI/SesionExpirada.vue";
 import { activarSesionExpirada } from "../stores/session.js";
 import { io } from "socket.io-client";
-const socket = io("https://enlace-crm.com:4000/whatsapp")
+const socket = io("https://enlace-crm.com:3000/backend/whatsapp")
 
 
 // Instancia de Vue Router
