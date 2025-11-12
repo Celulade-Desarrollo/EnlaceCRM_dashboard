@@ -49,9 +49,9 @@ const whatsappURL = "/whatsapp/send-message"
       "nroFacturaAlpina": nroFacturaAlpina,
       "telefonoTransportista":String(numeroTransportista.value)
     }
-
+    const hora = new Date().toLocaleTimeString();
     const number = numeroTransportista.value;
-    const message = `envío un pago de la factura ${nroFacturaAlpina} por el valor de ${pagarValor} el dia ${fechaActual.toLocaleDateString()}.`;
+    const message = `Envío un pago de la factura ${nroFacturaAlpina} por el valor de ${pagarValor} el dia ${fechaActual.toLocaleDateString()} a la hora ${hora}.`;
     axios.post(whatsappURL, {
       number: number,
       message: message
