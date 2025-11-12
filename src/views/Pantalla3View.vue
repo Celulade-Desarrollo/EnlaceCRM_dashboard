@@ -7,8 +7,8 @@ import { motion } from "motion-v";
 import axios from "axios";
 import SesionExpirada from "../components/UI/SesionExpirada.vue";
 import { activarSesionExpirada } from "../stores/session.js";
-import { io } from "socket.io-client";
-const socket = io("https://enlace-crm.com:3000/backend/whatsapp")
+
+const whatsappURL = "enlace-crm.com:3000/backend/whatsapp/send-message"
 
 
 // Instancia de Vue Router
@@ -52,7 +52,10 @@ const socket = io("https://enlace-crm.com:3000/backend/whatsapp")
 
     const number = numeroTransportista.value;
     const message = `envío un pago de la factura ${nroFacturaAlpina} por el valor de ${pagarValor} el dia ${fechaActual.toLocaleDateString()}.`;
-    socket.emit("sendNumber", {number, message})
+    axios.post(whatsappURL, {
+      number: number,
+      message: message
+    })
 
     console.log("datosPagoFactura:", dataPagoFactura);
      try {
