@@ -8,7 +8,7 @@ import axios from "axios";
 import SesionExpirada from "../components/UI/SesionExpirada.vue";
 import { activarSesionExpirada } from "../stores/session.js";
 
-const whatsappURL = "enlace-crm.com:3000/backend/whatsapp/send-message"
+const whatsappURL = "https://enlace-crm.com:3000/backend/whatsapp/send-message"
 
 
 // Instancia de Vue Router
