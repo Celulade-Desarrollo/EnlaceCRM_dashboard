@@ -33,9 +33,10 @@ const formatoMiles = (numero) => {
 };
 
 const fechaFormateada = computed(() => {
-  if (!props.fechaAbono) return '';
+  const fechaRaw = fechaSiguienteAbono.value;
+  if (!fechaRaw) return '';
   
-  const [year, month, day] = props.fechaAbono.split('T')[0].split('-');
+  const [year, month, day] = fechaRaw.split('T')[0].split('-');
   const fecha = new Date(Number(year), Number(month) - 1, Number(day));
 
   return fecha.toLocaleDateString('es-ES', {
@@ -44,6 +45,7 @@ const fechaFormateada = computed(() => {
     year: 'numeric'
   });
 });
+
 
 onMounted (async () => {
  const estadoCuentaResponse = await axios.get(
@@ -61,39 +63,54 @@ onMounted (async () => {
   console.log("estadocuentaa",estadoCuenta.value)
 });
 
+const fechaSiguienteAbono = ref(props.fechaAbono || null);
+
 const valorProximoAbono = computed(() => {
   if (!estadoCuenta.value.movimientos) return 0;
 
   const movimientos = estadoCuenta.value.movimientos;
-  const hoy = new Date();
 
-  const tipo1 = movimientos.filter(m => m.IdTipoMovimiento === 1);
+  const facturas = movimientos.filter(m => m.IdTipoMovimiento === 1);
+  const abonos = movimientos.filter(m => m.IdTipoMovimiento === 2);
 
-  const facturasPagadas = movimientos
-    .filter(m => m.IdTipoMovimiento === 2)
-    .map(m => m.NroFacturaAlpina);
+  const abonosPorFactura = {};
+  abonos.forEach(a => {
+    if (!abonosPorFactura[a.NroFacturaAlpina]) {
+      abonosPorFactura[a.NroFacturaAlpina] = 0;
+    }
+    abonosPorFactura[a.NroFacturaAlpina] += a.Monto || 0;
+  });
 
-  // facturas tipo 1 que no estén abonadas
-  const sinPagar = tipo1.filter(m => !facturasPagadas.includes(m.NroFacturaAlpina));
+  const pendientes = facturas.map(f => {
+    const montoBase = f.Monto || 0;
+    const montoConInteres = f.MontoMasIntereses && f.MontoMasIntereses > 0
+      ? f.MontoMasIntereses
+      : montoBase;
 
-  if (sinPagar.length === 0) return 0;
+    const abonado = abonosPorFactura[f.NroFacturaAlpina] || 0;
+    const facturaPagada = abonado >= montoBase;
+    const saldo = facturaPagada ? 0 : montoConInteres - abonado;
 
-  // Convertimos fechas y separamos las que están vencidas
-  const vencidas = sinPagar.filter(m => new Date(m.FechaPagoProgramado) <= hoy);
-  const futuras = sinPagar.filter(m => new Date(m.FechaPagoProgramado) > hoy);
+    return { ...f, montoBase, montoConInteres, abonado, facturaPagada, saldo };
+  })
+  .filter(f => f.saldo > 0);
 
-  // Si hay facturas vencidas sumamos todas sus deudas
-  if (vencidas.length > 0) {
-    return vencidas.reduce((acc, mov) => acc + (mov.Monto || 0), 0);
+  if (pendientes.length === 0) {
+    estadoCuenta.value.deudaTotalCalculada = 0;
+    fechaSiguienteAbono.value = null;
+    return 0;
   }
 
-  // Si no hay vencidas mostramos la más próxima a vencer
-  const proxima = futuras.sort(
-    (a, b) => new Date(a.FechaPagoProgramado) - new Date(b.FechaPagoProgramado)
-  )[0];
+  const deudaTotalCalculada = pendientes.reduce((acc, f) => acc + f.saldo, 0);
+  estadoCuenta.value.deudaTotalCalculada = deudaTotalCalculada;
 
-  return proxima ? proxima.Monto : 0;
+  pendientes.sort((a, b) => new Date(a.FechaPagoProgramado) - new Date(b.FechaPagoProgramado));
+
+  fechaSiguienteAbono.value = pendientes[0].FechaPagoProgramado || props.fechaAbono || null;
+
+  return pendientes[0].saldo;
 });
+
 
 </script>
 
@@ -109,9 +126,9 @@ const valorProximoAbono = computed(() => {
       </h3>
       <h3 class="flex gap-2"> Cupo disponible $ <p class="font-bold">{{ formatoMiles(props.cupoDisp) }}</p></h3>
       
-      <h2 class="text-xl flex gap-3 mt-1">Deuda total $<p class="font-bold">{{formatoMiles(deudaTotal) }}</p></h2>
+      <h2 class="text-xl flex gap-3 mt-1">Deuda total $<p class="font-bold">{{ formatoMiles(estadoCuenta.deudaTotalCalculada || deudaTotal) }}</p></h2>
       <h2 class="text-xl flex gap-3 mt-1">Valor siguiente abono: <p class="font-bold">{{ formatoMiles(valorProximoAbono) }}</p></h2>
-      <h3 v-if="Number(deudaTotal) > 0" class=" flex text-[13px]"> Fecha del siguiente abono:  <p class="font-bold">{{ fechaFormateada }}</p></h3>
+      <h3 v-if="(estadoCuenta.deudaTotalCalculada || deudaTotal) > 0" class="flex text-[13px]"> Fecha del siguiente abono:  <p class="font-bold">{{ fechaFormateada }}</p></h3>
      <div v-if="bloqueoMora" class="alert alert-danger mt-3">
         <p><strong>⚠ Estas bloqueado por mora </strong></p>
       </div>
