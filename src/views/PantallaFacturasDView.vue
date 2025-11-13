@@ -247,7 +247,7 @@ onMounted(async () => {
     </div>
 
     <div class="header-container">
-      <h3 class="header-text">Cupo disponible: {{ formatPesos(estadoCuenta.cupoDisponible) }}</h3>
+      <h3 class="header-text">Cupo disponible: {{ formatPesos(datosCuenta.CupoDisponible) }}</h3>
     </div>
 
         <div v-if="bloqueoMora" class="alert alert-danger mt-3">
