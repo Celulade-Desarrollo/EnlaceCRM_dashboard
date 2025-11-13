@@ -11,6 +11,11 @@
         <span class="fecha"> Realizado el {{ formatearFecha(movimiento.FechaHoraMovimiento) }}</span>
       </div>
       <div class="card-body">
+        <!-- Overlay de carga -->
+        <div v-if="movimiento.cargando" class="card-overlay">
+          <div class="spinner"></div>
+        </div>
+
         <p><strong>Cédula:</strong> {{ movimiento.Cedula_Usuario }}</p>
         <p>
           <strong>Pago:</strong>
@@ -135,10 +140,22 @@
         <div class="botones">
           <template v-if="movimiento.editando">
            <!-- <button @click="actualizarMonto( movimiento.Cedula_Usuario, actualizarSaldo.abonoCapital )" class="p-2 bg-green-400 rounded-xl pl-3 pr-3 text-green-800">Realizar Abono</button>-->
-            <button @click="actualizarIntereses( movimiento.IdMovimiento, calcularSaldoTotal(movimiento))" class="p-2 bg-yellow-400 rounded-xl pl-3 pr-3 text-yellow-800">Actualizar Intereses</button> 
+            <button 
+              @click="actualizarIntereses(movimiento)" 
+              :disabled="movimiento.cargando"
+              class="p-2 bg-yellow-400 rounded-xl pl-3 pr-3 text-yellow-800"
+            >
+              Actualizar Intereses
+            </button> 
 
       
-            <button @click="cancelarEdicion(movimiento)" class="text-gray-400 p-2 border-2 rounded-xl border-solid border-gray-400">Cancelar</button>
+            <button 
+              @click="cancelarEdicion(movimiento)" 
+              :disabled="movimiento.cargando"
+              class="text-gray-400 p-2 border-2 rounded-xl border-solid border-gray-400"
+            >
+              Cancelar
+            </button>
           </template>
           <template v-else>
             <button @click="iniciarEdicion(movimiento)" class="bg-[#dd3590] text-white p-2 pl-4 pr-4 rounded-xl">Actualizar Saldo</button>
@@ -197,28 +214,15 @@ const calcularSaldoTotal = (movimiento) => {
 
 
 const obtenerMovimientos = async () => {
-
-        const response = await axios.get('/api/listar/enlace/movimientos')
-        const data = response.data
-        console.log(data)
-    
-
   try {
-    const dataPrueba = [
-      {
-        IdMovimiento: 18674,
-        IdUsuarioFinal: 54,
-        FechaHoraMovimiento: "2025-10-06T18:04:30.495Z",
-        IdTipoMovimiento: 1,
-        Monto: 30000,
-        Descripcion: "testing",
-        Cedula_Usuario: "1111480601",
-      },
-    ]
+    const response = await axios.get('/api/listar/enlace/movimientos')
+    const data = response.data
+    console.log(data)
 
     movimientos.value = data.map((mov) => ({
       ...mov,
       editando: false,
+      cargando: false,
       nuevoMonto: mov.MontoMasIntereses != null ? mov.MontoMasIntereses : mov.Monto,
       // Campos por movimiento (estado local)
       interesCorriente: 0,
@@ -228,9 +232,8 @@ const obtenerMovimientos = async () => {
       abonoFees: 0,
       cobroFees: 500,
     }))
-
   
-  // No inicializamos valores globales; cada movimiento mantiene sus cálculos al renderizar.
+    // No inicializamos valores globales; cada movimiento mantiene sus cálculos al renderizar.
   } catch (error) {
     console.error('Error al obtener movimientos:', error)
   }
@@ -282,11 +285,23 @@ const actualizarMonto = async (identificadorTendero, abono) => {
 }
 
 
-const actualizarIntereses = async (IdMovimiento, valorConIntereses) => {
+const actualizarIntereses = async (movimiento) => {
   try {
-    await axios.put(`/api/actualizarIntereses/${IdMovimiento}`, { nuevoMonto: valorConIntereses })
+    movimiento.cargando = true
+    
+    const valorConIntereses = calcularSaldoTotal(movimiento)
+    await axios.put(`/api/actualizarIntereses/${movimiento.IdMovimiento}`, { 
+      nuevoMonto: valorConIntereses 
+    })
+    
+    console.log('Intereses actualizados correctamente')
+    
+    // Recargar la página después de actualizar
+    window.location.reload()
   } catch (error) {
     console.error('Error al actualizar intereses:', error)
+  } finally {
+    movimiento.cargando = false
   }
 }
 
@@ -348,6 +363,7 @@ p{
   padding: 1rem;
   background-color: white;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  position: relative;
 }
 
 .card-header {
@@ -364,6 +380,10 @@ p{
 .fecha {
   color: #666;
   font-size: 0.9rem;
+}
+
+.card-body {
+  position: relative;
 }
 
 .card-body p {
@@ -414,5 +434,35 @@ strong {
 
 button:hover {
   opacity: 0.9;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Overlay y spinner */
+.card-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  z-index: 10;
+}
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 4px solid rgba(0,0,0,0.08);
+  border-top-color: #2ecc71;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 </style>
