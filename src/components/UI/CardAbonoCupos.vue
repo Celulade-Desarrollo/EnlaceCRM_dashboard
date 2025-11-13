@@ -111,7 +111,6 @@ const valorProximoAbono = computed(() => {
   return pendientes[0].saldo;
 });
 
-
 </script>
 
 <template>
