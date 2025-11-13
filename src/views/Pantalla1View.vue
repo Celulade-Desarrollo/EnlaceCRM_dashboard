@@ -50,27 +50,29 @@ onMounted(async () => {
 
     const movimientos = responseEstadoCuenta.data.movimientos;
 
-  const facturas = movimientos.filter(m => m.IdTipoMovimiento === 1);
-    const facturasPagadas = movimientos
-      .filter(m => m.IdTipoMovimiento === 2)
-      .map(m => m.NroFacturaAlpina);
+    const movimientoFactura = [...movimientos]
+      .reverse()
+      .find((mov) =>
+        mov.IdTipoMovimiento === 1 &&
+        mov.MontoMasIntereses !== null
+      );
 
-    const facturasPendientes = facturas.filter(
-      m => !facturasPagadas.includes(m.NroFacturaAlpina)
-    );
+    console.log("Movimiento factura encontrado:", movimientoFactura);
 
-    facturasPendientes.sort(
-      (a, b) => new Date(a.FechaPagoProgramado) - new Date(b.FechaPagoProgramado)
-    );
+    if (movimientoFactura) {
+      const monto = parseFloat(movimientoFactura.Monto.toString().replace(',', '.'));
+      const abono = parseFloat((movimientoFactura.AbonoUsuario || '0').toString().replace(',', '.'));
+      const montoConIntereses = parseFloat(movimientoFactura.MontoMasIntereses.toString().replace(',', '.'));
 
-    if (facturasPendientes.length > 0) {
-      const siguienteFactura = facturasPendientes[0];
-      fechaPago.value = siguienteFactura.FechaPagoProgramado;
-      estadoCuenta.value.deudaTotal = siguienteFactura.Monto.toFixed(2);
+      estadoCuenta.value.deudaTotal = abono >= monto ? 0 : montoConIntereses.toFixed(2);
     } else {
-      fechaPago.value = null;
-      estadoCuenta.value.deudaTotal = 0;
+      const cupoFinal = parseInt(estadoCuenta.value.CupoFinal.replace(/\./g, ''));
+      const cupoDisponible = parseInt(estadoCuenta.value.CupoDisponible);
+      estadoCuenta.value.deudaTotal = (cupoFinal - cupoDisponible).toFixed(2);
     }
+
+    console.log("responseEstadoCuenta", responseEstadoCuenta);
+    console.log("deudatotal", estadoCuenta.value);
 
   } catch (error) {
     console.error("Error al obtener el estado de cuenta:", error);
@@ -78,6 +80,16 @@ onMounted(async () => {
       activarSesionExpirada();
     }
   }
+
+  document.body.style.backgroundColor = "#2e008b";
+
+  const tipo = localStorage.getItem("tipo");
+  const idUsuario = localStorage.getItem("idUsuario");
+
+  console.log("localStorage token:", token);
+  console.log("localStorage tipo:", tipo);
+  console.log("idUsuario", idUsuario);
+  console.log("datosCuenta", datosCuenta);
 });
 
 const goToPantallaAbonar = () => {
