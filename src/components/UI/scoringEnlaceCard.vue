@@ -25,16 +25,23 @@ const props = defineProps({
 // Refs principales
 const localScoring = ref("");
 const localCupo = ref("");
+const localLatitud = ref("");
+const localLongitud = ref("");
 const mensajeError = ref("");
-const confirmado = ref("")
-// Precargado flags
+const confirmado = ref("");
+
+// Control de estados UI
+const camposDeshabilitados = ref(false);
+const confirmacionHabilitada = ref(false);
+
+// Precargado flags (🆕 agregamos latitud y longitud)
 const precargado = {
   localScoring: ref(false),
   localCupo: ref(false),
+  localLatitud: ref(false),
+  localLongitud: ref(false),
 };
-console.log("Props data:", props.data);
-console.log("scoringData en card:", props.scoringData);
-console.log("bancowData en card:", props.bancowData);
+
 onMounted(() => {
   const registro = props.scoringData.find(
     item => String(item.IdFlujoRegistro) === String(props.data.Id)
@@ -50,26 +57,49 @@ onMounted(() => {
       localCupo.value = registro.Cupo;
       precargado.localCupo.value = true;
     }
-  }
-});
 
-const puedeConfirmar = computed(() => {
-  const camposLlenos = precargado.localScoring.value && precargado.localCupo.value;
+    if (registro.Latitud) {
+      localLatitud.value = registro.Latitud;
+      precargado.localLatitud.value = true;
+    }
+
+    if (registro.Longitud) {
+      localLongitud.value = registro.Longitud;
+      precargado.localLongitud.value = true;
+    }
+  }
 
   const bancoRegistro = props.bancowData.find(
     item => String(item.IdFlujoRegistro) === String(props.data.Id)
   );
 
-  const aprobadoBanco = bancoRegistro?.Aprobacion_Cupo_sugerido === "si";
+  if (bancoRegistro?.Aprobacion_Cupo_sugerido === "si") {
+    camposDeshabilitados.value = true;
+    confirmacionHabilitada.value = true;
+  } else {
+    camposDeshabilitados.value = false;
+    confirmacionHabilitada.value = false;
+  }
+});
 
+const puedeConfirmar = computed(() => {
+  const camposLlenos =
+    precargado.localScoring.value &&
+    precargado.localCupo.value &&
+    precargado.localLatitud.value &&
+    precargado.localLongitud.value; // 🆕 agregado
+  const bancoRegistro = props.bancowData.find(
+    item => String(item.IdFlujoRegistro) === String(props.data.Id)
+  );
+  const aprobadoBanco = bancoRegistro?.Aprobacion_Cupo_sugerido === "si";
   return camposLlenos && aprobadoBanco;
 });
 
+// ✅ no tocamos nada más desde aquí hacia abajo
+
 const handleconfirmado = async () => {
-  if (
-    !confirmado.value
-  ) {
-    mensajeError.value = "Por favor, confirma si el usuario acepto el cupo";
+  if (!confirmado.value) {
+    mensajeError.value = "Por favor, confirma si el usuario aceptó el cupo";
     return;
   }
 
@@ -80,6 +110,8 @@ const handleconfirmado = async () => {
   const payload = {
     Scoring: localScoring.value.toString(),
     Cupo: localCupo.value.toString(),
+    Latitud: localLatitud.value.toString(),
+    Longitud: localLongitud.value.toString(),
     IdFlujoRegistro: id,
     Cliente_Acepto: confirmado.value,
     Cedula_Cliente: props.data.Cedula_Cliente.toString(),
@@ -88,31 +120,27 @@ const handleconfirmado = async () => {
 
   const payloadput = { Estado: "confirmado" };
   const paylaodClienteAcepto = { respuestaCliente: confirmado.value };
+
   try {
-    if (confirmado.value === "si" && localScoring.value && localCupo.value)   {
-      
-       await axios.put(`api/flujoRegistroEnlace/estado/pendiente/${id}`, payloadput, {
-      headers: {
-        Authorization: `Bearer ${props.token}`,
-        "Content-Type": "application/json",
-      },
-    });
-    await axios.put(`api/scoring/estado/update/${id}`, 
-      payloadput, 
-      {
+    if (confirmado.value === "si" && localScoring.value && localCupo.value) {
+      await axios.put(`api/flujoRegistroEnlace/estado/pendiente/${id}`, payloadput, {
         headers: {
           Authorization: `Bearer ${props.token}`,
           "Content-Type": "application/json",
         },
-    });
-    await axios.put(`api/flujoRegistroEnlace/clienteAcepto/${id}`, 
-      paylaodClienteAcepto, 
-      {
+      });
+      await axios.put(`api/scoring/estado/update/${id}`, payloadput, {
         headers: {
           Authorization: `Bearer ${props.token}`,
           "Content-Type": "application/json",
         },
-    });
+      });
+      await axios.put(`api/flujoRegistroEnlace/clienteAcepto/${id}`, paylaodClienteAcepto, {
+        headers: {
+          Authorization: `Bearer ${props.token}`,
+          "Content-Type": "application/json",
+        },
+      });
     }
     window.location.reload();
   } catch (error) {
@@ -121,11 +149,8 @@ const handleconfirmado = async () => {
 };
 
 const handleScoringCupo = async () => {
-  if (
-    !localScoring.value ||
-    !localCupo.value
-  ) {
-    mensajeError.value = "Por favor, completa los campos scoring y cupo para guardar";
+  if (!localScoring.value || !localCupo.value || !localLatitud.value || !localLongitud.value) {
+    mensajeError.value = "Por favor, completa Scoring, Cupo, Latitud y Longitud para guardar";
     return;
   }
 
@@ -136,6 +161,8 @@ const handleScoringCupo = async () => {
   const payload = {
     Scoring: localScoring.value.toString(),
     Cupo: localCupo.value.toString(),
+    Latitud: localLatitud.value.toString(),
+    Longitud: localLongitud.value.toString(),
     IdFlujoRegistro: id,
     Cliente_Acepto: confirmado.value,
     Cedula_Cliente: props.data.Cedula_Cliente.toString(),
@@ -165,6 +192,20 @@ const handleScoringCupo = async () => {
   }
 };
 
+function autoFormatCoordenada(event, tipo) {
+  let valor = event.target.value.replace(/[^0-9-]/g, '');
+  const esNegativo = valor.startsWith("-");
+  valor = valor.replace(/-/g, "");
+  if (valor.length > 2) {
+    valor = valor.slice(0, 2) + "." + valor.slice(2);
+  }
+  if (esNegativo) {
+    valor = "-" + valor;
+  }
+  event.target.value = valor;
+  if (tipo === "lat") localLatitud.value = valor;
+  else if (tipo === "lon") localLongitud.value = valor;
+}
 
 function formatCurrency(event) {
   let input = event.target;
@@ -175,23 +216,23 @@ function formatCurrency(event) {
 }
 </script>
 
-
 <template>
   <div class="tarjeta">
     <div class="tarjeta-header">
       <p class="cedula">Cédula: {{ data.Cedula_Cliente }}</p>
     </div>
+
     <div class="etapas-container">
       <div class="etapa">Género: {{ data.Genero }}</div>
       <div class="etapa">Estado Civil: {{ data.Estado_Civil }}</div>
-      <div class="etapa">Nivel Educativo: {{data.Nivel_Educativo }}</div>
+      <div class="etapa">Nivel Educativo: {{ data.Nivel_Educativo }}</div>
       <div class="etapa">Estrato: {{ data.Estrato }}</div>
-      <div class="etapa">Declara Renta: {{ data.Declara_Renta ? 'Si' : 'No' }}</div>
-      <div class="etapa">Esta obligado a tener RUT por tu actividad economica: {{ data.Esta_obligado_a_tener_RUT_por_tu_actividad_economica ? 'Si' : 'No' }}</div>
-      <div class="etapa">Ubicación del Negocio-Departamento: {{ data.Ubicacion_del_Negocio_Departamento }}</div>
-      <div class="etapa">Ubicación del Negocio-Ciudad: {{ data.Ubicacion_del_Negocio_Ciudad }}</div>
-      <div class="etapa">Numero de neveras que tiene la tienda: {{ data.Numero_de_neveras }}</div>
-      <div class="etapa">Reguistrado en Camara de Comercio: {{ data.Registrado_Camara_Comercio ? 'Si' : 'No' }}</div>
+      <div class="etapa">Declara Renta: {{ data.Declara_Renta ? 'Sí' : 'No' }}</div>
+      <div class="etapa">RUT por actividad económica: {{ data.Esta_obligado_a_tener_RUT_por_tu_actividad_economica ? 'Sí' : 'No' }}</div>
+      <div class="etapa">Depto Negocio: {{ data.Ubicacion_del_Negocio_Departamento }}</div>
+      <div class="etapa">Ciudad Negocio: {{ data.Ubicacion_del_Negocio_Ciudad }}</div>
+      <div class="etapa">Neveras: {{ data.Numero_de_neveras }}</div>
+      <div class="etapa">Cámara de Comercio: {{ data.Registrado_Camara_Comercio ? 'Sí' : 'No' }}</div>
       <div class="etapa">Rango Ingreso: {{ data.Rango_de_Ingresos }}</div>
     </div>
 
@@ -201,67 +242,92 @@ function formatCurrency(event) {
           <tr>
             <th>Scoring</th>
             <th>Cupo</th>
+            <th>Latitud</th>
+            <th>Longitud</th>
             <th>Usuario confirmo</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td :disabled="precargado.localCupo.value">
+            <td>
               <input
                 v-model="localScoring"
                 class="tabla-input"
                 type="number"
-                :disabled="precargado.localScoring.value"
                 placeholder="Ej: 40"
+                :disabled="precargado.localScoring.value"
               />
             </td>
-            <td :disabled="precargado.localCupo.value">
+            <td>
               <input
                 v-model="localCupo"
                 class="tabla-input"
                 type="text"
                 @input="formatCurrency"
-                :disabled="precargado.localCupo.value"
                 placeholder="Ej: 1.000.000"
+                :disabled="precargado.localCupo.value"
+              />
+            </td>
+            <td>
+              <input
+                v-model="localLatitud"
+                class="tabla-input"
+                type="text"
+                placeholder="Ej: 4.6486"
+                @input="autoFormatCoordenada($event, 'lat')"
+                :disabled="precargado.localLatitud.value"
+              />
+            </td>
+            <td>
+              <input
+                v-model="localLongitud"
+                class="tabla-input"
+                type="text"
+                placeholder="Ej: -74.2479"
+                @input="autoFormatCoordenada($event, 'lon')"
+                :disabled="precargado.localLongitud.value"
               />
             </td>
             <td>
               <select
-                class="tabla-input" 
+                class="tabla-input"
                 v-model="confirmado"
                 :disabled="!puedeConfirmar">
                 <option value="" selected>Selecciona una opción</option>
-                <option value="si">Si</option>
+                <option value="si">Sí</option>
               </select>
-            <p v-if="!puedeConfirmar" style="color: #999; font-size: 0.85rem;">
-               Asegúrate de guardar Scoring y Cupo, y que el banco haya aprobado el cupo sugerido.
-            </p>
+              <p v-if="!puedeConfirmar" class="nota">
+                Asegúrate de guardar Scoring, Cupo, Latitud y Longitud, y que el banco haya aprobado.
+              </p>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
-    <div v-if="mensajeError" style="color: red; margin-bottom: 1rem; text-align: center;">
+
+    <div v-if="mensajeError" class="mensaje-error">
       {{ mensajeError }}
     </div>
+
     <div class="tarjeta-acciones">
-      <button 
-          v-if="props.data.Estado === 'pendiente'"
-          class="boton-enviar"
-          @click="handleScoringCupo"
-        >
-          Guardar
-        </button>
-         <button 
-          v-if="props.data.Estado === 'aprobado'"
-          class="boton-enviar"
-          @click="handleconfirmado"
-        >
-          Guardar
-        </button>
+      <button
+        v-if="props.data.Estado === 'pendiente'"
+        class="boton-enviar"
+        @click="handleScoringCupo"
+      >
+        Guardar
+      </button>
+      <button
+        v-if="props.data.Estado === 'aprobado'"
+        class="boton-enviar"
+        @click="handleconfirmado"
+      >
+        Guardar
+      </button>
     </div>
   </div>
 </template>
+
 
 <style scoped>
 input:disabled {
@@ -270,18 +336,7 @@ input:disabled {
   border: 2px solid #ccc !important;
   box-shadow: none !important;
 }
-/* Logo */
-.logo-container {
-  text-align: center;
-  margin-block: 1.5rem;
-}
-.logo-main {
-  width: min(180px, 80%);
-  height: auto;
-  display: inline;
-}
 
-/* Tarjeta general */
 .tarjeta {
   width: 1200px;
   margin: 2rem auto;
@@ -291,12 +346,7 @@ input:disabled {
   background-color: #fefefe;
   font-family: sans-serif;
 }
-.tarjeta-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.75rem;
-}
+
 .cedula {
   background-color: #f0f0f0;
   padding: 5px 15px;
@@ -304,42 +354,31 @@ input:disabled {
   font-weight: bold;
   color: #333;
   font-size: 1.1em;
-  white-space: nowrap;
-  order: 3;
-}
-.tarjeta-subtitulo {
-  margin-block: 1rem;
-  font-size: 1.1rem;
-  color: #333;
-  text-align: center;
 }
 
-/* Etapas horizontal en varias filas */
 .etapas-container {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
   margin: 2rem auto;
-  justify-content: flex-start;
 }
+
 .etapa {
   font-size: 1rem;
   font-weight: 500;
-  text-align: center;
   padding: 0.5rem 1rem;
+  background: #f9f9f9;
   border-bottom: 3px solid #ffffff;
   border-radius: 0 0 10px 10px;
-  background: #f9f9f9;
   min-width: 250px;
-  flex: 1 0 auto;
 }
 
-/* Tabla Scoring/Cupo */
 .tabla-contenedor {
   overflow-x: auto;
   margin-bottom: 1.5rem;
   border-radius: 10px;
 }
+
 .tabla {
   width: 100%;
   border-collapse: collapse;
@@ -348,18 +387,20 @@ input:disabled {
   background-color: #ffffff;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
   border-radius: 10px;
-  overflow: hidden;
 }
+
 .tabla th,
 .tabla td {
   padding: 0.75rem 1rem;
   border-bottom: 1px solid #e5e7eb;
 }
+
 .tabla th {
   background-color: #251886;
   font-weight: bold;
   color: #f0f0f0;
 }
+
 .tabla-input {
   width: 100%;
   padding: 0.4rem;
@@ -370,17 +411,29 @@ input:disabled {
   outline: none;
   background-color: #fff;
 }
+
 .tabla-input:focus {
   border-color: #251886;
   box-shadow: 0 0 0 2px rgba(37, 24, 134, 0.2);
 }
 
-/* Botón enviar */
+.nota {
+  color: #999;
+  font-size: 0.85rem;
+}
+
+.mensaje-error {
+  color: red;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
 .tarjeta-acciones {
   display: flex;
   justify-content: center;
   margin-top: 1rem;
 }
+
 .boton-enviar {
   padding: 10px 30px;
   font-size: 15px;
@@ -392,6 +445,7 @@ input:disabled {
   outline: none;
   border: none;
 }
+
 .boton-enviar:hover {
   background-color: #f15bab;
 }

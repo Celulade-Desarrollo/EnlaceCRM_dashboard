@@ -4,7 +4,7 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 
 const goToLogin = () => {
-router.push('/Pantalla13View');
+router.push('/LoginView');
 };
 </script>
 
@@ -12,13 +12,13 @@ router.push('/Pantalla13View');
   <header class="header-bar">
     <div class="left-section">
       <img 
-        src="/public/casa.png" 
+        src="/public/cerrar.png" 
         alt="Inicio" 
         class="home-icon"
         @click="goToLogin"
       />
     </div>
-    <h1 class="title">Hola, Administrador banco w</h1>
+    <h1 class="title">Portal de gestión del Banco W</h1>
 
     <div class="right-section">
       <img src="/public/enlaceFiado.png" alt="Enlace CRM" class="logo enlace" />

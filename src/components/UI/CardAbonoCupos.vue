@@ -67,29 +67,27 @@ const valorProximoAbono = computed(() => {
   const movimientos = estadoCuenta.value.movimientos;
   const hoy = new Date();
 
-  // 1️⃣ Filtramos los de tipo 1 (utilización)
   const tipo1 = movimientos.filter(m => m.IdTipoMovimiento === 1);
 
-  // 2️⃣ Obtenemos las facturas que ya tienen pago (tipo 2)
   const facturasPagadas = movimientos
     .filter(m => m.IdTipoMovimiento === 2)
     .map(m => m.NroFacturaAlpina);
 
-  // 3️⃣ Nos quedamos con las facturas tipo 1 que NO estén pagadas
+  // facturas tipo 1 que no estén abonadas
   const sinPagar = tipo1.filter(m => !facturasPagadas.includes(m.NroFacturaAlpina));
 
   if (sinPagar.length === 0) return 0;
 
-  // 4️⃣ Convertimos fechas y separamos las que están vencidas
+  // Convertimos fechas y separamos las que están vencidas
   const vencidas = sinPagar.filter(m => new Date(m.FechaPagoProgramado) <= hoy);
   const futuras = sinPagar.filter(m => new Date(m.FechaPagoProgramado) > hoy);
 
-  // 5️⃣ Si hay facturas vencidas → sumamos todas sus deudas
+  // Si hay facturas vencidas sumamos todas sus deudas
   if (vencidas.length > 0) {
     return vencidas.reduce((acc, mov) => acc + (mov.Monto || 0), 0);
   }
 
-  // 6️⃣ Si no hay vencidas → mostramos la más próxima a vencer
+  // Si no hay vencidas mostramos la más próxima a vencer
   const proxima = futuras.sort(
     (a, b) => new Date(a.FechaPagoProgramado) - new Date(b.FechaPagoProgramado)
   )[0];
