@@ -1,5 +1,5 @@
 <template>
-  <div class="movimientos-container">
+ <div class="movimientos-container">
     <!-- Componente de error global -->
     <Errormsj v-if="errorMessage" :message="errorMessage" @close="errorMessage = ''" />
     
