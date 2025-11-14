@@ -44,11 +44,6 @@
           ${{ formatearMonto(calcularSaldoCapital(movimiento)) }}
         </p>
         
-        <p>
-          <strong>Saldo total:</strong>
-          ${{ formatearMonto(calcularSaldoTotal(movimiento)) }}
-        </p>
-        
         <p class="bg-yellow-200">
           <strong>Total Abono:</strong>
           ${{ calcularTotalAbono(movimiento) }}
