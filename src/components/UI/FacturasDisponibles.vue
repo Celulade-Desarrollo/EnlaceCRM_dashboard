@@ -1,10 +1,30 @@
+<script setup>
+import { ref } from "vue";
+
+const props = defineProps({
+  facturas: {
+    type: Array,
+    required: true,
+  },
+});
+
+const emit = defineEmits(["update-total"]);
+
+const seleccionadas = ref(null);
+
+const emitirTotal = () => {
+  const total = seleccionadas.value ? seleccionadas.value.faltante : 0; // Se suma solo el faltante
+  emit("update-total", total, seleccionadas.value ? [seleccionadas.value]: []);
+};
+</script>
+
 <template>
   <div class="facturas">
     <label v-for="factura in facturas" :key="factura.factura">
       <!-- Checkbox oculto pero funcional -->
       <input
-        type="checkbox"
-        class="custom-checkbox"
+        type="radio"
+        class="custom-radio"
         :value="factura"
         v-model="seleccionadas"
         @change="emitirTotal"
@@ -28,26 +48,6 @@
   </div>
 </template>
 
-<script setup>
-import { ref } from "vue";
-
-const props = defineProps({
-  facturas: {
-    type: Array,
-    required: true,
-  },
-});
-
-const emit = defineEmits(["update-total"]);
-
-const seleccionadas = ref([]);
-
-const emitirTotal = () => {
-  const total = seleccionadas.value.reduce((sum, f) => sum + f.faltante, 0); // Se suma solo el faltante
-  emit("update-total", total, seleccionadas.value);
-};
-</script>
-
 <style scoped>
 .facturas label {
   display: flex;
@@ -56,36 +56,35 @@ const emitirTotal = () => {
   margin-bottom: 15px;
 }
 
-.facturas input[type="checkbox"] {
+.facturas input[type="radio"] {
   display: none;
 }
 
 .checkbox-visual {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   border: 2px solid #412ece;
   background-color: transparent;
   display: inline-block;
   position: relative;
-  border-radius: 6px;
+  border-radius: 50%;
   margin-right: 12px;
   margin-top: 4px;
 }
 
-.facturas input[type="checkbox"]:checked + .checkbox-visual {
+.facturas input[type="radio"]:checked + .checkbox-visual {
   background-color: #dd3590;
 }
 
-.facturas input[type="checkbox"]:checked + .checkbox-visual::after {
+.facturas input[type="radio"]:checked + .checkbox-visual::after {
   content: '';
   position: absolute;
-  left: 7px;
-  top: 3px;
-  width: 8px;
-  height: 16px;
-  border: solid white;
-  border-width: 0 4px 4px 0;
-  transform: rotate(45deg);
+  left: 6px;
+  top: 6px;
+  width: 10px;
+  height: 10px;
+  border: white;
+ border-radius: 50%;
 }
 
 /* Estilos nuevos para estructurar la info */

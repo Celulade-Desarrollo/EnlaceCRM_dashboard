@@ -317,7 +317,7 @@ onMounted(async () => {
     margin-right: 10px;
     display: inline-block;
     position: relative;
-    border-radius: 4px;
+    border-radius: 50%;
 }
 
 .facturas input[type="checkbox"]:checked + .checkbox-visual {
@@ -325,17 +325,19 @@ onMounted(async () => {
 }
 
 
-.facturas input[type="checkbox"]:checked + .checkbox-visual::after {
+.facturas input[type="radio"]:checked + .checkbox-visual::after {
     content: '';
     position: absolute;
-    left: 7px;
-    top: 4px;
-    width: 8px;
-    height: 16px;
-    border: solid white;
-    border-width: 0 3px 3px 0;
-    transform: rotate(45deg);
-}
+    left: 6px;
+    top: 6px;
+    width: 10px;
+    height: 10px;
+    background: white;
+    border-radius: 50%;
+    /* border: solid white; */  
+    /* border-width: 0 3px 3px 0; */
+    /* transform: rotate(45deg);*/ 
+};
 
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
