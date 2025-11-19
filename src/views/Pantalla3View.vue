@@ -8,6 +8,9 @@ import axios from "axios";
 import SesionExpirada from "../components/UI/SesionExpirada.vue";
 import { activarSesionExpirada } from "../stores/session.js";
 
+const whatsappURL = "/whatsapp/send-message"
+
+
 // Instancia de Vue Router
   const router = useRouter();
 
@@ -46,6 +49,15 @@ import { activarSesionExpirada } from "../stores/session.js";
       "nroFacturaAlpina": nroFacturaAlpina,
       "telefonoTransportista":String(numeroTransportista.value)
     }
+    const hora = new Date().toLocaleTimeString();
+    const number = numeroTransportista.value;
+    const pagoFormateado = formatPesos(pagarValor);
+    const message = `${datosCuenta.Nombres} envío un pago de la factura ${nroFacturaAlpina} por el valor de ${pagoFormateado} el dia ${fechaActual.toLocaleDateString()} a la hora ${hora}`;
+    axios.post(whatsappURL, {
+      number: number,
+      message: message
+    })
+
     console.log("datosPagoFactura:", dataPagoFactura);
      try {
        const pagoFacturas = await axios.post("/api/movimientos",
