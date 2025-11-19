@@ -61,39 +61,58 @@ onMounted (async () => {
   console.log("estadocuentaa",estadoCuenta.value)
 });
 
+const deudaTotalCalculada = computed(() => {
+  if (!estadoCuenta.value.movimientos) return 0;
+
+  const facturas = estadoCuenta.value.movimientos.filter(m => m.IdTipoMovimiento === 1);
+  const abonos = estadoCuenta.value.movimientos.filter(m => m.IdTipoMovimiento === 2);
+
+  let total = 0;
+
+  facturas.forEach(fact => {
+    const totalAbonado = abonos
+      .filter(a => a.NroFacturaAlpina === fact.NroFacturaAlpina)
+      .reduce((acc, a) => acc + (a.Monto || 0), 0);
+
+    const montoTotal = fact.MontoMasIntereses || fact.Monto;
+    const saldo = montoTotal - totalAbonado;
+
+    if (saldo > 0) total += saldo;
+  });
+
+  return total;
+});
+
 const valorProximoAbono = computed(() => {
   if (!estadoCuenta.value.movimientos) return 0;
 
-  const movimientos = estadoCuenta.value.movimientos;
+  const facturas = estadoCuenta.value.movimientos.filter(m => m.IdTipoMovimiento === 1);
+  const abonos = estadoCuenta.value.movimientos.filter(m => m.IdTipoMovimiento === 2);
   const hoy = new Date();
 
-  const tipo1 = movimientos.filter(m => m.IdTipoMovimiento === 1);
+  // Facturas pendientes
+  const pendientes = facturas.map(fact => {
+    const totalAbonado = abonos
+      .filter(a => a.NroFacturaAlpina === fact.NroFacturaAlpina)
+      .reduce((acc, a) => acc + (a.Monto || 0), 0);
 
-  const facturasPagadas = movimientos
-    .filter(m => m.IdTipoMovimiento === 2)
-    .map(m => m.NroFacturaAlpina);
+    const montoTotal = fact.MontoMasIntereses || fact.Monto;
+    return {
+      ...fact,
+      saldo: montoTotal - totalAbonado
+    };
+  }).filter(f => f.saldo > 0);
 
-  // facturas tipo 1 que no estén abonadas
-  const sinPagar = tipo1.filter(m => !facturasPagadas.includes(m.NroFacturaAlpina));
+  if (pendientes.length === 0) return 0;
 
-  if (sinPagar.length === 0) return 0;
-
-  // Convertimos fechas y separamos las que están vencidas
-  const vencidas = sinPagar.filter(m => new Date(m.FechaPagoProgramado) <= hoy);
-  const futuras = sinPagar.filter(m => new Date(m.FechaPagoProgramado) > hoy);
-
-  // Si hay facturas vencidas sumamos todas sus deudas
-  if (vencidas.length > 0) {
-    return vencidas.reduce((acc, mov) => acc + (mov.Monto || 0), 0);
-  }
-
-  // Si no hay vencidas mostramos la más próxima a vencer
-  const proxima = futuras.sort(
+  // Tomar la factura más próxima a vencer
+  const proxima = pendientes.sort(
     (a, b) => new Date(a.FechaPagoProgramado) - new Date(b.FechaPagoProgramado)
   )[0];
 
-  return proxima ? proxima.Monto : 0;
+  return proxima.saldo;
 });
+
 
 </script>
 
@@ -109,7 +128,7 @@ const valorProximoAbono = computed(() => {
       </h3>
       <h3 class="flex gap-2"> Cupo disponible $ <p class="font-bold">{{ formatoMiles(props.cupoDisp) }}</p></h3>
       
-      <h2 class="text-xl flex gap-3 mt-1">Deuda total $<p class="font-bold">{{formatoMiles(deudaTotal) }}</p></h2>
+      <h2 class="text-xl flex gap-3 mt-1">Deuda total $<p class="font-bold">{{ formatoMiles(deudaTotalCalculada) }}</p></h2>
       <h2 class="text-xl flex gap-3 mt-1">Valor siguiente abono: <p class="font-bold">{{ formatoMiles(valorProximoAbono) }}</p></h2>
       <h3 v-if="Number(deudaTotal) > 0" class=" flex text-[13px]"> Fecha del siguiente abono:  <p class="font-bold">{{ fechaFormateada }}</p></h3>
      <div v-if="bloqueoMora" class="alert alert-danger mt-3">
