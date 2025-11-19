@@ -61,13 +61,30 @@ onMounted(async () => {
   }
 
 
-  const map = L.map("map").setView([4.711, -74.0721], 12); // Bogotá por defecto
+  const map = L.map("map").setView([4.711, -74.0721], 12);
 
     L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
     attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
   }).addTo(map);
 
- 
+  const redIcon = new L.Icon({
+    iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png",
+    shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+  });
+
+  map.locate({ setView: true, maxZoom: 16 });
+
+  map.on("locationfound", (e) => {
+    L.marker(e.latlng, { icon: redIcon })
+      .addTo(map)
+      .bindPopup("<b>📍 Estás aquí</b>")
+      .openPopup();
+  });
+
   try {
   const ubicacionesResponse = await axios.get("/api/mapa/ubicaciones", {
   headers: {
