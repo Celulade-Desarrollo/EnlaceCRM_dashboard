@@ -84,7 +84,6 @@ const handleContinuarClick = () => {
   window.open("/Pantalla3View", "_parent");
 };
 
-
 // Observa cambios en totalFacturasSeleccionadas y actualiza pagar automáticamente
     watch(totalFacturasSeleccionadas, (nuevoTotal) => {
       pagar.value = nuevoTotal;
