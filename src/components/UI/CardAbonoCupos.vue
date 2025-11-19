@@ -65,6 +65,7 @@ onMounted (async () => {
 
 const fechaSiguienteAbono = ref(props.fechaAbono || null);
 
+//funcion 
 const valorProximoAbono = computed(() => {
   if (!estadoCuenta.value.movimientos) return 0;
 
