@@ -6,7 +6,7 @@
     <section class="logo-container">
       <img src="/public/enlaceFiado.png" alt="logo Enlace CRM" class="logo-main" />
     </section>
-    
+    <!-- comen-->
     <div v-if="movimientos.length" v-for="movimiento in movimientos" :key="movimiento.IdMovimiento" class="movimiento-card">
       <div class="card-header">
         <h3>Movimiento #{{ movimiento.IdMovimiento }}</h3>
