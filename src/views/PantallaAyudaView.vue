@@ -6,7 +6,7 @@ const datosCuentaUser = JSON.parse(localStorage.getItem("datosCuenta")) || {};
 const datosCuenta = JSON.parse(localStorage.getItem("datosCuenta")) || {};
 
 
-const whatsappLink = "https://wa.me/573001234545";
+const whatsappLink = "https://wa.me/573196622476";
 const categoriaSeleccionada = ref(null);
 
 
