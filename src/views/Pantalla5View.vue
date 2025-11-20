@@ -130,12 +130,10 @@ onMounted(async () => {
                 <div class="detalle">
                   <p class="fecha"><strong>Fecha:</strong> {{ formatFecha(mov.FechaHoraMovimiento) }}</p>
                   <p class="descripcion"><strong>Descripción:</strong> {{ mov.Descripcion }}</p>
-                  <p class="descripcion"><strong>Estado Movimiento:</strong> {{ mov.IdEstadoMovimiento }}</p>
-                  <p class="descripcion"><strong>Fecha Programada:</strong>
+                  <p class="descripcion"><strong>Fecha Programada del pago del crédito:</strong>
                     {{ mov.FechaPagoProgramado ? formatFecha(mov.FechaPagoProgramado) : 'No aplica' }}
                   </p>
-                  <p class="descripcion"><strong>Medio de Pago:</strong> {{ mov.IdMedioPago ?? 'N/A' }}</p>
-                  <p class="descripcion"><strong>Bloqueo Mora:</strong> {{ mov.BloqueoMora === 1 ? 'Sí' : 'No' }}</p>
+
                   <p class="descripcion"><strong>Factura Alpina:</strong> {{ mov.NroFacturaAlpina || 'No aplica' }}</p>
                   <p class="descripcion"><strong>Tel. Transportista:</strong> {{ mov.TelefonoTransportista || 'No aplica' }}</p>
                 </div>
