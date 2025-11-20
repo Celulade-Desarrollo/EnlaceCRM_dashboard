@@ -17,7 +17,8 @@ const cupoTotal = ref(0);
 const mostrarMovimientos = ref(true);
 const datosCuenta = ref(null);
 const movimientos = ref([]);
-
+const interesesPagados = ref(0)
+const feesPagados = ref(500)
 
 function formatPesos(valor) {
   return new Intl.NumberFormat("es-CO", {
@@ -40,6 +41,8 @@ const goToPantallaAbonar = () => {
 };
 // Lógica de obtención de datos
 onMounted(async () => {
+  const cedula = datosCuentaUser.Cedula_Cliente;
+
   const token = localStorage.getItem("token");
   if (!token) {
     console.error("No hay token en localStorage");
@@ -66,15 +69,36 @@ onMounted(async () => {
       deudaTotal.value = cupoFinal - cupoDisponible;
       
      //Obtener movimientos
-     const resMov = await axios.get(`/api/movimientos/${idUsuario}`,
-       {
-          headers: {  
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
-          }
-        }
-     );
-     movimientos.value = resMov.data;
+    //  const resMov = await axios.get(`/api/movimientos/${idUsuario}`,
+    //    {
+    //       headers: {  
+    //         Authorization: `Bearer ${token}`,
+    //         "Content-Type": "application/json"
+    //       }
+    //     }
+    //  );
+    //  movimientos.value = resMov.data;
+    //  console.log("movimientos",movimientos.value)
+
+    const responseEstadoCuenta = await axios.get(
+    `/api/pagos/estado-cuenta?identificadorTendero=${cedula}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    movimientos.value = responseEstadoCuenta.data.movimientos;
+
+    movimientos.value.forEach(mov => {
+      if (mov.IdTipoMovimiento === 1) {
+        interesesPagados.value += parseFloat( mov.MontoMasIntereses - mov.Monto - 500);
+      }
+    });
+    
+    console.log("movimientos",movimientos.value)
+    console.log("responseEstadoCuenta",responseEstadoCuenta);
+
   } catch (error) {
     console.error("Error al obtener datos:", error);
   if (error.response?.status === 401) {
@@ -126,18 +150,30 @@ onMounted(async () => {
 
           <div v-else>
             <div v-for="(mov, index) in movimientos" :key="index" class="movimiento">
-              <div class="info-movimiento">
+
+              <div class="info-movimiento" v-if="mov.IdTipoMovimiento === 1">
                 <div class="detalle">
                   <p class="fecha"><strong>Fecha:</strong> {{ formatFecha(mov.FechaHoraMovimiento) }}</p>
                   <p class="descripcion"><strong>Descripción:</strong> {{ mov.Descripcion }}</p>
                   <p class="descripcion"><strong>Fecha Programada del pago del crédito:</strong>
                     {{ mov.FechaPagoProgramado ? formatFecha(mov.FechaPagoProgramado) : 'No aplica' }}
                   </p>
-
                   <p class="descripcion"><strong>Factura Alpina:</strong> {{ mov.NroFacturaAlpina || 'No aplica' }}</p>
                   <p class="descripcion"><strong>Tel. Transportista:</strong> {{ mov.TelefonoTransportista || 'No aplica' }}</p>
                 </div>
               </div>
+               <div class="info-movimiento" v-if="mov.IdTipoMovimiento === 2">
+                <div class="detalle">
+                  <p class="fecha"><strong>Fecha:</strong> {{ formatFecha(mov.FechaHoraMovimiento) }}</p>
+                  <p class="descripcion"><strong>Descripción:</strong> {{ mov.Descripcion }}</p>
+                  <p class="descripcion"><strong>Factura Alpina:</strong> {{ mov.NroFacturaAlpina || 'No aplica' }}</p>
+                  <p class="descripcion"><strong>Abono capital:</strong> ${{ mov.Monto}}</p>
+                  <p class="descripcion"><strong>Intereses:</strong> ${{ interesesPagados}}</p>
+                  <p class="descripcion"><strong>Fees:</strong> ${{ feesPagados }}</p>
+
+                </div>
+              </div>
+
               <p :class="['monto', mov.IdTipoMovimiento === 2 ? 'positivo' : 'negativo']">
                 {{ mov.IdTipoMovimiento === 2 ? '+' : '-' }}{{ formatPesos(mov.Monto) }}
               </p>
@@ -278,4 +314,4 @@ button:focus {
 .monto.positivo {
   color: green;
 }
-</style> 
+</style>
