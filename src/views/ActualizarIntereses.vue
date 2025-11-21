@@ -172,11 +172,6 @@ import axios from 'axios'
 
 
 const movimientos = ref([])
-
-// Eliminamos el estado global 'actualizarSaldo'.
-// Cada movimiento tendrá sus propios campos editables inicializados al obtener los movimientos.
-
-
 const formatearFecha = (fecha) => {
   return new Date(fecha).toLocaleDateString('es-ES', {
     year: 'numeric',
@@ -224,7 +219,6 @@ const obtenerMovimientos = async () => {
       editando: false,
       cargando: false,
       nuevoMonto: mov.MontoMasIntereses != null ? mov.MontoMasIntereses : mov.Monto,
-      // Campos por movimiento (estado local)
       interesCorriente: 0,
       interesMora: 0,
       abonoCapital: 0,
@@ -254,36 +248,7 @@ const iniciarEdicion = (movimiento) => {
 const cancelarEdicion = (movimiento) => {
   movimiento.editando = false
   movimiento.nuevoMonto = movimiento.Monto
-  // opcional: resetear campos editables si se desea
 }
-
-const movimientoInfo ={
-  identificadorTendero: 0,
-  monto: 0,
-  tipoMovimiento: 2,
-  descripcion: "pago de credito",
-  fechaPagoProgramado: "",
-  idMedioPago: 2,
-  nroFacturaAlpina: "string",
-  telefonoTransportista: ""
-}
-
-const actualizarMonto = async (identificadorTendero, abono) => {
-  try {
-    const payload = {
-      ...movimientoInfo,
-      identificadorTendero,
-      monto: abono,
-    }
-
-    await axios.post('/api/movimientos', payload)
-
-    console.log('Movimiento actualizado correctamente')
-  } catch (error) {
-    console.error('Error al actualizar monto:', error)
-  }
-}
-
 
 const actualizarIntereses = async (movimiento) => {
   try {
@@ -291,7 +256,10 @@ const actualizarIntereses = async (movimiento) => {
     
     const valorConIntereses = calcularSaldoTotal(movimiento)
     await axios.put(`/api/actualizarIntereses/${movimiento.IdMovimiento}`, { 
-      nuevoMonto: valorConIntereses 
+      nuevoMonto: valorConIntereses,
+      Intereses: movimiento.interesCorriente,
+      InteresesMora: movimiento.interesMora,
+      Fees: movimiento.cobroFees
     })
     
     console.log('Intereses actualizados correctamente')
