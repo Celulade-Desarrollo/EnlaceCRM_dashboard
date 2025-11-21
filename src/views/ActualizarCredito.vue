@@ -39,14 +39,19 @@
           </template>
         </p>
         
-        <p>
+
+         <p>
           <strong>Saldo Capital:</strong>
+          <template v-if="movimiento.editando">
+            <input 
+              type="number" 
+              v-model.number="movimiento.SaldoCapital" 
+              class="monto-input"
+            >
+          </template>
+          <template v-else>
           ${{ formatearMonto(calcularSaldoCapital(movimiento)) }}
-        </p>
-        
-        <p class="bg-yellow-200">
-          <strong>Total Abono:</strong>
-          ${{ calcularTotalAbono(movimiento) }}
+          </template>
         </p>
         
         <p class="bg-green-200">
@@ -68,17 +73,18 @@
           {{ validarAbonoCapital(movimiento).mensaje }}
         </div>
         
-        <p class="bg-green-200">
-          <strong>Abono Intereses:</strong>
+
+        <p class="bg-yellow-200">
+          <strong>Valor Intereses:</strong>
           <template v-if="movimiento.editando">
             <input 
               type="number" 
-              v-model.number="movimiento.abonoIntereses" 
+              v-model.number="movimiento.Intereses" 
               class="monto-input"
             >
           </template>
           <template v-else>
-            ${{ formatearMonto(movimiento.abonoIntereses) }}
+            ${{ formatearMonto(movimiento.Intereses) }}
           </template>
         </p>
         
@@ -87,17 +93,33 @@
           {{ validarAbonoIntereses(movimiento).mensaje }}
         </div>
         
-        <p class="bg-green-200">
-          <strong>Seguro (fees):</strong>
+        
+
+         <p class="bg-yellow-200">
+          <strong>Valor Fees:</strong>
           <template v-if="movimiento.editando">
             <input 
               type="number" 
-              v-model.number="movimiento.abonoFees" 
+              v-model.number="movimiento.Fees" 
               class="monto-input"
             >
           </template>
           <template v-else>
-            ${{ formatearMonto(movimiento.abonoFees) }}
+            ${{ formatearMonto(movimiento.Fees) }}
+          </template>
+        </p>
+
+         <p class="bg-yellow-200">
+          <strong>Valor Intereses mora:</strong>
+          <template v-if="movimiento.editando">
+            <input 
+              type="number" 
+              v-model.number="movimiento.interesesMora" 
+              class="monto-input"
+            >
+          </template>
+          <template v-else>
+            ${{ formatearMonto(movimiento.interesesMora) }}
           </template>
         </p>
         
@@ -202,9 +224,6 @@ const getTotalAbonoValue = (movimiento) => {
   )
 }
 
-const calcularTotalAbono = (movimiento) => {
-  return formatearMonto(getTotalAbonoValue(movimiento))
-}
 
 const calcularSaldoCapital = (movimiento) => {
   const abonoCapital = Number(movimiento.abonoCapital || 0)
@@ -212,26 +231,12 @@ const calcularSaldoCapital = (movimiento) => {
 
   if (movimiento.AbonoUsuario != null) {
     const AbonoUsuario = Number(movimiento.AbonoUsuario || 0)
-    return pago - AbonoUsuario
+    return pago - AbonoUsuario - abonoCapital
   }
   return pago - abonoCapital
 }
 
-const calcularSaldoTotal = (movimiento) => {
-  const pago = Number(getPago(movimiento) || 0)
-  const abonoCapital = Number(movimiento.abonoCapital || 0)
-  
-  if (movimiento.AbonoUsuario != null) {
-    const AbonoUsuario = Number(movimiento.AbonoUsuario || 0)
-    const resultado = pago - AbonoUsuario
-    return resultado - abonoCapital
-  }
-  return pago - abonoCapital
-}
 
-// ============================================
-// FUNCIONES DE VALIDACIÓN
-// ============================================
 const validarAbonoCapital = (movimiento) => {
   const pago = Number(getPago(movimiento) || 0)
   const abonoCapital = Number(movimiento.abonoCapital || 0)
@@ -284,11 +289,11 @@ const obtenerMovimientos = async () => {
       editando: false,
       nuevoMonto: mov.MontoMasIntereses != null ? mov.MontoMasIntereses : mov.Monto,
       interesCorriente: 0,
-      interesMora: 0,
+      SaldoCapital: 0,
+      InteresMora: 0,
       abonoCapital: 0,
-      abonoIntereses: 0,
-      abonoFees: 0,
-      cobroFees: 0,
+      Intereses: 0,
+      Fees: 0,
       cargando: false,
     }))
   } catch (error) {
@@ -304,12 +309,13 @@ const iniciarEdicion = (movimiento) => {
   movimiento.nuevoMonto = getPago(movimiento)
   errorMessage.value = ''
   
-  movimiento.interesCorriente = movimiento.interesCorriente ?? 0
-  movimiento.interesMora = movimiento.interesMora ?? 0
+  movimiento.Intereses = movimiento.Intereses ?? 0
+  movimiento.interesesMora = movimiento.interesesMora ?? 0
   movimiento.abonoCapital = movimiento.abonoCapital ?? 0
   movimiento.abonoIntereses = movimiento.abonoIntereses ?? 0
   movimiento.abonoFees = movimiento.abonoFees ?? 0
-  movimiento.cobroFees = movimiento.cobroFees ?? 0
+  movimiento.Fees = movimiento.Fees ?? 0
+
 }
 
 const cancelarEdicion = (movimiento) => {
@@ -342,27 +348,26 @@ const actualizarMonto = async (movimiento) => {
       identificadorTendero: movimiento.Cedula_Usuario,
       monto: movimiento.abonoCapital,
       nroFacturaAlpina: movimiento.NroFacturaAlpina,
-      IdMovimiento: movimiento.IdMovimiento
+      IdMovimiento: movimiento.IdMovimiento,
+      Intereses: movimiento.Intereses,
+      InteresesMora: movimiento.interesMora,
+      Fees: movimiento.Fees
     }
 
     await axios.post('/api/movimientos', payload)
     await axios.put(`/api/actualizarAbono/${movimiento.IdMovimiento}`, { 
-      nuevoMonto: movimiento.abonoCapital 
+      nuevoMonto: movimiento.abonoCapital,
     })
 
-    console.log('Movimiento actualizado correctamente')
+
     window.location.reload()
   } catch (error) {
-    console.error('Error al actualizar monto:', error)
     errorMessage.value = 'Error al actualizar el movimiento. Por favor, intenta de nuevo.'
   } finally {
     movimiento.cargando = false
   }
 }
 
-// ============================================
-// LIFECYCLE
-// ============================================
 onMounted(obtenerMovimientos)
 </script>
 
