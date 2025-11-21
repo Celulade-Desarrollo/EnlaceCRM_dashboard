@@ -168,14 +168,14 @@ onMounted(async () => {
                   <p class="descripcion"><strong>Descripción:</strong> {{ mov.Descripcion }}</p>
                   <p class="descripcion"><strong>Factura Alpina:</strong> {{ mov.NroFacturaAlpina || 'No aplica' }}</p>
                   <p class="descripcion"><strong>Abono capital:</strong> ${{ mov.Monto}}</p>
-                  <p class="descripcion"><strong>Intereses:</strong> ${{ interesesPagados}}</p>
-                  <p class="descripcion"><strong>Fees:</strong> ${{ feesPagados }}</p>
+                  <p class="descripcion"><strong>Intereses:</strong> ${{ mov.Intereses}}</p>
+                  <p class="descripcion"><strong>Fees:</strong> ${{ mov.Fees }}</p>
 
                 </div>
               </div>
 
               <p :class="['monto', mov.IdTipoMovimiento === 2 ? 'positivo' : 'negativo']">
-                {{ mov.IdTipoMovimiento === 2 ? '+' : '-' }}{{ formatPesos(mov.Monto) }}
+                {{ mov.IdTipoMovimiento === 2 ? '+' : '-' }}{{ formatPesos(mov.Monto + mov.Intereses +mov.Fees)  }}
               </p>
             </div>
           </div>
