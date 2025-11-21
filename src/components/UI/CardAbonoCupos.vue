@@ -12,15 +12,12 @@ const props = defineProps({
     type: String,
     required: true
   },
-  deudaTotal:{
-    type: String,
-    required: true
-  },
   fechaAbono:{
     type: String,
     required: true
   }
 });
+
 const estadoCuenta = ref({});
 const token = localStorage.getItem("token");
 const datosCuenta = JSON.parse(localStorage.getItem("datosCuenta")) || {};
@@ -74,8 +71,15 @@ const deudaTotalCalculada = computed(() => {
       .filter(a => a.NroFacturaAlpina === fact.NroFacturaAlpina)
       .reduce((acc, a) => acc + (a.Monto || 0), 0);
 
-    const montoTotal = fact.MontoMasIntereses || fact.Monto;
-    const saldo = montoTotal - totalAbonado;
+    const capital = fact.Monto;
+    const proyectado = fact.MontoMasIntereses;
+
+    let saldo = 0;
+
+    if (totalAbonado < capital) {
+      const montoTotal = proyectado || capital;
+      saldo = montoTotal - totalAbonado;
+    }
 
     if (saldo > 0) total += saldo;
   });
@@ -88,31 +92,41 @@ const valorProximoAbono = computed(() => {
 
   const facturas = estadoCuenta.value.movimientos.filter(m => m.IdTipoMovimiento === 1);
   const abonos = estadoCuenta.value.movimientos.filter(m => m.IdTipoMovimiento === 2);
-  const hoy = new Date();
 
   // Facturas pendientes
-  const pendientes = facturas.map(fact => {
-    const totalAbonado = abonos
-      .filter(a => a.NroFacturaAlpina === fact.NroFacturaAlpina)
-      .reduce((acc, a) => acc + (a.Monto || 0), 0);
+  const pendientes = facturas
+    .map(fact => {
+      const totalAbonado = abonos
+        .filter(a => a.NroFacturaAlpina === fact.NroFacturaAlpina)
+        .reduce((acc, a) => acc + (a.Monto || 0), 0);
 
-    const montoTotal = fact.MontoMasIntereses || fact.Monto;
-    return {
-      ...fact,
-      saldo: montoTotal - totalAbonado
-    };
-  }).filter(f => f.saldo > 0);
+      const capital = fact.Monto;
+      const proyectado = fact.MontoMasIntereses;
+
+      let saldo = 0;
+
+      // Si ya pagó todo el capital
+      if (totalAbonado < capital) {
+        const montoTotal = proyectado || capital;
+        saldo = montoTotal - totalAbonado;
+      }
+
+      return {
+        ...fact,
+        saldo
+      };
+    })
+    .filter(f => f.saldo > 0);
 
   if (pendientes.length === 0) return 0;
 
-  // Tomar la factura más próxima a vencer
+  // Tomar la más próxima a vencer
   const proxima = pendientes.sort(
     (a, b) => new Date(a.FechaPagoProgramado) - new Date(b.FechaPagoProgramado)
   )[0];
 
   return proxima.saldo;
 });
-
 
 </script>
 

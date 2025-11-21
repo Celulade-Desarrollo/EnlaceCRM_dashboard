@@ -50,27 +50,6 @@ onMounted(async () => {
 
     const movimientos = responseEstadoCuenta.data.movimientos;
 
-    const movimientoFactura = [...movimientos]
-      .reverse()
-      .find((mov) =>
-        mov.IdTipoMovimiento === 1 &&
-        mov.MontoMasIntereses !== null
-      );
-
-    console.log("Movimiento factura encontrado:", movimientoFactura);
-
-    if (movimientoFactura) {
-      const monto = parseFloat(movimientoFactura.Monto.toString().replace(',', '.'));
-      const abono = parseFloat((movimientoFactura.AbonoUsuario || '0').toString().replace(',', '.'));
-      const montoConIntereses = parseFloat(movimientoFactura.MontoMasIntereses.toString().replace(',', '.'));
-
-      estadoCuenta.value.deudaTotal = abono >= monto ? 0 : montoConIntereses.toFixed(2);
-    } else {
-      const cupoFinal = parseInt(estadoCuenta.value.CupoFinal.replace(/\./g, ''));
-      const cupoDisponible = parseInt(estadoCuenta.value.CupoDisponible);
-      estadoCuenta.value.deudaTotal = (cupoFinal - cupoDisponible).toFixed(2);
-    }
-
     console.log("responseEstadoCuenta", responseEstadoCuenta);
     console.log("deudatotal", estadoCuenta.value);
 
@@ -113,12 +92,11 @@ const goToPantalla5 = () => {
         :cupoTotal="estadoCuenta.CupoFinal"
         :cupoDisp="estadoCuenta.CupoDisponible"
         :fechaAbono="fechaPago"
-        :deudaTotal="estadoCuenta.deudaTotal"
-        :facturaDisponiblePago= "estadoCuenta.facturaDisponiblePago"
+        :facturaDisponiblePago="estadoCuenta.facturaDisponiblePago"
         @abonar="goToPantallaAbonar"
         @movimientos="goToPantalla5"
       />
-     
+      
       <!-- Tarjeta de proveedor -->
       <div class="card">
         <h3 class="font-bold text-lg mt-3">Facturas disponibles para pagar</h3>
