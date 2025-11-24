@@ -1,80 +1,59 @@
 <template>
-  <div class="movimientos-container">
+ <div class="movimientos-container">
+    <!-- Componente de error global -->
+    <Errormsj v-if="errorMessage" :message="errorMessage" @close="errorMessage = ''" />
+    
     <section class="logo-container">
       <img src="/public/enlaceFiado.png" alt="logo Enlace CRM" class="logo-main" />
-      <!-- <Heading :mensaje="'Hola, Administrador'" /> -->
     </section>
-    
+    <!-- comen-->
     <div v-if="movimientos.length" v-for="movimiento in movimientos" :key="movimiento.IdMovimiento" class="movimiento-card">
       <div class="card-header">
         <h3>Movimiento #{{ movimiento.IdMovimiento }}</h3>
         <span class="fecha"> Realizado el {{ formatearFecha(movimiento.FechaHoraMovimiento) }}</span>
       </div>
+      
       <div class="card-body">
         <div v-if="movimiento.cargando" class="card-overlay">
           <div class="spinner"></div>
         </div>
+        
         <p><strong>Cédula:</strong> {{ movimiento.Cedula_Usuario }}</p>
+        
         <p>
           <strong>Pago:</strong>
+          ${{ formatearMonto(getPago(movimiento)) }}
+        </p>
+        
+        <p>
+          <strong>Saldo Capital + Intereses:</strong>
           <template v-if="movimiento.editando">
             <input 
               type="number" 
-              v-model.number="movimiento.nuevoMonto" 
+              v-model.number="movimiento.MontoMasIntereses" 
               class="monto-input"
             >
           </template>
           <template v-else>
-            ${{ formatearMonto(getDisplayMonto(movimiento)) }}
+            ${{ formatearMonto(getSaldoCapitalIntereses(movimiento)) }}
           </template>
         </p>
-        <p>
+        
+
+         <p>
           <strong>Saldo Capital:</strong>
           <template v-if="movimiento.editando">
             <input 
               type="number" 
-              v-model.number="movimiento.abonoCapital"
-              class="saldo-capital-input"
-            >
-          </template>
-          <template v-else>
-            ${{ calcularSaldoCapital(movimiento) }}
-          </template>
-        </p>
-        <p>
-          <strong>Saldo total:</strong>
-          ${{ formatearMonto(calcularSaldoTotal(movimiento)) }}
-        </p>
-        <!-- 
-        <p class="bg-green-200">
-          <strong>Interes corriente:</strong>
-          <template v-if="movimiento.editando">
-            <input 
-              type="number" 
-              v-model.number="movimiento.interesCorriente"
+              v-model.number="movimiento.SaldoCapital" 
               class="monto-input"
             >
           </template>
           <template v-else>
-            ${{ formatearMonto(movimiento.interesCorriente) }}
+          ${{ formatearMonto(calcularSaldoCapital(movimiento)) }}
           </template>
         </p>
-
-        <p class="bg-green-200">
-          <strong>Intereses mora:</strong>
-          <template v-if="movimiento.editando">
-            <input 
-              type="number" 
-              v-model.number="movimiento.interesMora" 
-              class="monto-input"
-            >
-          </template>
-          <template v-else>
-            ${{ formatearMonto(movimiento.interesMora) }}
-          </template>
-        </p>
-
-      -->
+        
         <p class="bg-green-200">
           <strong>Abono Capital:</strong>
           <template v-if="movimiento.editando">
@@ -88,73 +67,94 @@
             ${{ formatearMonto(movimiento.abonoCapital) }}
           </template>
         </p>
-      <!-- 
+        
+        <!-- Error específico de abono capital -->
+        <div v-if="movimiento.editando && validarAbonoCapital(movimiento).error" class="error-mensaje">
+          {{ validarAbonoCapital(movimiento).mensaje }}
+        </div>
+        
 
-         <p class="bg-green-200">
-          <strong>Abono Intereses:</strong>
+        <p class="bg-yellow-200">
+          <strong>Valor Intereses:</strong>
           <template v-if="movimiento.editando">
             <input 
               type="number" 
-              v-model.number="movimiento.abonoIntereses" 
+              v-model.number="movimiento.Intereses" 
               class="monto-input"
             >
           </template>
           <template v-else>
-            ${{ formatearMonto(movimiento.abonoIntereses) }}
+            ${{ formatearMonto(movimiento.Intereses) }}
           </template>
         </p>
+        
+        <!-- Error específico de abono intereses -->
+        <div v-if="movimiento.editando && validarAbonoIntereses(movimiento).error" class="error-mensaje">
+          {{ validarAbonoIntereses(movimiento).mensaje }}
+        </div>
+        
+        
 
-         <p>
-          <strong>Cobro fees:</strong>
+         <p class="bg-yellow-200">
+          <strong>Valor Fees:</strong>
           <template v-if="movimiento.editando">
             <input 
               type="number" 
-              v-model.number="movimiento.cobroFees" 
+              v-model.number="movimiento.Fees" 
               class="monto-input"
             >
           </template>
           <template v-else>
-            ${{ formatearMonto(movimiento.cobroFees) }}
+            ${{ formatearMonto(movimiento.Fees) }}
           </template>
         </p>
 
-         <p class="bg-green-200">
-          <strong>Abono fees:</strong>
+         <p class="bg-yellow-200">
+          <strong>Valor Intereses mora:</strong>
           <template v-if="movimiento.editando">
             <input 
               type="number" 
-              v-model.number="movimiento.abonoFees" 
+              v-model.number="movimiento.interesesMora" 
               class="monto-input"
             >
           </template>
           <template v-else>
-            ${{ formatearMonto(movimiento.abonoFees) }}
+            ${{ formatearMonto(movimiento.interesesMora) }}
           </template>
         </p>
-        -->
+        
         <p><strong>Descripción:</strong> {{ movimiento.Descripcion }}</p>
         <p><strong>Fecha de Pago Programado:</strong> {{ formatearFecha(movimiento.FechaPagoProgramado) }}</p>
         
         <div class="botones">
-
-          <template v-if="movimiento.editando" class="edit-buttons">
-            <span v-if="!abonoCapitalValido(movimiento)" class="error-msg">El abono capital no puede ser mayor que el valor de la factura (pago).</span>
-            <button @click="actualizarMonto(movimiento, movimiento.Cedula_Usuario, movimiento.abonoCapital, movimiento.NroFacturaAlpina, movimiento.IdMovimiento)" :disabled="movimiento.cargando || !abonoCapitalValido(movimiento)" class="p-2 bg-green-400 rounded-xl pl-3 pr-3 text-green-800 mb-10">
-              <span v-if="!movimiento.cargando">Realizar Abono</span>
-              <span v-else class="spinner-inline" aria-hidden="true"></span>
-            
+          <template v-if="movimiento.editando">
+            <button 
+              @click="actualizarMonto(movimiento)" 
+              :disabled="!puedeActualizar(movimiento)"
+              class="p-2 bg-green-400 rounded-xl pl-3 pr-3 text-green-800"
+            >
+              Realizar Abono
             </button>
-
-            <button @click="cancelarEdicion(movimiento)" :disabled="movimiento.cargando" class="text-gray-400 p-2 border-2 rounded-xl border-solid border-gray-400 h-10">Cancelar</button>         
+            
+            <button 
+              @click="cancelarEdicion(movimiento)" 
+              :disabled="movimiento.cargando" 
+              class="text-gray-400 p-2 border-2 rounded-xl border-solid border-gray-400"
+            >
+              Cancelar
+            </button>
           </template>
           <template v-else>
-
             <button 
               @click="iniciarEdicion(movimiento)" 
-              :disabled="saldoCapitalValue(movimiento) === 0"
+              :disabled="!puedeEditar(movimiento)"
               class="bg-[#dd3590] text-white p-2 pl-4 pr-4 rounded-xl"
-            >Actualizar Saldo</button>
-            <span v-if="saldoCapitalValue(movimiento) === 0" class="no-edit-note">Saldo capital es 0 — no editable</span>
+            >
+              Actualizar Saldo
+            </button>
+            <span v-if="!puedeEditar(movimiento)" class="no-edit-note">
+              Saldo capital es 0 — no editable
+            </span>
           </template>
         </div>
       </div>
@@ -163,17 +163,34 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
+import Errormsj from '../components/UI/Alerta.vue'
 import axios from 'axios'
 
-
+// ============================================
+// ESTADO
+// ============================================
 const movimientos = ref([])
+const errorMessage = ref('')
 
-// Eliminamos el estado global 'actualizarSaldo'.
-// Cada movimiento tendrá su propio estado inicializado en obtenerMovimientos.
+// ============================================
+// CONSTANTES
+// ============================================
+const MOVIMIENTO_INFO = {
+  identificadorTendero: 0,
+  monto: 0,
+  tipoMovimiento: 2,
+  descripcion: "pago de credito",
+  fechaPagoProgramado: "",
+  idMedioPago: 2,
+  telefonoTransportista: ""
+}
 
-
+// ============================================
+// FUNCIONES DE FORMATO
+// ============================================
 const formatearFecha = (fecha) => {
+  if (!fecha) return 'N/A'
   return new Date(fecha).toLocaleDateString('es-ES', {
     year: 'numeric',
     month: 'long',
@@ -186,154 +203,193 @@ const formatearMonto = (monto) => {
   return Number(monto).toLocaleString('es-CO')
 }
 
-
-const getDisplayMonto = (movimiento) => {
-  if (!movimiento) return 0
-  return movimiento.Monto
+// ============================================
+// FUNCIONES DE CÁLCULO
+// ============================================
+const getPago = (movimiento) => {
+  return movimiento?.Monto || 0
 }
+
+const getSaldoCapitalIntereses = (movimiento) => {
+  if (!movimiento) return 0
+  const totalAbono = getTotalAbonoValue(movimiento)
+  return movimiento.MontoMasIntereses - Number(movimiento.AbonoUsuario || 0) - totalAbono
+}
+
+const getTotalAbonoValue = (movimiento) => {
+  return (
+    Number(movimiento.abonoCapital || 0) +
+    Number(movimiento.abonoIntereses || 0) +
+    Number(movimiento.abonoFees || 0)
+  )
+}
+
 
 const calcularSaldoCapital = (movimiento) => {
   const abonoCapital = Number(movimiento.abonoCapital || 0)
-  const pago = Number(getDisplayMonto(movimiento) || 0)
+  const pago = Number(getPago(movimiento) || 0)
 
-  if(movimiento.AbonoUsuario != null){
-    const AbonoUsuario = Number(movimiento.AbonoUsuario || 0)
-    return formatearMonto(pago - AbonoUsuario)
-  }
-  return formatearMonto(pago - abonoCapital)
-}
-
-const calcularSaldoTotal = (movimiento) => {
-  const pago = Number(getDisplayMonto(movimiento) || 0)
-  const abonoCapital = Number(movimiento.abonoCapital || 0)
-  if(movimiento.AbonoUsuario != null){
-    const AbonoUsuario = Number(movimiento.AbonoUsuario || 0)
-    const pago = Number(getDisplayMonto(movimiento) || 0)
-    const resultado = pago - AbonoUsuario
-    return resultado - abonoCapital
-  }
-}
-
-const saldoCapitalValue = (movimiento) => {
-  const pago = Number(getDisplayMonto(movimiento) || 0)
-  const abonoCapital = Number(movimiento.abonoCapital || 0)
   if (movimiento.AbonoUsuario != null) {
-    return pago - Number(movimiento.AbonoUsuario || 0)
+    const AbonoUsuario = Number(movimiento.AbonoUsuario || 0)
+    return pago - AbonoUsuario - abonoCapital
   }
   return pago - abonoCapital
 }
 
-// Validación: abonoCapital no puede ser mayor al valor de la factura (pago)
-const abonoCapitalValido = (movimiento) => {
-  const pago = Number(getDisplayMonto(movimiento) || 0)
+
+const validarAbonoCapital = (movimiento) => {
+  const pago = Number(getPago(movimiento) || 0)
   const abonoCapital = Number(movimiento.abonoCapital || 0)
-  return abonoCapital <= pago
+
+  if (abonoCapital > pago) {
+    return {
+      error: true,
+      mensaje: 'El abono capital no puede ser mayor al pago'
+    }
+  }
+  return { error: false, mensaje: '' }
 }
 
+const validarAbonoIntereses = (movimiento) => {
+  const pago = Number(getPago(movimiento) || 0)
+  const abonoIntereses = Number(movimiento.abonoIntereses || 0)
 
+  if (abonoIntereses > pago) {
+    return {
+      error: true,
+      mensaje: 'El abono de intereses no puede ser mayor que el valor original de la factura'
+    }
+  }
+  return { error: false, mensaje: '' }
+}
+
+const puedeEditar = (movimiento) => {
+  return calcularSaldoCapital(movimiento) !== 0
+}
+
+const puedeActualizar = (movimiento) => {
+  if (movimiento.cargando) return false
+  
+  const validacionCapital = validarAbonoCapital(movimiento)
+  const validacionIntereses = validarAbonoIntereses(movimiento)
+  
+  return !validacionCapital.error && !validacionIntereses.error
+}
+
+// ============================================
+// OPERACIONES CON LA API
+// ============================================
 const obtenerMovimientos = async () => {
-
-        const response = await axios.get('/api/listar/enlace/movimientos')
-        const data = response.data   
-    
-
   try {
+    const response = await axios.get('/api/listar/enlace/movimientos')
+    const data = response.data   
 
     movimientos.value = data.map((mov) => ({
       ...mov,
       editando: false,
       nuevoMonto: mov.MontoMasIntereses != null ? mov.MontoMasIntereses : mov.Monto,
-      // estado por movimiento
       interesCorriente: 0,
-      interesMora: 0,
+      SaldoCapital: 0,
+      InteresMora: 0,
       abonoCapital: 0,
-      abonoIntereses: 0,
-      abonoFees: 0,
-      cobroFees: 0,
+      Intereses: 0,
+      Fees: 0,
       cargando: false,
     }))
-
-  
-  // Los cálculos ahora se realizan por movimiento en el template.
+    console.log("data",data.value)
   } catch (error) {
     console.error('Error al obtener movimientos:', error)
+    errorMessage.value = 'Error al cargar los movimientos. Por favor, intenta de nuevo.'
   }
 }
 
 const iniciarEdicion = (movimiento) => {
+  if (!puedeEditar(movimiento)) return
+
   movimiento.editando = true
-  movimiento.nuevoMonto = getDisplayMonto(movimiento)
-  movimiento.interesCorriente = movimiento.interesCorriente ?? 0
-  movimiento.interesMora = movimiento.interesMora ?? 0
+  movimiento.nuevoMonto = getPago(movimiento)
+  errorMessage.value = ''
+  
+  movimiento.Intereses = movimiento.Intereses ?? 0
+  movimiento.interesesMora = movimiento.interesesMora ?? 0
   movimiento.abonoCapital = movimiento.abonoCapital ?? 0
   movimiento.abonoIntereses = movimiento.abonoIntereses ?? 0
   movimiento.abonoFees = movimiento.abonoFees ?? 0
-  movimiento.cobroFees = movimiento.cobroFees ?? 0
+  movimiento.Fees = movimiento.Fees ?? 0
+
 }
 
 const cancelarEdicion = (movimiento) => {
   movimiento.editando = false
-  movimiento.nuevoMonto = getDisplayMonto(movimiento)
-  // resetear abonoCapital para ocultar cualquier mensaje de validación
-  movimiento.abonoCapital = movimiento.AbonoUsuario != null ? Number(movimiento.AbonoUsuario || 0) : 0
+  movimiento.nuevoMonto = getPago(movimiento)
+  errorMessage.value = ''
 }
 
-const movimientoInfo ={
-  identificadorTendero: 0,
-  monto: 0,
-  tipoMovimiento: 2,
-  descripcion: "pago de credito",
-  fechaPagoProgramado: "",
-  idMedioPago: 2,
-  telefonoTransportista: ""
-}
+const actualizarMonto = async (movimiento) => {
+  // Validar antes de enviar
+  const validacionCapital = validarAbonoCapital(movimiento)
+  const validacionIntereses = validarAbonoIntereses(movimiento)
 
-// actualizarMonto con control de carga por movimiento
-const actualizarMonto = async (movimiento, identificadorTendero, abono, nroFacturaAlpina, IdMovimiento) => {
+  if (validacionCapital.error) {
+    errorMessage.value = validacionCapital.mensaje
+    return
+  }
+
+  if (validacionIntereses.error) {
+    errorMessage.value = validacionIntereses.mensaje
+    return
+  }
+
   try {
     movimiento.cargando = true
+    errorMessage.value = ''
+
     const payload = {
-      ...movimientoInfo,
-      identificadorTendero,
-      monto: abono,
-      nroFacturaAlpina: nroFacturaAlpina,
-      IdMovimiento: IdMovimiento
+      ...MOVIMIENTO_INFO,
+      identificadorTendero: movimiento.Cedula_Usuario,
+      monto: movimiento.abonoCapital,
+      nroFacturaAlpina: movimiento.NroFacturaAlpina,
+      IdMovimiento: movimiento.IdMovimiento,
+      Intereses: movimiento.Intereses,
+      InteresesMora: movimiento.interesMora,
+      Fees: movimiento.Fees
     }
 
     await axios.post('/api/movimientos', payload)
-    await axios.put(`/api/actualizarAbono/${IdMovimiento}`, { nuevoMonto: abono })
+    await axios.put(`/api/actualizarAbono/${movimiento.IdMovimiento}`, { 
+      nuevoMonto: movimiento.abonoCapital,
+    })
 
-    console.log('Movimiento actualizado correctamente')
+
+    window.location.reload()
   } catch (error) {
-    console.error('Error al actualizar monto:', error)
+    errorMessage.value = 'Error al actualizar el movimiento. Por favor, intenta de nuevo.'
   } finally {
     movimiento.cargando = false
   }
-  // recargar para reflejar cambios en backend
-  window.location.reload()
 }
 
 onMounted(obtenerMovimientos)
 </script>
 
 <style scoped>
-
-
-p{
+p {
   padding: 2px
 }
 
 .titulo {
   font-size: 1.5rem;
   font-weight: bold;
-  color:white;
+  color: white;
   margin-bottom: 10px;
 }
+
 .logout {
   display: flex;
   justify-content: right;
   margin-top: 1rem;
 }
+
 .boton-logout {
   padding: 10px 30px;
   font-size: 15px;
@@ -345,9 +401,11 @@ p{
   outline: none;
   border: none;
 }
+
 .boton-logout:hover {
   background-color: #f15bab;
 }
+
 .logo-container {
   text-align: center;
   margin-block: 1.5rem;
@@ -358,6 +416,7 @@ p{
   height: auto;
   display: inline;
 }
+
 .movimientos-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -371,7 +430,7 @@ p{
   padding: 1rem;
   background-color: white;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-
+  position: relative;
 }
 
 .card-header {
@@ -392,7 +451,6 @@ p{
 
 .card-body p {
   margin: 0.5rem 0;
-
 }
 
 strong {
@@ -441,7 +499,11 @@ button:hover {
   opacity: 0.9;
 }
 
-/* Overlay sutil y spinner */
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .card-overlay {
   position: absolute;
   inset: 0;
@@ -452,6 +514,7 @@ button:hover {
   border-radius: 8px;
   z-index: 10;
 }
+
 .spinner {
   width: 36px;
   height: 36px;
@@ -460,42 +523,24 @@ button:hover {
   border-top-color: #2ecc71;
   animation: spin 1s linear infinite;
 }
-.spinner-inline {
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  border: 2px solid rgba(0,0,0,0.08);
-  border-top-color: #fff;
-  animation: spin 0.8s linear infinite;
-}
-
-.error-msg {
-
-  color: #b91c1c; /* rojo */
-  font-size: 15px;
-  margin-left: 8px;
-  position: absolute;
-  bottom: 10px;
-}
-
-.edit-buttons {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.error-placeholder {
-  min-height: 48px; /* espacio reservado para el mensaje */
-  display: flex;
-  align-items: center;
-}
 
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
 
-/* Asegurar que la tarjeta sea position:relative para overlay */
-.movimiento-card { position: relative; }
+.error-mensaje {
+  background-color: #fee;
+  color: #c00;
+  padding: 0.5rem;
+  margin: 0.5rem 0;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  border-left: 3px solid #c00;
+}
+
+.no-edit-note {
+  font-size: 0.85rem;
+  color: #666;
+  font-style: italic;
+}
 </style>

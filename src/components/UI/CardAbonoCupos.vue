@@ -12,15 +12,12 @@ const props = defineProps({
     type: String,
     required: true
   },
-  deudaTotal:{
-    type: String,
-    required: true
-  },
   fechaAbono:{
     type: String,
     required: true
   }
 });
+
 const estadoCuenta = ref({});
 const token = localStorage.getItem("token");
 const datosCuenta = JSON.parse(localStorage.getItem("datosCuenta")) || {};
@@ -33,10 +30,9 @@ const formatoMiles = (numero) => {
 };
 
 const fechaFormateada = computed(() => {
-  const fechaRaw = fechaSiguienteAbono.value;
-  if (!fechaRaw) return '';
+  if (!props.fechaAbono) return '';
   
-  const [year, month, day] = fechaRaw.split('T')[0].split('-');
+  const [year, month, day] = props.fechaAbono.split('T')[0].split('-');
   const fecha = new Date(Number(year), Number(month) - 1, Number(day));
 
   return fecha.toLocaleDateString('es-ES', {
@@ -45,7 +41,6 @@ const fechaFormateada = computed(() => {
     year: 'numeric'
   });
 });
-
 
 onMounted (async () => {
  const estadoCuentaResponse = await axios.get(
@@ -63,52 +58,61 @@ onMounted (async () => {
   console.log("estadocuentaa",estadoCuenta.value)
 });
 
-const fechaSiguienteAbono = ref(props.fechaAbono || null);
+const deudaTotalCalculada = computed(() => {
+  if (!estadoCuenta.value.movimientos) return 0;
+
+  const facturas = estadoCuenta.value.movimientos.filter(m => m.IdTipoMovimiento === 1);
+  const abonos = estadoCuenta.value.movimientos.filter(m => m.IdTipoMovimiento === 2);
+
+  let total = 0;
+
+  facturas.forEach(fact => {
+    const totalAbonado = abonos
+      .filter(a => a.NroFacturaAlpina === fact.NroFacturaAlpina)
+      .reduce((acc, a) => acc + (a.Monto || 0), 0);
+
+    const capital = fact.Monto;
+    const proyectado = fact.MontoMasIntereses;
+
+    let saldo = 0;
+
+    if (totalAbonado < capital) {
+      const montoTotal = proyectado || capital;
+      saldo = montoTotal - totalAbonado;
+    }
+
+    if (saldo > 0) total += saldo;
+  });
+
+  return total;
+});
 
 const valorProximoAbono = computed(() => {
   if (!estadoCuenta.value.movimientos) return 0;
 
-  const movimientos = estadoCuenta.value.movimientos;
+  const facturas = estadoCuenta.value.movimientos.filter(
+    m => m.IdTipoMovimiento === 1
+  );
 
-  const facturas = movimientos.filter(m => m.IdTipoMovimiento === 1);
-  const abonos = movimientos.filter(m => m.IdTipoMovimiento === 2);
+  const pendientes = facturas
+    .map(fact => {
+      const capital = fact.Monto;
+      const abonado = fact.AbonoUsuario || 0;
 
-  const abonosPorFactura = {};
-  abonos.forEach(a => {
-    if (!abonosPorFactura[a.NroFacturaAlpina]) {
-      abonosPorFactura[a.NroFacturaAlpina] = 0;
-    }
-    abonosPorFactura[a.NroFacturaAlpina] += a.Monto || 0;
-  });
+      const saldo = capital - abonado;
 
-  const pendientes = facturas.map(f => {
-    const montoBase = f.Monto || 0;
-    const montoConInteres = f.MontoMasIntereses && f.MontoMasIntereses > 0
-      ? f.MontoMasIntereses
-      : montoBase;
+      return { ...fact, saldo };
+    })
+    .filter(f => f.saldo > 0);
 
-    const abonado = abonosPorFactura[f.NroFacturaAlpina] || 0;
-    const facturaPagada = abonado >= montoBase;
-    const saldo = facturaPagada ? 0 : montoConInteres - abonado;
+  if (pendientes.length === 0) return 0;
 
-    return { ...f, montoBase, montoConInteres, abonado, facturaPagada, saldo };
-  })
-  .filter(f => f.saldo > 0);
+  const proxima = pendientes.sort(
+    (a, b) =>
+      new Date(a.FechaPagoProgramado) - new Date(b.FechaPagoProgramado)
+  )[0];
 
-  if (pendientes.length === 0) {
-    estadoCuenta.value.deudaTotalCalculada = 0;
-    fechaSiguienteAbono.value = null;
-    return 0;
-  }
-
-  const deudaTotalCalculada = pendientes.reduce((acc, f) => acc + f.saldo, 0);
-  estadoCuenta.value.deudaTotalCalculada = deudaTotalCalculada;
-
-  pendientes.sort((a, b) => new Date(a.FechaPagoProgramado) - new Date(b.FechaPagoProgramado));
-
-  fechaSiguienteAbono.value = pendientes[0].FechaPagoProgramado || props.fechaAbono || null;
-
-  return pendientes[0].saldo;
+  return proxima.saldo;
 });
 
 </script>
@@ -125,9 +129,9 @@ const valorProximoAbono = computed(() => {
       </h3>
       <h3 class="flex gap-2"> Cupo disponible $ <p class="font-bold">{{ formatoMiles(props.cupoDisp) }}</p></h3>
       
-      <h2 class="text-xl flex gap-3 mt-1">Deuda total $<p class="font-bold">{{ formatoMiles(estadoCuenta.deudaTotalCalculada || deudaTotal) }}</p></h2>
+      <h2 class="text-xl flex gap-3 mt-1">Deuda total $<p class="font-bold">{{ formatoMiles(deudaTotalCalculada) }}</p></h2>
       <h2 class="text-xl flex gap-3 mt-1">Valor siguiente abono: <p class="font-bold">{{ formatoMiles(valorProximoAbono) }}</p></h2>
-      <h3 v-if="(estadoCuenta.deudaTotalCalculada || deudaTotal) > 0" class="flex text-[13px]"> Fecha del siguiente abono:  <p class="font-bold">{{ fechaFormateada }}</p></h3>
+      <h3 v-if="Number(deudaTotal) > 0" class=" flex text-[13px]"> Fecha del siguiente abono:  <p class="font-bold">{{ fechaFormateada }}</p></h3>
      <div v-if="bloqueoMora" class="alert alert-danger mt-3">
         <p><strong>⚠ Estas bloqueado por mora </strong></p>
       </div>
