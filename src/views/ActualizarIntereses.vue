@@ -257,9 +257,6 @@ const actualizarIntereses = async (movimiento) => {
     const valorConIntereses = calcularSaldoTotal(movimiento)
     await axios.put(`/api/actualizarIntereses/${movimiento.IdMovimiento}`, { 
       nuevoMonto: valorConIntereses,
-      Intereses: movimiento.interesCorriente,
-      InteresesMora: movimiento.interesMora,
-      Fees: movimiento.cobroFees
     })
     
     console.log('Intereses actualizados correctamente')
