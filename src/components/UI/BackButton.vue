@@ -1,6 +1,6 @@
 <script setup>
 import { useRouter } from 'vue-router'
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 
 const router = useRouter()
 
@@ -8,12 +8,24 @@ const canGoBack = computed(() => {
   return window.history.length > 1
 })
 
+
 const goBack = () => {
-  if (canGoBack.value) {
-    router.go(-1)
-  }
+  if (!canGoBack.value) return
+
+  sessionStorage.setItem("reloadAfterBack", "1")
+
+  router.go(-1)
 }
+
+
+onMounted(() => {
+  if (sessionStorage.getItem("reloadAfterBack") === "1") {
+    sessionStorage.removeItem("reloadAfterBack")
+    window.location.reload()
+  }
+})
 </script>
+
 
 <template>
   <button
