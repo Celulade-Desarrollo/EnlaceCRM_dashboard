@@ -128,6 +128,12 @@ const routes = [
   name: "PantallaBajarExcelV",
   component: () => import("../views/PantallaBajarExcelView.vue"),
   meta: { requiresAuth: true,  role: "admin" },
+  },
+  {
+  path: "/PantallaDistribuidoresView",
+  name: "PantallaDistribuidores",
+  component: () => import("../views/PantallaDistribuidoresView.vue"),
+  //meta: { requiresAuth: true,  role: "admin" },
   }
   
 ];
