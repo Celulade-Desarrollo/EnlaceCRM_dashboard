@@ -90,39 +90,26 @@ const deudaTotalCalculada = computed(() => {
 const valorProximoAbono = computed(() => {
   if (!estadoCuenta.value.movimientos) return 0;
 
-  const facturas = estadoCuenta.value.movimientos.filter(m => m.IdTipoMovimiento === 1);
-  const abonos = estadoCuenta.value.movimientos.filter(m => m.IdTipoMovimiento === 2);
+  const facturas = estadoCuenta.value.movimientos.filter(
+    m => m.IdTipoMovimiento === 1
+  );
 
-  // Facturas pendientes
   const pendientes = facturas
     .map(fact => {
-      const totalAbonado = abonos
-        .filter(a => a.NroFacturaAlpina === fact.NroFacturaAlpina)
-        .reduce((acc, a) => acc + (a.Monto || 0), 0);
-
       const capital = fact.Monto;
-      const proyectado = fact.MontoMasIntereses;
+      const abonado = fact.AbonoUsuario || 0;
 
-      let saldo = 0;
+      const saldo = capital - abonado;
 
-      // Si ya pagó todo el capital
-      if (totalAbonado < capital) {
-        const montoTotal = proyectado || capital;
-        saldo = montoTotal - totalAbonado;
-      }
-
-      return {
-        ...fact,
-        saldo
-      };
+      return { ...fact, saldo };
     })
     .filter(f => f.saldo > 0);
 
   if (pendientes.length === 0) return 0;
 
-  // Tomar la más próxima a vencer
   const proxima = pendientes.sort(
-    (a, b) => new Date(a.FechaPagoProgramado) - new Date(b.FechaPagoProgramado)
+    (a, b) =>
+      new Date(a.FechaPagoProgramado) - new Date(b.FechaPagoProgramado)
   )[0];
 
   return proxima.saldo;

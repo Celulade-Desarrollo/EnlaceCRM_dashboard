@@ -296,6 +296,7 @@ const obtenerMovimientos = async () => {
       Fees: 0,
       cargando: false,
     }))
+    console.log("data",data.value)
   } catch (error) {
     console.error('Error al obtener movimientos:', error)
     errorMessage.value = 'Error al cargar los movimientos. Por favor, intenta de nuevo.'

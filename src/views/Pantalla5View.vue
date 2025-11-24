@@ -186,7 +186,6 @@ onMounted(async () => {
     </motion.div>
 </template>
 
-
 <style scoped>
 .banners {
   background-color: #ffffff;
