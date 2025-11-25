@@ -7,7 +7,9 @@ import { fadeInUp } from "../motion/pageAnimation";
 import { useRouter } from "vue-router";
 import SesionExpirada from "../components/UI/SesionExpirada.vue";
 import { activarSesionExpirada } from "../stores/session.js";
+
 const router = useRouter();
+
 // Datos iniciales
 const datosCuentaUser = JSON.parse(localStorage.getItem("datosCuenta")) || {};
 console.log("datosCuentaUser", datosCuentaUser);
@@ -17,8 +19,10 @@ const cupoTotal = ref(0);
 const mostrarMovimientos = ref(true);
 const datosCuenta = ref(null);
 const movimientos = ref([]);
-const interesesPagados = ref(0)
-const feesPagados = ref(500)
+
+// Nuevas variables del merge
+const interesesPagados = ref(0);
+const feesPagados = ref(500);
 
 function formatPesos(valor) {
   return new Intl.NumberFormat("es-CO", {
@@ -36,10 +40,11 @@ function formatFecha(fechaISO) {
     day: "numeric"
   });
 }
+
 const goToPantallaAbonar = () => {
   router.push("/PantallaAbonoView");
 };
-// Lógica de obtención de datos
+
 onMounted(async () => {
   const cedula = datosCuentaUser.Cedula_Cliente;
 
@@ -50,65 +55,56 @@ onMounted(async () => {
   }
 
   try {
-    const idUsuario = datosCuentaUser.IdUsuarioFinal
-    
-      const resCuenta = await axios.get(`/api/user/estado-cuenta/${idUsuario}`,
-        {
-          headers: {  
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
-          }
-        }
-      );
+    const idUsuario = datosCuentaUser.IdUsuarioFinal;
 
-      datosCuenta.value = resCuenta.data;
-      cupoTotal.value = resCuenta.data.CupoDisponible || 0;
-      
-      const cupoFinal = parseInt(resCuenta.data.CupoFinal.replace(/\./g, ''));
-      const cupoDisponible = parseInt(resCuenta.data.CupoDisponible);
-      deudaTotal.value = cupoFinal - cupoDisponible;
-      
-     //Obtener movimientos
-    //  const resMov = await axios.get(`/api/movimientos/${idUsuario}`,
-    //    {
-    //       headers: {  
-    //         Authorization: `Bearer ${token}`,
-    //         "Content-Type": "application/json"
-    //       }
-    //     }
-    //  );
-    //  movimientos.value = resMov.data;
-    //  console.log("movimientos",movimientos.value)
-
-    const responseEstadoCuenta = await axios.get(
-    `/api/pagos/estado-cuenta?identificadorTendero=${cedula}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    movimientos.value = responseEstadoCuenta.data.movimientos;
-
-    movimientos.value.forEach(mov => {
-      if (mov.IdTipoMovimiento === 1) {
-        interesesPagados.value += parseFloat( mov.MontoMasIntereses - mov.Monto - 500);
+    const resCuenta = await axios.get(`/api/user/estado-cuenta/${idUsuario}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json"
       }
     });
-    
-    console.log("movimientos",movimientos.value)
-    console.log("responseEstadoCuenta",responseEstadoCuenta);
 
+    datosCuenta.value = resCuenta.data;
+    cupoTotal.value = resCuenta.data.CupoDisponible || 0;
+
+    const cupoFinal = parseInt(resCuenta.data.CupoFinal.replace(/\./g, ""));
+    const cupoDisponible = parseInt(resCuenta.data.CupoDisponible);
+    deudaTotal.value = cupoFinal - cupoDisponible;
+
+    // Nuevo endpoint de estado de cuenta con movimientos
+    const responseEstadoCuenta = await axios.get(
+      `/api/pagos/estado-cuenta?identificadorTendero=${cedula}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    movimientos.value = responseEstadoCuenta.data.movimientos;
+
+    // Calcular intereses pagados
+    movimientos.value.forEach((mov) => {
+      if (mov.IdTipoMovimiento === 1) {
+        interesesPagados.value += parseFloat(
+          mov.MontoMasIntereses - mov.Monto - 500
+        );
+      }
+    });
+
+    console.log("movimientos", movimientos.value);
+    console.log("responseEstadoCuenta", responseEstadoCuenta);
   } catch (error) {
     console.error("Error al obtener datos:", error);
-  if (error.response?.status === 401) {
+    if (error.response?.status === 401) {
       activarSesionExpirada();
     }
   }
 
-    document.body.style.backgroundColor = "#2e008b";
+  document.body.style.backgroundColor = "#2e008b";
 });
 </script>
+
 <template>
 
   <Heading :mensaje="'Hola, ' + datosCuentaUser.Nombres" :showBackButton="true" />
