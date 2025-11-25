@@ -109,20 +109,6 @@
           </template>
         </p>
 
-         <p class="bg-yellow-200">
-          <strong>Valor Intereses mora:</strong>
-          <template v-if="movimiento.editando">
-            <input 
-              type="number" 
-              v-model.number="movimiento.interesesMora" 
-              class="monto-input"
-            >
-          </template>
-          <template v-else>
-            ${{ formatearMonto(movimiento.interesesMora) }}
-          </template>
-        </p>
-        
         <p><strong>Descripción:</strong> {{ movimiento.Descripcion }}</p>
         <p><strong>Fecha de Pago Programado:</strong> {{ formatearFecha(movimiento.FechaPagoProgramado) }}</p>
         
