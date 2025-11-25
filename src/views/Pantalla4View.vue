@@ -13,6 +13,23 @@ const deudaTotal = ref(0);
 const cupoTotal = ref(0);
 const datosCuenta = JSON.parse(localStorage.getItem("datosCuenta")) || {};
 
+const telefonoTransportista = ref("");
+onMounted(() => {
+  telefonoTransportista.value = localStorage.getItem("telefonoTransportista") || "";
+
+  console.log("📦 DATOS COMPLETOS EN PANTALLA 4 (ACTUALIZADOS):", {
+    telefonoTransportista: telefonoTransportista.value,
+    datosCuenta,
+    pagarValor,
+    dataInfoapp,
+    celular: celular.value,
+    deudaTotal: deudaTotal.value,
+    cupoTotal: cupoTotal.value,
+  });
+});
+
+
+
 // Instancia de router
 const router = useRouter();
 let pagarValor = localStorage.getItem("pagarValor");
@@ -33,6 +50,10 @@ function formatPesos(valor) {
 
 const handlePago1Click = () => {
   window.open("/Pantalla1View", "_parent");
+};
+
+const handleeditarClick= () => {
+  window.open("/Pantalla6View", "_parent");
 };
 
 // Función para calcular y ajustar la barra de progreso
@@ -77,13 +98,20 @@ onMounted(() => {
           />
         </picture>
         <h2 class="proveedores mb-4" id="pagado">
-         Tu pago por <span>{{ formatPesos(pagarValor) }}</span> para Alpina <br />ha sido recibido exitosamente
+         Tu pago por <span>{{ formatPesos(pagarValor) }}</span> para Alpina <br />ha sido recibido exitosamente.
         </h2>
+      <h2>El comprobante ha sido enviado al número telefónico {{ telefonoTransportista }}.</h2>
+
+
+
         <h1 class="proveedores mb-4" id="cantidad-pagar">
           <strong>¡Muchas gracias!</strong>
         </h1>
       </div>
-      <div class="button-inicio" @click="handlePago1Click">
+      <div class="button-inicio" @click="handleeditarClick">
+        <button type="button" class="button">Editar número</button>
+      </div>
+            <div class="button-inicio" @click="handlePago1Click">
         <button type="button" class="button">Volver al inicio</button>
       </div>
     </div>
@@ -95,6 +123,11 @@ onMounted(() => {
   text-align: center;
   margin-top: 1rem;
 }
+
+#cantidad-pagar {
+  margin-top: 30px; /* Ajusta el valor como quieras */
+}
+
 
 .logo-main {
   width: 200px;

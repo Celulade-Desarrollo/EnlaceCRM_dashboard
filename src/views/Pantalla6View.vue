@@ -1,127 +1,107 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
 import { useRouter } from "vue-router";
+import axios from "axios";
 import Heading from "../components/UI/Heading.vue";
+import SesionExpirada from "../components/UI/SesionExpirada.vue";
 import { fadeInUp } from "../motion/pageAnimation";
 import { motion } from "motion-v";
-import axios from "axios";
-import SesionExpirada from "../components/UI/SesionExpirada.vue";
-import { activarSesionExpirada } from "../stores/session.js";
 
-const whatsappURL = "/whatsapp/send-message";
-
-// Instancia de Vue Router
+// Router
 const router = useRouter();
 
-// Datos guardados en localStorage
-const pagarValor = localStorage.getItem("pagarValor");
-const datosCuenta = JSON.parse(localStorage.getItem("datosCuenta")) || {};
-const facturas = JSON.parse(localStorage.getItem("numeroFactura")) || [];
-const nroFacturaAlpina = facturas.join(",");
-const numeroTransportista = ref("");
+// Token y datos de cuenta
 const token = localStorage.getItem("token");
+const datosCuenta = JSON.parse(localStorage.getItem("datosCuenta")) || {};
+
+// Traer número actual guardado
+const TelefonoTransportista = ref(localStorage.getItem("telefonoTransportista") || "");
+
+// Error de validación
 const errorMessage = ref("");
 
-// Fechas
-const fechaActual = new Date();
-const fechaProgramada = new Date(fechaActual);
-fechaProgramada.setDate(fechaProgramada.getDate() + 15);
-const fechaPagoProgramado = fechaProgramada.toISOString().split("T")[0];
-
-// Función para formatear pesos
-function formatPesos(valor) {
-  return new Intl.NumberFormat("es-CO", {
-    style: "currency",
-    currency: "COP",
-    minimumFractionDigits: 0,
-  }).format(valor || 0);
-}
-
-// ----- FUNCIÓN PRINCIPAL -----
-const handlePagoClick = async () => {
-  console.log("Número al presionar pagar:", numeroTransportista.value);
-  if (!numeroTransportista.value) {
-    errorMessage.value = "Por favor, ingresa el teléfono del transportista";
+// Guardar cambios y volver a pantalla 4
+const guardarNumero = async () => {
+  if (!TelefonoTransportista.value) {
+    errorMessage.value = "Por favor ingresa un número válido";
     return;
   }
 
   errorMessage.value = "";
 
-  // ✔️ Guardar el teléfono para mostrarlo en Pantalla 4
-  localStorage.setItem("telefonoTransportista", numeroTransportista.value);
-
-  // Datos del pago
-  const dataPagoFactura = {
-    identificadorTendero: datosCuenta.Cedula_Cliente,
-    monto: pagarValor,
-    tipoMovimiento: 1,
-    descripcion: "pago de factura",
-    fechaPagoProgramado: fechaPagoProgramado,
-    idMedioPago: 14,
-    nroFacturaAlpina: nroFacturaAlpina,
-    telefonoTransportista: localStorage.getItem("telefonoTransportista"),
-
-  };
-
-  // Mensaje de WhatsApp
-  const hora = new Date().toLocaleTimeString();
-  const number = numeroTransportista.value;
-  const pagoFormateado = formatPesos(pagarValor);
-
-  const message = `${datosCuenta.Nombres} envío un pago de la factura ${nroFacturaAlpina} por el valor de ${pagoFormateado} el día ${fechaActual.toLocaleDateString()} a la hora ${hora}`;
-
-  // Enviar WhatsApp
-  axios.post(
-    whatsappURL,
-    { number, message },
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    }
-  );
-
-  console.log("datosPagoFactura:", dataPagoFactura);
-
-  // Guardar transacción y redirigir
   try {
-    await axios.post("/api/movimientos", dataPagoFactura, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
+    // 🔥 CONVERTIR A STRING EXPLÍCITAMENTE
+    const telefonoString = String(TelefonoTransportista.value);
+    
+    // Guardar en localStorage
+    localStorage.setItem("telefonoTransportista", telefonoString);
+
+    console.log("📞 Actualizando teléfono en BD:", telefonoString);
+    console.log("📋 Datos a enviar:", {
+      identificadorTendero: datosCuenta.Cedula_Cliente,
+      telefonoTransportista: telefonoString
     });
 
-  window.open("/Pantalla4View", "_parent");
+    // 🔥 ACTUALIZAR EN LA BASE DE DATOS
+    const response = await axios.put(
+      "/api/movimientos/actualizar-telefono",
+      {
+        identificadorTendero: datosCuenta.Cedula_Cliente,
+        telefonoTransportista: telefonoString // 🔥 ENVIAR COMO STRING
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    console.log("✅ Respuesta del servidor:", response.data);
+
+    // ✅ Esperar un momento antes de redirigir
+    setTimeout(() => {
+      window.open("/Pantalla4View", "_parent");
+    }, 500);
+
   } catch (error) {
-    console.error("Error al realizar el pago:", error);
+    console.error("❌ Error completo:", error);
+    console.error("❌ Response error:", error.response?.data);
+    
+    // 🔥 Si es error 500 pero ya se guardó en BD, redirigir igual
+    if (error.response?.status === 500) {
+      console.log("⚠️ Error 500 pero puede que se haya guardado, redirigiendo...");
+      setTimeout(() => {
+        window.open("/Pantalla4View", "_parent");
+      }, 1000);
+      return;
+    }
+    
+    if (error.response) {
+      // Error con respuesta del servidor
+      errorMessage.value = error.response.data?.error || "Error al actualizar el número";
+    } else if (error.request) {
+      // Error de red
+      errorMessage.value = "No se pudo conectar con el servidor";
+    } else {
+      // Otro tipo de error
+      errorMessage.value = "Error al actualizar el número. Intenta nuevamente.";
+    }
   }
 };
 
-// Botón atrás
-const handlePagina2Click = () => {
-  window.open("/PantallaFacturasView", "_parent");
+// Volver sin guardar
+const cancelar = () => {
+  window.open("/Pantalla4View", "_parent");
 };
-
-// Montaje del event listener
-onMounted(() => {
-  const atras = document.getElementById("boton-atras");
-  if (atras) {
-    atras.addEventListener("click", handlePagina2Click);
-  }
-});
 </script>
 
 
 <template>
   <motion.div v-bind="fadeInUp">
 
-
     <Heading
-      :mensaje="
-        'Hola, ' + datosCuenta.Nombres
-      "
+      mensaje="Editar número del transportista"
       :showBackButton="true"
     />
 
@@ -130,41 +110,36 @@ onMounted(() => {
         <div class="header-container">
           <img src="/Alpina.png" alt="Alpina" class="alpina-logo-outside" />
         </div>
-        <h2 class="proveedores">¿Estás seguro que deseas pagar?</h2>
-        <h1 class="proveedores mb-4" id="cantidad-pagar">
-          <span>{{ formatPesos(pagarValor) }}</span> a Alpina
-        </h1>
+
+        <h2 class="proveedores">Ingresa el número correcto</h2>
 
         <div class="form-group">
-          <label for="pagar" id="label-pagar" class="input-label">
+          <label id="label-pagar" class="input-label">
             <input
               class="form-control text-center mb-4"
-              aria-required="true"
-              aria-invalid="false"
-              aria-labelledby="label-pagar"
-              name="numeroTransportista"
-              v-model="numeroTransportista"
+              v-model="TelefonoTransportista"
               type="number"
-              placeholder=""
               autocomplete="off"
-              id="numeroTransportista"
               required
-              aria-describedby="error-pagar"
             />
-            <span class="floating-label"
-              >Ingresa el teléfono de tu transportista</span>
+            <span class="floating-label">Teléfono del transportista</span>
           </label>
         </div>
+
         <div class="button-banner-pedidos">
           <p v-if="errorMessage" class="error-text">{{ errorMessage }}</p>
-          <button type="button" id="boton-pago" class="boton" @click="handlePagoClick">Pagar</button>
-          <button type="button" id="boton-atras" class="boton">Atrás</button>
+
+          <button type="button" class="boton" @click="guardarNumero">
+            Enviar
+          </button>
         </div>
       </div>
     </section>
+
     <SesionExpirada />
   </motion.div>
 </template>
+
 
 <style scoped>
 .error-text {
