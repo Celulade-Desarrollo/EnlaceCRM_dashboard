@@ -69,6 +69,13 @@ const routes = [
     meta: { requiresAuth: true, role: "usuario" }
   },
 
+    {
+    path: "/Pantalla6View",
+    name: "pantalla6",
+    component: () => import("../views/Pantalla6View.vue"),
+    meta: { requiresAuth: true, role:"usuario" },
+  },
+
   // {
   //   path: "/Pantalla9View",
   //   name: "pantalla9",
