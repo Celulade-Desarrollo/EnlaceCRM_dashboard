@@ -3,10 +3,13 @@ import { onMounted, ref, computed } from 'vue'
 import { motion } from 'motion-v'
 import axios from 'axios'
 import { activarSesionExpirada } from "../stores/session.js";
+import { useRouter } from "vue-router";
 
 const movimientosEnlace = ref([])
 const ruta = ref("asv545")
 const fechaSeleccionada = ref(new Date().toISOString().substr(0, 10))
+
+const router = useRouter();
 
 const formatoMiles = (numero) => {
   return new Intl.NumberFormat('es-ES').format(Number(numero));
@@ -35,6 +38,14 @@ onMounted(async () => {
     }
   }
 })
+const logout = () => {
+  localStorage.removeItem("admin_token");
+  localStorage.removeItem("company");
+  localStorage.removeItem("admin_tipo");
+  localStorage.removeItem("admin_userData");
+  localStorage.removeItem("admin_isAuthenticated");
+  router.push("/LoginView");
+};
 </script>
 
 <template>
@@ -42,7 +53,9 @@ onMounted(async () => {
     <section class="logo-container">
       <img src="/public/enlaceFiado.png" alt="logo Enlace CRM" class="logo-main" />
     </section>
-    
+    <div class="logout">
+      <button class="boton-logout" @click="logout">Cerrar sesión</button>
+    </div>
     <div class="card">
       <section class="total-recaudo">
         <div class="recaudo-linea">
@@ -74,7 +87,30 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-
+.logout {
+  display: flex;
+  justify-content: right;
+  margin-top: 1rem;
+}
+.logout {
+  display: flex;
+  justify-content: right;
+  margin-top: 1rem;
+}
+.boton-logout {
+  padding: 10px 30px;
+  font-size: 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 600;
+  background: #dd3590 !important;;
+  color: #fff;
+  outline: none;
+  border: none;
+}
+.boton-logout:hover {
+  background-color: #f15bab !important;;
+}
 .pantalla {
   background-color: #1a0f8b;
   min-height: 100vh;
