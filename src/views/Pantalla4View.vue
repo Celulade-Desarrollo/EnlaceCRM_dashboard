@@ -104,13 +104,14 @@ onMounted(() => {
 
 
 
-        <h1 class="proveedores mb-4" id="cantidad-pagar">
-          <strong>¡Muchas gracias!</strong>
-        </h1>
+
       </div>
       <div class="button-inicio" @click="handleeditarClick">
         <button type="button" class="button">Editar número</button>
       </div>
+              <h1 class="proveedores mb-4" id="cantidad-pagar">
+          <strong>¡Muchas gracias!</strong>
+        </h1>
             <div class="button-inicio" @click="handlePago1Click">
         <button type="button" class="button">Volver al inicio</button>
       </div>
@@ -126,6 +127,7 @@ onMounted(() => {
 
 #cantidad-pagar {
   margin-top: 30px; /* Ajusta el valor como quieras */
+  transform: translateY(20px); /* baja 50px */
 }
 
 
