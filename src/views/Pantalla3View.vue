@@ -10,10 +10,10 @@ import { activarSesionExpirada } from "../stores/session.js";
 
 const whatsappURL = "/whatsapp/send-message";
 
-// Instancia de Vue Router
+// Router
 const router = useRouter();
 
-// Datos guardados en localStorage
+// Datos
 const pagarValor = localStorage.getItem("pagarValor");
 const datosCuenta = JSON.parse(localStorage.getItem("datosCuenta")) || {};
 const facturas = JSON.parse(localStorage.getItem("numeroFactura")) || [];
@@ -28,7 +28,7 @@ const fechaProgramada = new Date(fechaActual);
 fechaProgramada.setDate(fechaProgramada.getDate() + 15);
 const fechaPagoProgramado = fechaProgramada.toISOString().split("T")[0];
 
-// Función para formatear pesos
+// Format pesos
 function formatPesos(valor) {
   return new Intl.NumberFormat("es-CO", {
     style: "currency",
@@ -37,9 +37,10 @@ function formatPesos(valor) {
   }).format(valor || 0);
 }
 
-// ----- FUNCIÓN PRINCIPAL -----
+// ------------- FUNCIÓN PRINCIPAL -------------
 const handlePagoClick = async () => {
   console.log("Número al presionar pagar:", numeroTransportista.value);
+
   if (!numeroTransportista.value) {
     errorMessage.value = "Por favor, ingresa el teléfono del transportista";
     return;
@@ -47,8 +48,12 @@ const handlePagoClick = async () => {
 
   errorMessage.value = "";
 
-  // ✔️ Guardar el teléfono para mostrarlo en Pantalla 4
-  localStorage.setItem("telefonoTransportista", numeroTransportista.value);
+  // 🔥 LIMPIAR TELÉFONO PARA BD Y LOCALSTORAGE (SIN 57)
+  let telefono = String(numeroTransportista.value).trim();
+  telefono = telefono.replace(/^(\+57|57)/, ""); // <-- ESTA ES LA ÚNICA LÍNEA CRÍTICA
+
+  // ✔️ Guardar limpio en localStorage para Pantalla 4
+  localStorage.setItem("telefonoTransportista", telefono);
 
   // Datos del pago
   const dataPagoFactura = {
@@ -59,18 +64,16 @@ const handlePagoClick = async () => {
     fechaPagoProgramado: fechaPagoProgramado,
     idMedioPago: 14,
     nroFacturaAlpina: nroFacturaAlpina,
-    telefonoTransportista: localStorage.getItem("telefonoTransportista"),
-
+    telefonoTransportista: telefono, // <-- AHORA SIEMPRE LIMPIO
   };
 
-  // Mensaje de WhatsApp
+  // WhatsApp
   const hora = new Date().toLocaleTimeString();
-  const number = numeroTransportista.value;
   const pagoFormateado = formatPesos(pagarValor);
+  const number = "57" + telefono; // <-- SOLO AQUÍ SE AGREGA 57
 
   const message = `${datosCuenta.Nombres} envío un pago de la factura ${nroFacturaAlpina} por el valor de ${pagoFormateado} el día ${fechaActual.toLocaleDateString()} a la hora ${hora}`;
 
-  // Enviar WhatsApp
   axios.post(
     whatsappURL,
     { number, message },
@@ -84,7 +87,6 @@ const handlePagoClick = async () => {
 
   console.log("datosPagoFactura:", dataPagoFactura);
 
-  // Guardar transacción y redirigir
   try {
     await axios.post("/api/movimientos", dataPagoFactura, {
       headers: {
@@ -93,18 +95,18 @@ const handlePagoClick = async () => {
       },
     });
 
-  window.open("/Pantalla4View", "_parent");
+    window.open("/Pantalla4View", "_parent");
   } catch (error) {
     console.error("Error al realizar el pago:", error);
   }
 };
 
-// Botón atrás
+// Atrás
 const handlePagina2Click = () => {
   window.open("/PantallaFacturasView", "_parent");
 };
 
-// Montaje del event listener
+// Montaje
 onMounted(() => {
   const atras = document.getElementById("boton-atras");
   if (atras) {
@@ -112,6 +114,8 @@ onMounted(() => {
   }
 });
 </script>
+
+
 
 
 <template>
