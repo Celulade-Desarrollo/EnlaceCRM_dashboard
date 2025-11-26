@@ -16,35 +16,39 @@ const router = useRouter();
 const token = localStorage.getItem("token");
 const datosCuenta = JSON.parse(localStorage.getItem("datosCuenta")) || {};
 
-// Traer número actual guardado
-const TelefonoTransportista = ref(localStorage.getItem("telefonoTransportista") || "");
+// Teléfono actual
+const TelefonoTransportista = ref(
+  localStorage.getItem("telefonoTransportista") || ""
+);
 
-// Error de validación
+// Mensaje de error
 const errorMessage = ref("");
 
-// Guardar cambios y volver a pantalla 4
+// -------------------------------------------------------
+// 👉 Guardar número, actualizar BD y enviar WhatsApp
+// -------------------------------------------------------
 const guardarNumero = async () => {
-  if (!TelefonoTransportista.value) {
+  let telefono = String(TelefonoTransportista.value).trim();
+
+  if (!telefono || telefono.length < 8) {
     errorMessage.value = "Por favor ingresa un número válido";
     return;
   }
 
   errorMessage.value = "";
 
+  // Guardar localmente
+  localStorage.setItem("telefonoTransportista", telefono);
+
+  console.log("📞 Telefono para guardar:", telefono);
+
   try {
-    const telefonoString = String(TelefonoTransportista.value);
-
-    // Guardar localmente
-    localStorage.setItem("telefonoTransportista", telefonoString);
-
-    console.log("📞 Actualizando teléfono en BD:", telefonoString);
-
     // 👉 ACTUALIZAR EN BD
     const response = await axios.put(
       "/api/movimientos/actualizar-telefono",
       {
         identificadorTendero: datosCuenta.Cedula_Cliente,
-        telefonoTransportista: telefonoString
+        telefonoTransportista: telefono,
       },
       {
         headers: {
@@ -57,12 +61,14 @@ const guardarNumero = async () => {
     console.log("✅ Teléfono actualizado en BD:", response.data);
 
     // 👉 ENVIAR WHATSAPP
-    const number = telefonoString; // SIN +57
-    const message = `Hola ${datosCuenta.Nombres}, el número del transportista fue actualizado correctamente: ${telefonoString}`;
+    const message = `Hola ${datosCuenta.Nombres}, el número del transportista fue actualizado correctamente: ${telefono}`;
 
     await axios.post(
       whatsappURL,
-      { number, message },
+      {
+        number: telefono, // SIN +57
+        message,
+      },
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -77,13 +83,13 @@ const guardarNumero = async () => {
     setTimeout(() => {
       window.open("/Pantalla4View", "_parent");
     }, 500);
-
   } catch (error) {
     console.error("❌ Error completo:", error);
     console.error("❌ Response error:", error.response?.data);
 
+    // Si es 500, igual redirigimos, ya sabemos que igual guardó
     if (error.response?.status === 500) {
-      console.log("⚠️ Error 500 pero probablemente se guardó. Redirigiendo…");
+      console.log("⚠️ Error 500, pero probablemente se guardó. Redirigiendo…");
       setTimeout(() => {
         window.open("/Pantalla4View", "_parent");
       }, 1000);
@@ -91,20 +97,24 @@ const guardarNumero = async () => {
     }
 
     if (error.response) {
-      errorMessage.value = error.response.data?.error || "Error al actualizar el número";
+      errorMessage.value =
+        error.response.data?.error || "Error al actualizar el número";
     } else if (error.request) {
       errorMessage.value = "No se pudo conectar con el servidor";
     } else {
-      errorMessage.value = "Error al actualizar el número. Intenta nuevamente.";
+      errorMessage.value = "Error desconocido. Intenta nuevamente.";
     }
   }
 };
 
-// Volver sin guardar
+// -------------------------------------------------------
+// 👉 Cancelar y volver
+// -------------------------------------------------------
 const cancelar = () => {
   window.open("/Pantalla4View", "_parent");
 };
 </script>
+
 
 
 
@@ -113,9 +123,7 @@ const cancelar = () => {
   <motion.div v-bind="fadeInUp">
     
     <Heading
-      :mensaje="
-        'Hola, ' + datosCuenta.Nombres
-      "
+      :mensaje="'Hola, ' + datosCuenta.Nombres"
       :showBackButton="true"
     />
 
@@ -129,13 +137,18 @@ const cancelar = () => {
 
         <div class="form-group">
           <label id="label-pagar" class="input-label">
+
+            <!-- 🔥 INPUT CORREGIDO -->
             <input
               class="form-control text-center mb-4"
               v-model="TelefonoTransportista"
-              type="number"
+              type="text"
+              inputmode="numeric"
               autocomplete="off"
               required
             />
+            <!-- 🔥 Fin del cambio -->
+
             <span class="floating-label">Teléfono del transportista</span>
           </label>
         </div>
@@ -152,7 +165,9 @@ const cancelar = () => {
 
     <SesionExpirada />
   </motion.div>
+
 </template>
+
 
 
 <style scoped>
