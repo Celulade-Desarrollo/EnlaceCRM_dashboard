@@ -71,7 +71,8 @@ const guardarNumero = async () => {
 
     // 👉 ENVIAR WHATSAPP
     const numeroWhatsapp = "57" + telefono; // 🔥 Se envía con 57
-    const message = `Hola ${datosCuenta.Nombres}, el número del transportista fue actualizado correctamente: ${telefono}`;
+  const message = `${datosCuenta.Nombres} envío un pago de la factura ${nroFacturaAlpina} por el valor de ${pagoFormateado} el día ${fechaActual.toLocaleDateString()} a la hora ${hora}`;
+
 
     await axios.post(
       whatsappURL,
