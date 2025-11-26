@@ -77,7 +77,7 @@ onMounted(async () => {
 });
 
 
-// ✅ FUNCIÓN DESCARGAR EXCEL
+// FUNCIÓN DESCARGAR EXCEL
 async function downloadExcel() {
   try {
     const response = await axios.get("api/excel", {
@@ -154,7 +154,7 @@ async function downloadExcel() {
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.setAttribute("download", "historicoUsuariosEnlace.xlsx"); // 📁 nombre diferente opcional
+    link.setAttribute("download", "historicoUsuariosEnlace.xlsx");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -175,14 +175,13 @@ async function downloadExcel() {
       <img src="/public/enlaceFiado.png" alt="logo Enlace CRM" class="logo-main" />
       <!-- <Heading :mensaje="'Hola, Administrador'" /> -->
     </section>
-       <p class="titulo">Hola, Administrador enlaceCRM</p>
+      <p class="titulo">Hola, Administrador enlaceCRM</p>
 
-       <div class="descargar-container">
-  <button @click="downloadExcel" class="boton">
-    Descargar Excel
-  </button>
-</div>
-
+    <div class="descargar-container">
+      <button @click="downloadExcel" class="boton">
+        Descargar Excel
+      </button>
+    </div>
 
     <section class="content">
       <div class="logout">
