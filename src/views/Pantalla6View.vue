@@ -35,6 +35,15 @@ const guardarNumero = async () => {
     return;
   }
 
+  // 🔥🔥🔥 AÑADIDO: quitar 57 o +57 para NO guardarlo en BD
+  if (telefono.startsWith("57")) {
+    telefono = telefono.substring(2);
+  }
+  if (telefono.startsWith("+57")) {
+    telefono = telefono.substring(3);
+  }
+  // 🔥🔥🔥 FIN DEL CAMBIO
+
   errorMessage.value = "";
 
   // Guardar localmente
@@ -61,12 +70,13 @@ const guardarNumero = async () => {
     console.log("✅ Teléfono actualizado en BD:", response.data);
 
     // 👉 ENVIAR WHATSAPP
+    const numeroWhatsapp = "57" + telefono; // 🔥 Se envía con 57
     const message = `Hola ${datosCuenta.Nombres}, el número del transportista fue actualizado correctamente: ${telefono}`;
 
     await axios.post(
       whatsappURL,
       {
-        number: telefono, // SIN +57
+        number: numeroWhatsapp,
         message,
       },
       {
@@ -106,14 +116,9 @@ const guardarNumero = async () => {
     }
   }
 };
-
-// -------------------------------------------------------
-// 👉 Cancelar y volver
-// -------------------------------------------------------
-const cancelar = () => {
-  window.open("/Pantalla4View", "_parent");
-};
 </script>
+
+
 
 
 
