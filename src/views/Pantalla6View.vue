@@ -7,6 +7,8 @@ import SesionExpirada from "../components/UI/SesionExpirada.vue";
 import { fadeInUp } from "../motion/pageAnimation";
 import { motion } from "motion-v";
 
+const whatsappURL = "/whatsapp/send-message";
+
 // Router
 const router = useRouter();
 
@@ -30,24 +32,19 @@ const guardarNumero = async () => {
   errorMessage.value = "";
 
   try {
-    // 🔥 CONVERTIR A STRING EXPLÍCITAMENTE
     const telefonoString = String(TelefonoTransportista.value);
-    
-    // Guardar en localStorage
+
+    // Guardar localmente
     localStorage.setItem("telefonoTransportista", telefonoString);
 
     console.log("📞 Actualizando teléfono en BD:", telefonoString);
-    console.log("📋 Datos a enviar:", {
-      identificadorTendero: datosCuenta.Cedula_Cliente,
-      telefonoTransportista: telefonoString
-    });
 
-    // 🔥 ACTUALIZAR EN LA BASE DE DATOS
+    // 👉 ACTUALIZAR EN BD
     const response = await axios.put(
       "/api/movimientos/actualizar-telefono",
       {
         identificadorTendero: datosCuenta.Cedula_Cliente,
-        telefonoTransportista: telefonoString // 🔥 ENVIAR COMO STRING
+        telefonoTransportista: telefonoString
       },
       {
         headers: {
@@ -57,9 +54,26 @@ const guardarNumero = async () => {
       }
     );
 
-    console.log("✅ Respuesta del servidor:", response.data);
+    console.log("✅ Teléfono actualizado en BD:", response.data);
 
-    // ✅ Esperar un momento antes de redirigir
+    // 👉 ENVIAR WHATSAPP
+    const number = telefonoString; // SIN +57
+    const message = `Hola ${datosCuenta.Nombres}, el número del transportista fue actualizado correctamente: ${telefonoString}`;
+
+    await axios.post(
+      whatsappURL,
+      { number, message },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    console.log("📤 WhatsApp enviado correctamente");
+
+    // 👉 Redirigir
     setTimeout(() => {
       window.open("/Pantalla4View", "_parent");
     }, 500);
@@ -67,24 +81,20 @@ const guardarNumero = async () => {
   } catch (error) {
     console.error("❌ Error completo:", error);
     console.error("❌ Response error:", error.response?.data);
-    
-    // 🔥 Si es error 500 pero ya se guardó en BD, redirigir igual
+
     if (error.response?.status === 500) {
-      console.log("⚠️ Error 500 pero puede que se haya guardado, redirigiendo...");
+      console.log("⚠️ Error 500 pero probablemente se guardó. Redirigiendo…");
       setTimeout(() => {
         window.open("/Pantalla4View", "_parent");
       }, 1000);
       return;
     }
-    
+
     if (error.response) {
-      // Error con respuesta del servidor
       errorMessage.value = error.response.data?.error || "Error al actualizar el número";
     } else if (error.request) {
-      // Error de red
       errorMessage.value = "No se pudo conectar con el servidor";
     } else {
-      // Otro tipo de error
       errorMessage.value = "Error al actualizar el número. Intenta nuevamente.";
     }
   }
@@ -97,11 +107,15 @@ const cancelar = () => {
 </script>
 
 
-<template>
-  <motion.div v-bind="fadeInUp">
 
+<template>
+
+  <motion.div v-bind="fadeInUp">
+    
     <Heading
-      mensaje="Editar número del transportista"
+      :mensaje="
+        'Hola, ' + datosCuenta.Nombres
+      "
       :showBackButton="true"
     />
 
