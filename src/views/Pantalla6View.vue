@@ -8,21 +8,31 @@ import { fadeInUp } from "../motion/pageAnimation";
 import { motion } from "motion-v";
 
 const whatsappURL = "/whatsapp/send-message";
-
-// Router
 const router = useRouter();
 
-// Token y datos de cuenta
+// Token y datos
 const token = localStorage.getItem("token");
 const datosCuenta = JSON.parse(localStorage.getItem("datosCuenta")) || {};
-
-// Teléfono actual
-const TelefonoTransportista = ref(
-  localStorage.getItem("telefonoTransportista") || ""
-);
-
-// Mensaje de error
+const TelefonoTransportista = ref(localStorage.getItem("telefonoTransportista") || "");
 const errorMessage = ref("");
+
+// 🔥 Variables necesarias para el mensaje ORIGINAL de pantalla 3
+const pagarValor = localStorage.getItem("pagarValor");
+const facturas = JSON.parse(localStorage.getItem("numeroFactura")) || [];
+const nroFacturaAlpina = facturas.join(",");
+const fechaActual = new Date();
+const hora = new Date().toLocaleTimeString();
+
+// Formatear pesos igual que pantalla 3
+function formatPesos(valor) {
+  return new Intl.NumberFormat("es-CO", {
+    style: "currency",
+    currency: "COP",
+    minimumFractionDigits: 0,
+  }).format(valor || 0);
+}
+
+const pagoFormateado = formatPesos(pagarValor);
 
 // -------------------------------------------------------
 // 👉 Guardar número, actualizar BD y enviar WhatsApp
@@ -35,51 +45,37 @@ const guardarNumero = async () => {
     return;
   }
 
-  // 🔥🔥🔥 AÑADIDO: quitar 57 o +57 para NO guardarlo en BD
-  if (telefono.startsWith("57")) {
-    telefono = telefono.substring(2);
-  }
-  if (telefono.startsWith("+57")) {
-    telefono = telefono.substring(3);
-  }
-  // 🔥🔥🔥 FIN DEL CAMBIO
+  // Quitar 57 o +57 antes de guardar en BD
+  if (telefono.startsWith("57")) telefono = telefono.substring(2);
+  if (telefono.startsWith("+57")) telefono = telefono.substring(3);
 
   errorMessage.value = "";
 
-  // Guardar localmente
+  // Guardar en localStorage
   localStorage.setItem("telefonoTransportista", telefono);
-
-  console.log("📞 Telefono para guardar:", telefono);
 
   try {
     // 👉 ACTUALIZAR EN BD
-    const response = await axios.put(
+    await axios.put(
       "/api/movimientos/actualizar-telefono",
       {
         identificadorTendero: datosCuenta.Cedula_Cliente,
         telefonoTransportista: telefono,
       },
       {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
+        headers: { Authorization: `Bearer ${token}` },
       }
     );
 
-    console.log("✅ Teléfono actualizado en BD:", response.data);
+    // 👉 Construir el mensaje EXACTO de pantalla 3
+    const message = `${datosCuenta.Nombres} envío un pago de la factura ${nroFacturaAlpina} por el valor de ${pagoFormateado} el día ${fechaActual.toLocaleDateString()} a la hora ${hora}`;
 
-    // 👉 ENVIAR WHATSAPP
-    const numeroWhatsapp = "57" + telefono; // 🔥 Se envía con 57
-  const message = `${datosCuenta.Nombres} envío un pago de la factura ${nroFacturaAlpina} por el valor de ${pagoFormateado} el día ${fechaActual.toLocaleDateString()} a la hora ${hora}`;
-
+    // 👉 Enviar WhatsApp con 57
+    const numeroWhatsapp = "57" + telefono;
 
     await axios.post(
       whatsappURL,
-      {
-        number: numeroWhatsapp,
-        message,
-      },
+      { number: numeroWhatsapp, message },
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -88,41 +84,25 @@ const guardarNumero = async () => {
       }
     );
 
-    console.log("📤 WhatsApp enviado correctamente");
-
-    // 👉 Redirigir
+    // Redirigir
     setTimeout(() => {
       window.open("/Pantalla4View", "_parent");
     }, 500);
-  } catch (error) {
-    console.error("❌ Error completo:", error);
-    console.error("❌ Response error:", error.response?.data);
 
-    // Si es 500, igual redirigimos, ya sabemos que igual guardó
+  } catch (error) {
+    console.error("❌ Error:", error);
+
     if (error.response?.status === 500) {
-      console.log("⚠️ Error 500, pero probablemente se guardó. Redirigiendo…");
       setTimeout(() => {
         window.open("/Pantalla4View", "_parent");
       }, 1000);
       return;
     }
 
-    if (error.response) {
-      errorMessage.value =
-        error.response.data?.error || "Error al actualizar el número";
-    } else if (error.request) {
-      errorMessage.value = "No se pudo conectar con el servidor";
-    } else {
-      errorMessage.value = "Error desconocido. Intenta nuevamente.";
-    }
+    errorMessage.value = "Error al actualizar el número o enviar el mensaje.";
   }
 };
 </script>
-
-
-
-
-
 
 <template>
 
@@ -173,8 +153,6 @@ const guardarNumero = async () => {
   </motion.div>
 
 </template>
-
-
 
 <style scoped>
 .error-text {
