@@ -54,7 +54,8 @@ const handlePagoClick = async () => {
   if (telefono.startsWith("+57")) telefono = telefono.substring(3);
 
   // ✔️ Guardar el teléfono para mostrarlo en Pantalla 4
-  localStorage.setItem("telefonoTransportista", telefono);
+localStorage.setItem("telefonoTransportista", telefono.replace(/^(\+57|57)/, ""));
+
 
   // Datos del pago
   const dataPagoFactura = {
