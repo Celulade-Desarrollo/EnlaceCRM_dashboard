@@ -2,40 +2,54 @@
 import { onMounted, ref, computed } from 'vue'
 import { motion } from 'motion-v'
 import axios from 'axios'
+import { activarSesionExpirada } from "../stores/session.js";
 
 const movimientosEnlace = ref([])
 const ruta = ref("asv545")
-const fechaSeleccionada = ref(new Date().toISOString().substr(0, 10)) // yyyy-mm-dd
+const fechaSeleccionada = ref(new Date().toISOString().substr(0, 10))
 
-// Computed para calcular el total de Monto
+const formatoMiles = (numero) => {
+  return new Intl.NumberFormat('es-ES').format(Number(numero));
+};
+
+const movimientosFiltrados = computed(() => {
+  return movimientosEnlace.value.filter(mov =>{
+    const fechaMov = mov.FechaHoraMovimiento?.substring(0, 10);
+    return fechaMov === fechaSeleccionada.value;
+  });
+})
+
 const totalRecaudo = computed(() => {
-  return movimientosEnlace.value.reduce((acc, mov) => acc + (mov.Monto || 0), 0)
+  return movimientosFiltrados.value.reduce((acc, mov) => acc + (mov.Monto || 0), 0)
 })
 
 onMounted(async () => {
   try {
     const response = await axios.get('api/listar/enlace/movimientos')
     movimientosEnlace.value = response.data
+    console.log("Movimientos cargados:", movimientosEnlace.value)
   } catch (error) {
     console.error("Error al cargar movimientos:", error)
+     if (error.response?.status === 401) {
+      activarSesionExpirada();
+    }
   }
 })
 </script>
 
 <template>
   <motion.div class="pantalla">
-
-    <!-- LOGO -->
     <section class="logo-container">
       <img src="/public/enlaceFiado.png" alt="logo Enlace CRM" class="logo-main" />
     </section>
-
-    <!-- CARD -->
+    
     <div class="card">
       <section class="total-recaudo">
-        <span class="label">Total recaudo del día:</span>
-        <input type="date" v-model="fechaSeleccionada" />
-        <span class="monto-total">${{ totalRecaudo }}</span>
+        <div class="recaudo-linea">
+          <span class="label">Total recaudo del día:</span>
+          <input type="date" v-model="fechaSeleccionada" />
+          <span class="monto-total">${{ formatoMiles(totalRecaudo)}}</span>
+        </div>
       </section>
 
       <section class="tabla">
@@ -46,45 +60,21 @@ onMounted(async () => {
         </div>
 
         <div
-          v-for="mov in movimientosEnlace"
+          v-for="mov in movimientosFiltrados"
           :key="mov.IdMovimiento"
           class="fila"
         >
           <span>{{ mov.NroFacturaAlpina }}</span>
           <span>{{ mov.TelefonoTransportista }}</span>
-          <span>${{ mov.Monto }}</span>
+          <span>${{ formatoMiles(mov.Monto) }}</span>
         </div>
       </section>
     </div>
-
   </motion.div>
 </template>
 
 <style scoped>
 
-.total-recaudo {
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
-  margin-bottom: 2rem;
-}
-
-.label {
-  color: #0043ce;
-  font-weight: 600;
-}
-
-.recaudo-row {
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-}
-
-.monto-total {
-  font-size: 1.7rem;
-  font-weight: bold;
-  color: #0043ce;
-}
 .pantalla {
   background-color: #1a0f8b;
   min-height: 100vh;
@@ -108,34 +98,44 @@ onMounted(async () => {
 .total-recaudo {
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 1rem;
   margin-bottom: 2rem;
+  
 }
 
-.total-recaudo p {
-  color: #0043ce;
-  font-weight: 600;
-  margin: 0;
+.recaudo-linea {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
 }
 
-.monto-total {
-  font-size: 1.7rem;
-  font-weight: bold;
-  color: #0043ce;
+.label {
+  color: #dd3590;
+  font-weight: 900;
+  white-space: nowrap;
+  font-size: 1.2rem;
 }
 
-/* Input */
 input[type="date"] {
   border: none;
   border-bottom: 2px solid #0043ce;
   padding: 4px 2px;
   background: transparent;
   color: #0043ce;
-  font-size: 1rem;
+  font-size: 1.1rem;
   outline: none;
-  width: 160px;
+  width: 170px;
 }
 
+
+.monto-total {
+  font-size: 1.7rem;
+  font-weight: bold;
+  color: #0043ce;
+  white-space: nowrap;
+}
+
+/* TABLA */
 .tabla {
   display: flex;
   flex-direction: column;
@@ -146,8 +146,9 @@ input[type="date"] {
   display: flex; 
   justify-content: space-between; 
   font-weight: bold; 
-  color: #0043ce;
+  color: #dd3590;
   margin-bottom: 0.5rem;
+  font-size: 1.1rem;
 }
 
 .fila {
@@ -156,6 +157,7 @@ input[type="date"] {
   border-top: 1px solid #9bb1ff;
   padding-top: 0.5rem;
   color: #0043ce;
+  font-size: 1.1rem;
 }
 
 body, html {
@@ -173,7 +175,7 @@ body, html {
   background-color: white !important;
   padding: 50px;
   border-radius: 25px;
-  width: 800px;
+  width: 1040px;
   margin: 60px auto;
   box-shadow: 0 4px 20px rgba(0,0,0,0.25);
 }
@@ -181,4 +183,5 @@ body, html {
 .main-container, .container, .wrapper, .fondo, .page {
   background-color: transparent !important;
 }
+
 </style>
