@@ -47,8 +47,14 @@ const handlePagoClick = async () => {
 
   errorMessage.value = "";
 
+  // 🔥 LIMPIAR TELÉFONO (NO GUARDAR 57)
+  let telefono = String(numeroTransportista.value).trim();
+
+  if (telefono.startsWith("57")) telefono = telefono.substring(2);
+  if (telefono.startsWith("+57")) telefono = telefono.substring(3);
+
   // ✔️ Guardar el teléfono para mostrarlo en Pantalla 4
-  localStorage.setItem("telefonoTransportista", numeroTransportista.value);
+  localStorage.setItem("telefonoTransportista", telefono);
 
   // Datos del pago
   const dataPagoFactura = {
@@ -59,13 +65,12 @@ const handlePagoClick = async () => {
     fechaPagoProgramado: fechaPagoProgramado,
     idMedioPago: 14,
     nroFacturaAlpina: nroFacturaAlpina,
-    telefonoTransportista: localStorage.getItem("telefonoTransportista"),
-
+    telefonoTransportista: telefono, // 🔥 Guardar limpio
   };
 
   // Mensaje de WhatsApp
   const hora = new Date().toLocaleTimeString();
-  const number = numeroTransportista.value;
+  const number = "57" + telefono; // 🔥 Enviar con 57
   const pagoFormateado = formatPesos(pagarValor);
 
   const message = `${datosCuenta.Nombres} envío un pago de la factura ${nroFacturaAlpina} por el valor de ${pagoFormateado} el día ${fechaActual.toLocaleDateString()} a la hora ${hora}`;
@@ -112,6 +117,7 @@ onMounted(() => {
   }
 });
 </script>
+
 
 
 <template>
