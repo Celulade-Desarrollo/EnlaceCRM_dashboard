@@ -139,7 +139,7 @@ const routes = [
   {
   path: "/PantallaDistribuidoresView",
   name: "PantallaDistribuidores",
-  component: () => import("../views/PantallaDistribuidoresView.vue"),
+  component: () => import("../views/PantallaDistribuidoresview.vue"),
   meta: { requiresAuth: true,  role: "admin" },
   }
   
