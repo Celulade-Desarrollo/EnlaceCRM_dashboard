@@ -7,48 +7,75 @@ import SesionExpirada from "../components/UI/SesionExpirada.vue";
 import { fadeInUp } from "../motion/pageAnimation";
 import { motion } from "motion-v";
 
-// Router
+const whatsappURL = "/whatsapp/send-message";
 const router = useRouter();
 
-// Token y datos de cuenta
+// Token y datos
 const token = localStorage.getItem("token");
 const datosCuenta = JSON.parse(localStorage.getItem("datosCuenta")) || {};
-
-// Traer número actual guardado
 const TelefonoTransportista = ref(localStorage.getItem("telefonoTransportista") || "");
-
-// Error de validación
 const errorMessage = ref("");
 
-// Guardar cambios y volver a pantalla 4
+// 🔥 Variables necesarias para el mensaje ORIGINAL de pantalla 3
+const pagarValor = localStorage.getItem("pagarValor");
+const facturas = JSON.parse(localStorage.getItem("numeroFactura")) || [];
+const nroFacturaAlpina = facturas.join(",");
+const fechaActual = new Date();
+const hora = new Date().toLocaleTimeString();
+
+// Formatear pesos igual que pantalla 3
+function formatPesos(valor) {
+  return new Intl.NumberFormat("es-CO", {
+    style: "currency",
+    currency: "COP",
+    minimumFractionDigits: 0,
+  }).format(valor || 0);
+}
+
+const pagoFormateado = formatPesos(pagarValor);
+
+// -------------------------------------------------------
+// 👉 Guardar número, actualizar BD y enviar WhatsApp
+// -------------------------------------------------------
 const guardarNumero = async () => {
-  if (!TelefonoTransportista.value) {
+  let telefono = String(TelefonoTransportista.value).trim();
+
+  if (!telefono || telefono.length < 8) {
     errorMessage.value = "Por favor ingresa un número válido";
     return;
   }
 
+  // Quitar 57 o +57 antes de guardar en BD
+  if (telefono.startsWith("57")) telefono = telefono.substring(2);
+  if (telefono.startsWith("+57")) telefono = telefono.substring(3);
+
   errorMessage.value = "";
 
+  // Guardar en localStorage
+  localStorage.setItem("telefonoTransportista", telefono);
+
   try {
-    // 🔥 CONVERTIR A STRING EXPLÍCITAMENTE
-    const telefonoString = String(TelefonoTransportista.value);
-    
-    // Guardar en localStorage
-    localStorage.setItem("telefonoTransportista", telefonoString);
-
-    console.log("📞 Actualizando teléfono en BD:", telefonoString);
-    console.log("📋 Datos a enviar:", {
-      identificadorTendero: datosCuenta.Cedula_Cliente,
-      telefonoTransportista: telefonoString
-    });
-
-    // 🔥 ACTUALIZAR EN LA BASE DE DATOS
-    const response = await axios.put(
+    // 👉 ACTUALIZAR EN BD
+    await axios.put(
       "/api/movimientos/actualizar-telefono",
       {
         identificadorTendero: datosCuenta.Cedula_Cliente,
-        telefonoTransportista: telefonoString // 🔥 ENVIAR COMO STRING
+        telefonoTransportista: telefono,
       },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    // 👉 Construir el mensaje EXACTO de pantalla 3
+    const message = `${datosCuenta.Nombres} envío un pago de la factura ${nroFacturaAlpina} por el valor de ${pagoFormateado} el día ${fechaActual.toLocaleDateString()} a la hora ${hora}`;
+
+    // 👉 Enviar WhatsApp con 57
+    const numeroWhatsapp = "57" + telefono;
+
+    await axios.post(
+      whatsappURL,
+      { number: numeroWhatsapp, message },
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -57,51 +84,32 @@ const guardarNumero = async () => {
       }
     );
 
-    console.log("✅ Respuesta del servidor:", response.data);
-
-    // ✅ Esperar un momento antes de redirigir
+    // Redirigir
     setTimeout(() => {
       window.open("/Pantalla4View", "_parent");
     }, 500);
 
   } catch (error) {
-    console.error("❌ Error completo:", error);
-    console.error("❌ Response error:", error.response?.data);
-    
-    // 🔥 Si es error 500 pero ya se guardó en BD, redirigir igual
+    console.error("❌ Error:", error);
+
     if (error.response?.status === 500) {
-      console.log("⚠️ Error 500 pero puede que se haya guardado, redirigiendo...");
       setTimeout(() => {
         window.open("/Pantalla4View", "_parent");
       }, 1000);
       return;
     }
-    
-    if (error.response) {
-      // Error con respuesta del servidor
-      errorMessage.value = error.response.data?.error || "Error al actualizar el número";
-    } else if (error.request) {
-      // Error de red
-      errorMessage.value = "No se pudo conectar con el servidor";
-    } else {
-      // Otro tipo de error
-      errorMessage.value = "Error al actualizar el número. Intenta nuevamente.";
-    }
-  }
-};
 
-// Volver sin guardar
-const cancelar = () => {
-  window.open("/Pantalla4View", "_parent");
+    errorMessage.value = "Error al actualizar el número o enviar el mensaje.";
+  }
 };
 </script>
 
-
 <template>
-  <motion.div v-bind="fadeInUp">
 
+  <motion.div v-bind="fadeInUp">
+    
     <Heading
-      mensaje="Editar número del transportista"
+      :mensaje="'Hola, ' + datosCuenta.Nombres"
       :showBackButton="true"
     />
 
@@ -115,13 +123,18 @@ const cancelar = () => {
 
         <div class="form-group">
           <label id="label-pagar" class="input-label">
+
+            <!-- 🔥 INPUT CORREGIDO -->
             <input
               class="form-control text-center mb-4"
               v-model="TelefonoTransportista"
-              type="number"
+              type="text"
+              inputmode="numeric"
               autocomplete="off"
               required
             />
+            <!-- 🔥 Fin del cambio -->
+
             <span class="floating-label">Teléfono del transportista</span>
           </label>
         </div>
@@ -138,8 +151,8 @@ const cancelar = () => {
 
     <SesionExpirada />
   </motion.div>
-</template>
 
+</template>
 
 <style scoped>
 .error-text {
