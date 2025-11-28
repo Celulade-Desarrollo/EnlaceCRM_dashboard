@@ -83,7 +83,7 @@ onMounted(() => {
 
 <template>
 
-  <Heading :mensaje="'Hola, ' + datosCuenta.Nombres" :showBackButton="true" /> 
+  <Heading :mensaje="'Hola, ' + datosCuenta.Nombres"  /> 
 
   <section class="content">
     <div class="card">
