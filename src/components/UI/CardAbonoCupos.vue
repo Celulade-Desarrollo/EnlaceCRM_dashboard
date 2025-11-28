@@ -58,28 +58,21 @@ onMounted (async () => {
   console.log("estadocuentaa",estadoCuenta.value)
 });
 
+//deuda calculada
 const deudaTotalCalculada = computed(() => {
   if (!estadoCuenta.value.movimientos) return 0;
 
   const facturas = estadoCuenta.value.movimientos.filter(m => m.IdTipoMovimiento === 1);
-  const abonos = estadoCuenta.value.movimientos.filter(m => m.IdTipoMovimiento === 2);
 
   let total = 0;
 
-  facturas.forEach(fact => {
-    const totalAbonado = abonos
-      .filter(a => a.NroFacturaAlpina === fact.NroFacturaAlpina)
-      .reduce((acc, a) => acc + (a.Monto || 0), 0);
-
-    const capital = fact.Monto;
-    const proyectado = fact.MontoMasIntereses;
-
-    let saldo = 0;
-
-    if (totalAbonado < capital) {
-      const montoTotal = proyectado || capital;
-      saldo = montoTotal - totalAbonado;
-    }
+  facturas.forEach(f => {
+    const saldo = 
+      (f.MontoMasIntereses || f.Monto) -
+      (f.AbonoUsuario || 0) -
+      (f.Intereses || 0) -
+      (f.Fees || 0) -
+      (f.InteresesMora || 0);
 
     if (saldo > 0) total += saldo;
   });
@@ -87,45 +80,35 @@ const deudaTotalCalculada = computed(() => {
   return total;
 });
 
+// valor proixmo de abono
 const valorProximoAbono = computed(() => {
   if (!estadoCuenta.value.movimientos) return 0;
 
   const facturas = estadoCuenta.value.movimientos.filter(m => m.IdTipoMovimiento === 1);
-  const abonos = estadoCuenta.value.movimientos.filter(m => m.IdTipoMovimiento === 2);
 
-  // Facturas pendientes
-  const pendientes = facturas
-    .map(fact => {
-      const totalAbonado = abonos
-        .filter(a => a.NroFacturaAlpina === fact.NroFacturaAlpina)
-        .reduce((acc, a) => acc + (a.Monto || 0), 0);
+  if (facturas.length === 0) return 0;
 
-      const capital = fact.Monto;
-      const proyectado = fact.MontoMasIntereses;
 
-      let saldo = 0;
+  const fechaMin = facturas
+    .map(f => new Date(f.FechaPagoProgramado))
+    .reduce((min, fecha) => fecha < min ? fecha : min);
 
-      // Si ya pagó todo el capital
-      if (totalAbonado < capital) {
-        const montoTotal = proyectado || capital;
-        saldo = montoTotal - totalAbonado;
-      }
+  const facturasDelDia = facturas.filter(
+    f => new Date(f.FechaPagoProgramado).toDateString() === fechaMin.toDateString()
+  );
 
-      return {
-        ...fact,
-        saldo
-      };
-    })
-    .filter(f => f.saldo > 0);
+  const total = facturasDelDia.reduce((acc, f) => {
+    const saldo =
+      (f.MontoMasIntereses || f.Monto) -
+      (f.AbonoUsuario || 0) -
+      (f.Intereses || 0) -
+      (f.Fees || 0) -
+      (f.InteresesMora || 0);
 
-  if (pendientes.length === 0) return 0;
+    return acc + Math.max(saldo, 0);
+  }, 0);
 
-  // Tomar la más próxima a vencer
-  const proxima = pendientes.sort(
-    (a, b) => new Date(a.FechaPagoProgramado) - new Date(b.FechaPagoProgramado)
-  )[0];
-
-  return proxima.saldo;
+  return total;
 });
 
 </script>
