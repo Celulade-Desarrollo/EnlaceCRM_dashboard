@@ -344,6 +344,8 @@ const actualizarMonto = async (movimiento) => {
     await axios.post('/api/movimientos', payload)
     await axios.put(`/api/actualizarAbono/${movimiento.IdMovimiento}`, { 
       nuevoMonto: movimiento.abonoCapital,
+      Intereses: movimiento.Intereses,
+      Fees: movimiento.Fees 
     })
 
 
