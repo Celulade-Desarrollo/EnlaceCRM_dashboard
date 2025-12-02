@@ -56,6 +56,9 @@ const logout = () => {
     <div class="logout">
       <button class="boton-logout" @click="logout">Cerrar sesión</button>
     </div>
+    <div class="num_contacto">
+    Contacta soporte al siguiente número: 319-662-2476
+    </div>
     <div class="card">
       <section class="total-recaudo">
         <div class="recaudo-linea">
@@ -87,30 +90,41 @@ const logout = () => {
 </template>
 
 <style scoped>
+
+/* --- TU CSS ORIGINAL --- */
+.num_contacto {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: white;
+  text-align: right;
+  margin-right: 10px;
+  width: 100%;
+  max-width: 1140px;
+  align-self: center;
+  box-sizing: border-box;
+  margin-top: 20px;
+}
+
 .logout {
   display: flex;
   justify-content: right;
   margin-top: 1rem;
 }
-.logout {
-  display: flex;
-  justify-content: right;
-  margin-top: 1rem;
-}
+
 .boton-logout {
   padding: 10px 30px;
   font-size: 16px;
   border-radius: 20px;
   cursor: pointer;
   font-weight: 600;
-  background: #dd3590 !important;;
+  background: #dd3590 !important;
   color: #fff;
-  outline: none;
   border: none;
 }
 .boton-logout:hover {
-  background-color: #f15bab !important;;
+  background-color: #f15bab !important;
 }
+
 .pantalla {
   background-color: #1a0f8b;
   min-height: 100vh;
@@ -136,7 +150,6 @@ const logout = () => {
   flex-direction: column;
   gap: 1rem;
   margin-bottom: 2rem;
-  
 }
 
 .recaudo-linea {
@@ -163,7 +176,6 @@ input[type="date"] {
   width: 170px;
 }
 
-
 .monto-total {
   font-size: 1.7rem;
   font-weight: bold;
@@ -171,29 +183,29 @@ input[type="date"] {
   white-space: nowrap;
 }
 
-/* TABLA */
 .tabla {
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
 }
 
-.titulosTabla {
-  display: flex; 
-  justify-content: space-between; 
-  font-weight: bold; 
-  color: #dd3590;
-  margin-bottom: 0.5rem;
+.titulosTabla,
+.fila {
+  display: flex;
+  justify-content: space-between;
+  color: #0043ce;
   font-size: 1.1rem;
 }
 
+.titulosTabla {
+  font-weight: bold;
+  color: #dd3590;
+  margin-bottom: 0.5rem;
+}
+
 .fila {
-  display: flex; 
-  justify-content: space-between; 
   border-top: 1px solid #9bb1ff;
   padding-top: 0.5rem;
-  color: #0043ce;
-  font-size: 1.1rem;
 }
 
 body, html {
@@ -212,12 +224,113 @@ body, html {
   padding: 50px;
   border-radius: 25px;
   width: 1040px;
-  margin: 60px auto;
+  margin: 30px auto;
   box-shadow: 0 4px 20px rgba(0,0,0,0.25);
 }
 
-.main-container, .container, .wrapper, .fondo, .page {
-  background-color: transparent !important;
+/* Tablets */
+@media (max-width: 1021px) and (min-width: 774px) {
+
+  .card {
+    width: 90%;
+    padding: 30px;
+  }
+
+  /* Evita que el texto se salga */
+  .label,
+  .monto-total,
+  .num_contacto {
+    white-space: normal;
+  }
+
+  /* Hace que la línea se adapte mejor sin romper */
+  .recaudo-linea {
+    flex-wrap: wrap;
+    gap: 0.8rem;
+  }
+
+  input[type="date"] {
+    width: 200px;
+  }
+
+  .titulosTabla,
+  .fila {
+    font-size: 1rem;
+  }
+}
+@media (max-width: 1024px) {
+  .card {
+    width: 90%;
+    padding: 30px;
+  }
+
+  .logo-main {
+    height: 60px;
+  }
+
+  .monto-total {
+    font-size: 1.4rem;
+  }
+}
+
+/* Celulares grandes */
+@media (max-width: 768px) {
+
+  .card {
+    width: 95%;
+    padding: 25px;
+  }
+
+  .num_contacto {
+    text-align: center;
+    font-size: 1rem;
+    margin-right: 0;
+  }
+
+  .recaudo-linea {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+
+  .label {
+    font-size: 1rem;
+  }
+
+  input[type="date"] {
+    width: 100%;
+    max-width: 250px;
+    font-size: 1rem;
+  }
+
+  .monto-total {
+    font-size: 1.3rem;
+  }
+
+  .titulosTabla, .fila {
+    font-size: 1rem;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.3rem;
+  }
+}
+
+/* Celulares pequeños */
+@media (max-width: 480px) {
+  .logo-main {
+    height: 50px;
+  }
+
+  .boton-logout {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .monto-total {
+    font-size: 1.2rem;
+  }
 }
 
 </style>
