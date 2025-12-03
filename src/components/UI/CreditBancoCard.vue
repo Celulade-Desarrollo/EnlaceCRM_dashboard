@@ -202,6 +202,7 @@ const handleAprobadoClick = async () => {
   
   const whatsappMessage = `Felicitaciones ${props.data.Nombres} ${props.data.Primer_Apellido}, te hemos asignado un cupo de ${props.data.Cupo} para utilización en tu *APP COMPI*. Si deseas activar el cupo asignado, responde este mensaje con un: SI.`;
   const whatsapp = await axios.post('https://enlace-crm.com:3000/backend/whatsapp/send-message', 
+  const whatsapp = await axios.post('https://enlace-crm.com:3000/backend/whatsapp/send-message', 
     {
       number: `57${props.data.Numero_Cliente}`,
       message: whatsappMessage
@@ -257,6 +258,8 @@ const handleAprobadoClick = async () => {
   }catch(error){
     console.error("Error en alguno de los pasos:", error);
   }
+
+
 
 
 
