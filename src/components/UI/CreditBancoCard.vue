@@ -99,7 +99,7 @@ const handleSiClick = async () => {
   }
 
    const whatsappMessage = `Felicitaciones ${props.data.Nombres} ${props.data.Primer_Apellido}, desde hoy puedes utilizar tu cupo en la APP COMPI para comprar tus productos Alpina. Ingresa a tu APP COMPI y haz click en el botón "Microcréditos"`;
-  const whatsapp = await axios.post('https://enlace-crm.com:3000/backend/api/whatsapp/send-message', 
+  const whatsapp = await axios.post('https://enlace-crm.com:3000/backend/whatsapp/send-message', 
     {
       numero: props.data.Celular_Cliente,
       mensaje: whatsappMessage
@@ -201,7 +201,7 @@ const handleNoClick = async () => {
 const handleAprobadoClick = async () => {
 
   const whatsappMessage = `Felicitaciones ${props.data.Nombres} ${props.data.Primer_Apellido}, te hemos asignado un cupo de ${props.data.Cupo} para utilización en tu *APP COMPI*. Si deseas activar el cupo asignado, responde este mensaje con un: SI.`;
-  const whatsapp = await axios.post('https://enlace-crm.com:3000/backend/api/whatsapp/send-message', 
+  const whatsapp = await axios.post('https://enlace-crm.com:3000/backend/whatsapp/send-message', 
     {
       numero: props.data.Celular_Cliente,
       mensaje: whatsappMessage
@@ -256,6 +256,8 @@ const handleAprobadoClick = async () => {
   }catch(error){
     console.error("Error en alguno de los pasos:", error);
   }
+
+
 
 
 };
