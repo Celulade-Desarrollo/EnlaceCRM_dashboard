@@ -31,7 +31,7 @@ const handleContinuarClick = () => {
   const regex = /^\d{5,}$/;
 
   if (!valorPagoStr || isNaN(valorPagoStr) || !regex.test(valorPagoStr)) {
-    errorMessage.value = "Ingrese un valor válido de al menos 5 dígitos sin puntos ni comas";
+    errorMessage.value = "El valor mínimo permitido es $10.000";
     return;
   }
 
@@ -52,11 +52,6 @@ const handleContinuarClick = () => {
   console.log("totalFacturas:", totalFacturas);
   console.log("Cupo Disponible:", cupoDisponible);
   console.log("Cupo Final:", cupoFinal);
-
-  if (valorPago < 20000) {
-    errorMessage.value = "El valor mínimo permitido para el pago es de $20.000";
-    return;
-  }
 
   if (totalFacturas === 0) {
     errorMessage.value = "Debe seleccionar al menos una factura antes de continuar";
