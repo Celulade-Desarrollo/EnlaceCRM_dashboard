@@ -214,7 +214,6 @@ const handleAprobadoClick = async () => {
     }
   );
    
-
   if (!cupoAprobado.value) {
     mensajeError.value = "Por favor, completa el campo cupo aprobado";
     return;
@@ -236,7 +235,7 @@ const handleAprobadoClick = async () => {
   console.log("Payload que se va a enviar al put:", payloadPut,);
 
   try{
-    const postInfo = await axios.post('api/bancow', 
+    await axios.post('api/bancow', 
       payloadAprobado,
       {
         headers: {  
@@ -245,7 +244,7 @@ const handleAprobadoClick = async () => {
         }
       }
     );
-    const putInfo = await axios.put(`api/scoring/estado/update/${id}`, 
+      await axios.put(`api/scoring/estado/update/${id}`, 
       payloadPut,
       {
         headers: {  
@@ -253,6 +252,14 @@ const handleAprobadoClick = async () => {
           "Content-Type": "application/json"
         }
       })
+      await axios.put(`api/flujoRegistroEnlace/estado/pendiente/${id}`,
+        payloadPut,
+       {
+        headers: {
+          Authorization: `Bearer ${props.token}`,
+          "Content-Type": "application/json",
+        },
+      });
     window.location.reload();
   }catch(error){
     console.error("Error en alguno de los pasos:", error);
