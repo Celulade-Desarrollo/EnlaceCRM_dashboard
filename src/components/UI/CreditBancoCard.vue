@@ -230,7 +230,7 @@ const handleAprobadoClick = async () => {
 
   if (cupoAprobado.value === 'si') {
     payloadPut.Estado = "aprobado";
-  } else {
+  } else if (cupoAprobado.value === 'No' || cupoAprobado.value === 'no') {
     payloadPut.Estado = "negado";
   }
   console.log("Payload que se va a enviar al put:", payloadPut,);
@@ -257,11 +257,6 @@ const handleAprobadoClick = async () => {
   }catch(error){
     console.error("Error en alguno de los pasos:", error);
   }
-
-
-
-
-
 
 };
 </script>
