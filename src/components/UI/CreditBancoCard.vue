@@ -199,7 +199,7 @@ const handleNoClick = async () => {
 };
 
 const handleAprobadoClick = async () => {
-  
+  /*
   const whatsappMessage = `Felicitaciones ${props.data.Nombres} ${props.data.Primer_Apellido}, te hemos asignado un cupo de ${props.data.Cupo} para utilización en tu *APP COMPI*. Si deseas activar el cupo asignado, responde este mensaje con un: SI.`;
   const whatsapp = await axios.post('https://enlace-crm.com:3000/backend/whatsapp/send-message', 
     {
@@ -213,7 +213,7 @@ const handleAprobadoClick = async () => {
       }
     }
   );
-   
+   */
   if (!cupoAprobado.value) {
     mensajeError.value = "Por favor, completa el campo cupo aprobado";
     return;
