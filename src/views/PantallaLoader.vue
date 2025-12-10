@@ -45,7 +45,11 @@ onMounted(async () => {
   } catch (error) {
     if (error.response && error.response.status === 400) {
      redirigirAFormulario(datos);
-    } else {
+    } else if (error.response && error.response.status === 403) {
+      window.location.href = `https://enlace-crm.com/Tendero`;
+    }
+    else {
+      
       console.error("Error inesperado en la petición:", error);
     }
   }

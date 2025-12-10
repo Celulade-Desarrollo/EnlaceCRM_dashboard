@@ -8,19 +8,42 @@ import { useRouter } from "vue-router";
 const movimientosEnlace = ref([])
 const ruta = ref("asv545")
 const fechaSeleccionada = ref(new Date().toISOString().substr(0, 10))
+const filtroFactura = ref("");
+const filtroTelefono = ref("");
 
 const router = useRouter();
+
+const listaFacturas = computed(() => {
+  const facturas = movimientosEnlace.value.map(mov => mov.NroFacturaAlpina);
+  return [...new Set(facturas)];
+})
+
+const listaTelefonos = computed(()=>{
+  const telefonos = movimientosEnlace.value.map(mov => mov.TelefonoTransportista);
+  return [...new Set(telefonos)];
+})
 
 const formatoMiles = (numero) => {
   return new Intl.NumberFormat('es-ES').format(Number(numero));
 };
 
 const movimientosFiltrados = computed(() => {
-  return movimientosEnlace.value.filter(mov =>{
+  return movimientosEnlace.value.filter(mov => {
     const fechaMov = mov.FechaHoraMovimiento?.substring(0, 10);
-    return fechaMov === fechaSeleccionada.value;
+
+    const coincideFecha = fechaMov === fechaSeleccionada.value;
+
+    const coincideFactura =
+      !filtroFactura.value ||
+      mov.NroFacturaAlpina?.toString().includes(filtroFactura.value);
+
+    const coincideTelefono =
+      !filtroTelefono.value ||
+      mov.TelefonoTransportista?.toString().includes(filtroTelefono.value);
+
+    return coincideFecha && coincideFactura && coincideTelefono;
   });
-})
+});
 
 const totalRecaudo = computed(() => {
   return movimientosFiltrados.value.reduce((acc, mov) => acc + (mov.Monto || 0), 0)
@@ -65,9 +88,59 @@ const logout = () => {
           <span class="label">Total recaudo del día:</span>
           <input type="date" v-model="fechaSeleccionada" />
           <span class="monto-total">${{ formatoMiles(totalRecaudo)}}</span>
+
+          <div class="inputs-wrapper">
+            <label for="nombres" class="input-label">
+              <input
+                class="form-control"
+                type="text"
+                placeholder=""
+                v-model="filtroFactura"
+              />
+              <span class="floating-label">Buscar factura</span>
+            </label>
+
+            <label for="nombres" class="input-label">
+              <input
+                class="form-control"
+                type="text"
+                placeholder=""
+                v-model="filtroTelefono"
+              />
+              <span class="floating-label">Buscar teléfono</span>
+            </label>
+          </div>
         </div>
       </section>
+    <!-- <section class="filtros">
+          <div class="filtro-item">
+            <label>Filtrar por factura:</label>
+            <select v-model="filtroFactura">
+              <option value="">Todas</option>
+              <option
+                v-for="fac in listaFacturas"
+                :key="fac"
+                :value="fac"
+              >
+                {{ fac }}
+              </option>
+            </select>
+          </div>
 
+          <div class="filtro-item">
+            <label>Filtrar por teléfono:</label>
+            <select v-model="filtroTelefono">
+              <option value="">Todos</option>
+              <option
+                v-for="tel in listaTelefonos"
+                :key="tel"
+                :value="tel"
+                >
+                  {{ tel }}
+              </option>
+            </select>
+          </div>
+        </section> -->
       <section class="tabla">
         <div class="titulosTabla">
           <span>Factura</span>
@@ -90,7 +163,68 @@ const logout = () => {
 </template>
 
 <style scoped>
+.inputs-wrapper {
+  display: flex;
+  gap: 10px;
+  flex-wrap: nowrap;
+  flex-shrink: 1;
+}
 
+.input-label {
+  position: relative;
+  display: block;
+  margin-top: 0;
+  width: 180px;
+  min-width: 120px;
+  flex-shrink: 1; 
+}
+.form-control {
+  width: 100%;
+  padding: 10px 0;
+  font-size: 16px;
+  border: none;
+  border-bottom: 2px solid #09008be1;
+  background: transparent;
+  font-family: sans-serif;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.floating-label {
+  position: absolute;
+  left: 0;
+  top: 10px;
+  color: black;
+  font-size: 16px;
+  pointer-events: none;
+  transition: 0.3s ease all;
+  font-family: sans-serif;
+}
+
+/* Animación al enfocar o escribir */
+.form-control:focus + .floating-label,
+.form-control:not(:placeholder-shown) + .floating-label {
+  top: -15px;
+  font-size: 12px;
+  color: black;
+}
+
+.input-label:hover .form-control {
+  border-bottom-color: #ff00f2;
+}
+
+.form-control:focus {
+  border-bottom-color: #0064e6cc;
+  outline: none;
+  box-shadow: none;
+}
+
+.recaudo-linea {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.7rem;
+}
 /* --- TU CSS ORIGINAL --- */
 .num_contacto {
   font-size: 1.2rem;
@@ -150,12 +284,6 @@ const logout = () => {
   flex-direction: column;
   gap: 1rem;
   margin-bottom: 2rem;
-}
-
-.recaudo-linea {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
 }
 
 .label {
@@ -227,7 +355,25 @@ body, html {
   margin: 30px auto;
   box-shadow: 0 4px 20px rgba(0,0,0,0.25);
 }
+@media (max-width: 940px) {
+  .inputs-wrapper {
+    flex-wrap: wrap;
+    width: 100%;
+  }
 
+  .input-label {
+    width: calc(50% - 10px);
+  }
+}
+@media (max-width: 600px) {
+  .inputs-wrapper {
+    flex-direction: column;
+  }
+
+  .input-label {
+    width: 100%;
+  }
+}
 /* Tablets */
 @media (max-width: 1021px) and (min-width: 774px) {
 
@@ -332,5 +478,10 @@ body, html {
     font-size: 1.2rem;
   }
 }
-
+@media (max-width: 600px) {
+  .recaudo-linea {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
 </style>
