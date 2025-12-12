@@ -229,13 +229,19 @@ const handleAprobadoClick = async () => {
 
   if (cupoAprobado.value === 'si') {
     payloadPut.Estado = "aprobado";
+
+    const number = props.data.Numero_Cliente;
+    const customer_name = props.data.Nombres
+    const monto = props.data.Cupo
+      await axios.post(`https://enlace-crm.com:3000/backend/whatsapp/meta/cupo/${number}/${customer_name}/${monto}`)
+    
   } else if (cupoAprobado.value === 'No' || cupoAprobado.value === 'no') {
     payloadPut.Estado = "negado";
   }
   console.log("Payload que se va a enviar al put:", payloadPut,);
 
   try{
-    await axios.post('api/bancow', 
+    await axios.post('/api/bancow', 
       payloadAprobado,
       {
         headers: {  
