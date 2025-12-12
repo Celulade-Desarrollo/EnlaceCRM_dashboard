@@ -241,7 +241,7 @@ const handleAprobadoClick = async () => {
   console.log("Payload que se va a enviar al put:", payloadPut,);
 
   try{
-    await axios.post('', 
+    await axios.post('/api/bancow', 
       payloadAprobado,
       {
         headers: {  
