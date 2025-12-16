@@ -67,23 +67,22 @@ const cargarTransacciones = async () => {
 <template>
     <BotonAtras />
 
-  <section class="logo-container">
-    <img
-      src="/public/enlaceFiado.png"
-      alt="logo Enlace CRM"
-      class="logo-main"
-    />
-  </section>
-         <p class="titulo">Hola, Administrador banco w</p>
+<div class="card-botones">
+  <h3 class="titulo-card">Utilización</h3>
 
   <div class="botones-container">
-    <button class="btn" @click="cargarTransacciones">Refrescar</button>
-    <button class="btn" @click="exportarExcel">Descargar Excel</button>
-        <div class="logout">
-      <button class="boton-logout" @click="logout">Cerrar sesión</button>
-    </div>
+    <button class="btn" @click="cargarTransacciones">
+      <img src="/public/actualizar.png" alt="Refrescar" />
+      Refrescar
+    </button>
 
+    <button class="btn" @click="exportarExcel">
+      <img src="/public/descargar.png" alt="Descargar Excel" />
+      Descargar Excel
+    </button>
   </div>
+</div>
+
   <SesionExpiradaLogin />
 </template>
 
@@ -99,33 +98,82 @@ const cargarTransacciones = async () => {
   
 }
 
+/* TEXTO CENTRADO DENTRO DE LA CARD */
+.titulo-card {
+  width: 100%;               /* ocupa toda la card */
+  text-align: center;        /* centra el texto */
+  color: white;
+  font-size: 1.6rem;
+  font-weight: 500;
+  margin-bottom: 50px;
+}
+
+
+
 .logout {
   display: flex;
   justify-content: right;
   margin-top: 1rem;
 }
-.boton-logout {
-  padding: 10px 30px;
-  font-size: 15px;
-  border-radius: 20px;
-  cursor: pointer;
-  font-weight: 600;
-  background: #dd3590;
-  color: #fff;
-  outline: none;
-  border: none;
-  transform: translateY(80px);
-  margin-left: -100px;
+/* TARJETA */
+.card-botones {
+   display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 80px;
+  padding:50px;
+  height: auto;
+  min-height: 70vh;
+  background-color: #5c4cb8;
+  border: 9px solid #251786;
+  margin-top: 60px;
+  flex-wrap: wrap;
+  box-sizing: border-box;
 }
-.boton-logout:hover {
+
+/* CONTENEDOR DE BOTONES */
+.botones-container {
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+  padding:50px;
+
+}
+
+/* BOTONES */
+.btn {
+  background-color: #dd3590;
+  color: white;
+  font-size: 1rem;
+  padding: 14px 26px;
+  border: none;
+  border-radius: 29px;
+  cursor: pointer;
+  min-width: 220px;
+ display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: -40px;
+  transform: translateY(-100px);
+}
+
+.btn img {
+  width: 20px;
+  height: 20px;
+}
+
+.btn:hover {
   background-color: #f15bab;
 }
+
 
 .botones-container {
   display: flex;
   gap: 1rem;
   justify-content: center;
   margin-top: 2rem;
+  
 }
 
 .logo-main {
@@ -136,21 +184,6 @@ const cargarTransacciones = async () => {
     margin-top: 100px;
 }
 
-.btn {
-  background-color: #dd3590;
-  color: white;
-  font-size: 1.25rem;
-  font-weight: normal;
-  padding: 1rem 1rem;
-  border: none;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  transition: background 0.2s;
-  border-radius: 25px;
-  min-width: 250px;
-  text-align: center;
-
-}
 
 .btn:hover {
   background-color: #f15bab;
