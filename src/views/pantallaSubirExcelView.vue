@@ -196,7 +196,7 @@ const enviarCSV = async () => {
     </p>
 
     <div v-if="fileLoaded">
-      <button class="boton" @click="enviarCSV">
+      <button class="button" @click="enviarCSV">
         <img src="/public/enviar.png" class="icono-btn" />
         Enviar
       </button>
@@ -210,65 +210,83 @@ const enviarCSV = async () => {
 </template>
 
 <style scoped>
-/* CONTENEDOR DE LA PÁGINA */
+
 .page-container {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  text-align: center;
-  padding: 20px;
-  box-sizing: border-box;
-}
-
-.card-subir-excel {
-   display: flex;
   justify-content: center;
   align-items: flex-start;
   gap: 80px;
-  padding:50px;
-  height: auto;
+  padding: 50px;
   min-height: 70vh;
   background-color: #5c4cb8;
   border: 9px solid #251786;
   margin-top: 60px;
   flex-wrap: wrap;
   box-sizing: border-box;
-  
 }
 
 
-/* MENSAJES */
 .mensaje {
   font-size: 1.2rem;
   font-weight: 600;
   color: white;
-  margin: 20px 0;
+  margin: 0 0 40px 0;
+  text-align: center;
 }
 
-/* CONTENEDOR BOTÓN */
+
 .boton-container {
-  margin: 25px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto 30px auto;
+  position: relative;
 }
 
-/* BOTONES PRINCIPALES */
+.button {
+  background-color: #dd3590;
+  color: white;
+  font-size: 1rem;
+  font-weight: 500;
+
+  width: 260px;
+  height: 55px;
+  padding: 0;
+
+  border: none;
+  outline: none;
+  border-radius: 999px;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
 .boton {
   background-color: #dd3590;
   color: white;
-  padding: 12px 40px;
-  border: none;
-  border-radius: 20px;
   font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+  font-weight: 500;
+
+  width: 260px;
+  height: 55px;
+  padding: 0;
+
+  border: none;
   outline: none;
-  box-shadow: none;
-  margin: 10px 0;
-  min-width: 220px;
+  border-radius: 999px; 
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
 
-/* ICONOS DENTRO DE BOTONES */
 .icono-btn {
   width: 22px;
   height: 22px;
@@ -276,12 +294,13 @@ const enviarCSV = async () => {
   display: block;
 }
 
-
-.boton:hover {
+.boton:hover,
+.button:hover {
   background-color: #f15bab;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.25);
 }
 
-/* BOTÓN LOGOUT */
 .boton-logout {
   background-color: #dd3590;
   color: white;
@@ -297,4 +316,5 @@ const enviarCSV = async () => {
 .boton-logout:hover {
   background-color: #f15bab;
 }
+
 </style>

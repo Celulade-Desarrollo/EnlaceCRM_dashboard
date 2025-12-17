@@ -98,10 +98,10 @@ const cargarTransacciones = async () => {
   
 }
 
-/* TEXTO CENTRADO DENTRO DE LA CARD */
+
 .titulo-card {
-  width: 100%;               /* ocupa toda la card */
-  text-align: center;        /* centra el texto */
+  width: 100%;  
+  text-align: center; 
   color: white;
   font-size: 1.6rem;
   font-weight: 500;
