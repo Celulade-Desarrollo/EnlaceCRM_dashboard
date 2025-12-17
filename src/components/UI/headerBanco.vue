@@ -6,6 +6,10 @@ const router = useRouter();
 const goToLogin = () => {
 router.push('/LoginView');
 };
+
+const goToConfig = () => {
+router.push('/Credenciales');
+};
 </script>
 
 <template>
@@ -18,6 +22,15 @@ router.push('/LoginView');
         @click="goToLogin"
       />
     </div>
+    <div class="left-config">
+      <img 
+        src="/public/configuraciones.png" 
+        alt="Inicio" 
+        class="config-icon"
+        @click="goToConfig"
+      />
+    </div>
+
     <h1 class="title">Portal de gestión del Banco W</h1>
 
     <div class="right-section">
@@ -49,6 +62,7 @@ router.push('/LoginView');
   flex-shrink: 0;
 }
 
+
 .home-icon {
   cursor: pointer;
   width: 40px;
@@ -61,9 +75,28 @@ router.push('/LoginView');
   align-items: center;
 }
 
+.config-icon {
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  transform: translateX(20px);
+  background-color: rgba(247, 243, 243, 0.39);
+  border-radius: 50%;
+  padding: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .home-icon:hover {
   background-color: #0c0c0c4f;
   transform: scale(1.05);
+}
+
+.config-icon:hover {
+  background-color: #0c0c0c4f;
+  transform: scale(1.05);
+  transform: translateX(20px);
 }
 
 .title {

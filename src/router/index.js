@@ -50,6 +50,12 @@ const routes = [
     component: () => import("../views/LoginView.vue"),
     meta: { requiresAuth: false },
   },
+     {
+    path: "/Credenciales",
+    name: "Credenciales",
+    component: () => import("../views/Actualizarcredenciales.vue"),
+    meta: { requiresAuth: false },
+  },
   {
     path: "/Pantalla3View",
     name: "pantalla3",
