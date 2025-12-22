@@ -121,6 +121,7 @@ async function downloadExcel() {
           // ✅ Campos nuevos agregados
           Latitud: rest.Latitud || "",
           Longitud: rest.Longitud || "",
+          Fecha_Envio_Formulario: rest.Fecha_Envio_Formulario ? new Date(rest.Fecha_Envio_Formulario) : "",
           Estado: Estado,
         };
       }
