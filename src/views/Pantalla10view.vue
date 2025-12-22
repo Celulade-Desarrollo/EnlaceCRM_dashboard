@@ -121,6 +121,7 @@ async function downloadExcel() {
           // ✅ Campos nuevos agregados
           Latitud: rest.Latitud || "",
           Longitud: rest.Longitud || "",
+          Fecha_Envio_Formulario: rest.Fecha_Envio_Formulario ? new Date(rest.Fecha_Envio_Formulario) : "",
           Estado: Estado,
         };
       }
@@ -162,12 +163,11 @@ async function downloadExcel() {
 
   <motion.div v-bind="fadeInUp">
     <div class="descargar-container">
-      <button  @click="downloadExcel" class="boton">
-        Descargar Excel
-      </button>
-    </div>
-    <div class="logout">
-      <button class="boton-logout" @click="logout">Cerrar sesión</button>
+<button @click="downloadExcel" class="boton">
+  <img src="/public/descargar.png" alt="Descargar Excel" class="icono-btn" />
+  Descargar Excel
+</button>
+
     </div>
      <section class="content">
       <CreditBancoCard
@@ -245,6 +245,17 @@ async function downloadExcel() {
   outline: none;
   box-shadow: none;
 }
+.boton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.icono-btn {
+  width: 20px;
+  height: 20px;
+}
+
 
 .boton:hover {
   background-color: #f15bab;
