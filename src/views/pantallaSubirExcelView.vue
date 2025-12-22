@@ -173,38 +173,38 @@ const enviarCSV = async () => {
 <template>
   <BotonAtras />
   <motion.div v-bind="fadeInUp" class="page-container">
-    <section class="logo-container">
-      <img
-        src="/public/enlaceFiado.png"
-        alt="logo Enlace CRM"
-        class="logo-main"
+<div class="card-subir-excel">
+    <div class="boton-container">
+      <input
+        ref="fileInputRef"
+        type="file"
+        @change="handleFileUpload"
+        accept=".xlsx, .xls, .csv"
+        hidden
       />
-    </section>
-
-    <p class="titulo">Hola, Administrador banco w</p>
-
-    <div class="subir-excel">
-      <div class="boton-container">
-        <input
-          ref="fileInputRef"
-          type="file"
-          @change="handleFileUpload"
-          accept=".xlsx, .xls, .csv"
-          hidden
-        />
-        <button class="boton" @click="triggerFileInput">Subir Archivo</button>
-      </div>
-      <div class="logout">
-        <button class="boton-logout" @click="logout">Cerrar sesión</button>
-      </div>
-
-      <p v-if="fileLoaded" class="mensaje">Archivo cargado y listo para enviar</p>
-      <p v-else class="mensaje">Ningún archivo cargado</p>
-
-      <div v-if="fileLoaded">
-        <button class="boton" @click="enviarCSV">Enviar</button>
-      </div>
+      <button class="boton" @click="triggerFileInput">
+        <img src="/public/archivo.png" class="icono-btn" />
+        Subir Archivo
+      </button>
     </div>
+
+    <p v-if="fileLoaded" class="mensaje ok">
+      Archivo cargado y listo para enviar
+    </p>
+    <p v-else class="mensaje">
+      Ningún archivo cargado
+    </p>
+
+    <div v-if="fileLoaded">
+      <button class="button" @click="enviarCSV">
+        <img src="/public/enviar.png" class="icono-btn" />
+        Enviar
+      </button>
+    </div>
+    <div>
+  </div>
+</div>
+
     <SesionExpiradaLogin />
   </motion.div>
 </template>
@@ -213,71 +213,108 @@ const enviarCSV = async () => {
 
 .page-container {
   display: flex;
-  flex-direction: column;
-  justify-content: center; 
-  align-items: center;
-  min-height: 100vh;
-  text-align: center;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 80px;
+  padding: 50px;
+  min-height: 70vh;
+  background-color: #5c4cb8;
+  border: 9px solid #251786;
+  margin-top: 60px;
+  flex-wrap: wrap;
+  box-sizing: border-box;
 }
 
-.logo-main {
-  width: min(180px, 80%);
-  height: auto;
-  display: inline;
-  margin-bottom: 1rem;
-}
-
-.titulo {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: white;
-  margin-bottom: 20px;
-}
 
 .mensaje {
-  font-size: 1.5rem;
-  font-weight: bold;
+  font-size: 1.2rem;
+  font-weight: 600;
   color: white;
-  margin: 15px 0;
-}
-
-.boton-logout {
-  background-color: #dd3590;
-  color: white;
-  padding: 12px 50px;
-  border: none;
-  border-radius: 20px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  outline: none;
-  box-shadow: none;
-  margin: 10px 0;
-}
-.boton-logout:hover {
-  background-color: #f15bab;
+  margin: 0 0 40px 0;
+  text-align: center;
 }
 
 
 .boton-container {
-  text-align: center;
-  margin: 30px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto 30px auto;
+  position: relative;
+}
+
+.button {
+  background-color: #dd3590;
+  color: white;
+  font-size: 1rem;
+  font-weight: 500;
+
+  width: 260px;
+  height: 55px;
+  padding: 0;
+
+  border: none;
+  outline: none;
+  border-radius: 999px;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
 
 .boton {
   background-color: #dd3590;
   color: white;
-  padding: 12px 50px;
+  font-size: 1rem;
+  font-weight: 500;
+
+  width: 260px;
+  height: 55px;
+  padding: 0;
+
+  border: none;
+  outline: none;
+  border-radius: 999px; 
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.icono-btn {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  display: block;
+}
+
+.boton:hover,
+.button:hover {
+  background-color: #f15bab;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+}
+
+.boton-logout {
+  background-color: #dd3590;
+  color: white;
+  padding: 12px 40px;
   border: none;
   border-radius: 20px;
   font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  outline: none;
-  box-shadow: none;
-  margin: 10px 0;
+  margin-top: 20px;
 }
-.boton:hover {
+
+.boton-logout:hover {
   background-color: #f15bab;
 }
+
 </style>
