@@ -21,6 +21,7 @@ const nroFacturaAlpina = facturas.join(",");
 const numeroTransportista = ref("");
 const token = localStorage.getItem("token");
 const errorMessage = ref("");
+const isLoading = ref(false);
 
 // Fechas
 const fechaActual = new Date();
@@ -39,20 +40,22 @@ function formatPesos(valor) {
 
 // ------------- FUNCIÓN PRINCIPAL -------------
 const handlePagoClick = async () => {
+  isLoading.value = true; 
   console.log("Número al presionar pagar:", numeroTransportista.value);
 
   if (!numeroTransportista.value) {
     errorMessage.value = "Por favor, ingresa el teléfono del transportista";
+    isLoading.value = false;
     return;
   }
 
   errorMessage.value = "";
 
-  // 🔥 LIMPIAR TELÉFONO PARA BD Y LOCALSTORAGE (SIN 57)
+  //  LIMPIAR TELÉFONO PARA BD Y LOCALSTORAGE (SIN 57)
   let telefono = String(numeroTransportista.value).trim();
-  telefono = telefono.replace(/^(\+57|57)/, ""); // <-- ESTA ES LA ÚNICA LÍNEA CRÍTICA
+  telefono = telefono.replace(/^(\+57|57)/, "");
 
-  // ✔️ Guardar limpio en localStorage para Pantalla 4
+  // Guardar limpio en localStorage para Pantalla 4
   localStorage.setItem("telefonoTransportista", telefono);
 
   // Datos del pago
@@ -64,13 +67,13 @@ const handlePagoClick = async () => {
     fechaPagoProgramado: fechaPagoProgramado,
     idMedioPago: 14,
     nroFacturaAlpina: nroFacturaAlpina,
-    telefonoTransportista: telefono, // <-- AHORA SIEMPRE LIMPIO
+    telefonoTransportista: telefono,
   };
 
   // WhatsApp
   const hora = new Date().toLocaleTimeString();
   const pagoFormateado = formatPesos(pagarValor);
-  const number = "57" + telefono; // <-- SOLO AQUÍ SE AGREGA 57
+  const number = "57" + telefono; // SOLO AQUÍ SE AGREGA 57
 
   const message = `${datosCuenta.Nombres} envío un pago de la factura ${nroFacturaAlpina} por el valor de ${pagoFormateado} el día ${fechaActual.toLocaleDateString()} a la hora ${hora}`;
 
@@ -97,6 +100,7 @@ const handlePagoClick = async () => {
 
     window.open("/Pantalla4View", "_parent");
   } catch (error) {
+    isLoading.value = false;
     console.error("Error al realizar el pago:", error);
   }
 };
@@ -106,7 +110,6 @@ const handlePagina2Click = () => {
   window.open("/PantallaFacturasView", "_parent");
 };
 
-// Montaje
 onMounted(() => {
   const atras = document.getElementById("boton-atras");
   if (atras) {
@@ -115,13 +118,8 @@ onMounted(() => {
 });
 </script>
 
-
-
-
 <template>
   <motion.div v-bind="fadeInUp">
-
-
     <Heading
       :mensaje="
         'Hola, ' + datosCuenta.Nombres
@@ -138,7 +136,6 @@ onMounted(() => {
         <h1 class="proveedores mb-4" id="cantidad-pagar">
           <span>{{ formatPesos(pagarValor) }}</span> a Alpina
         </h1>
-
         <div class="form-group">
           <label for="pagar" id="label-pagar" class="input-label">
             <input
@@ -160,17 +157,41 @@ onMounted(() => {
           </label>
         </div>
         <div class="button-banner-pedidos">
-          <p v-if="errorMessage" class="error-text">{{ errorMessage }}</p>
-          <button type="button" id="boton-pago" class="boton" @click="handlePagoClick">Pagar</button>
-          <button type="button" id="boton-atras" class="boton">Atrás</button>
+          <p v-if="errorMessage & !isLoading" class="error-text">{{ errorMessage }}</p>
+          <div v-if="!isLoading">
+            <button type="button" id="boton-pago" class="boton" @click="handlePagoClick">Pagar</button>
+            <button type="button" id="boton-atras" class="boton">Atrás</button>
+          </div>
+          <div v-else class="loader-container">
+            <div class="loader"></div>
+              <p>Procesando pago...</p>
+          </div>
         </div>
       </div>
     </section>
     <SesionExpirada />
   </motion.div>
-</template>
+</template> 
 
 <style scoped>
+.loader-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 1rem;
+}
+.loader{
+  border: 5px solid #5708eb;
+  border-top: 5px solid #ff00f2;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin{
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); };
+}
 .error-text {
   color: red;
   font-size: 0.99rem;
