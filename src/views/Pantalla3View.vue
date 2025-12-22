@@ -136,7 +136,6 @@ onMounted(() => {
         <h1 class="proveedores mb-4" id="cantidad-pagar">
           <span>{{ formatPesos(pagarValor) }}</span> a Alpina
         </h1>
-
         <div class="form-group">
           <label for="pagar" id="label-pagar" class="input-label">
             <input
