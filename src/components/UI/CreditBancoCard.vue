@@ -98,9 +98,11 @@ const handleSiClick = async () => {
     return;
   }
 
+  if(usuarioAprobado.value === "si"){
     const number = props.data.Numero_Cliente;
     const customer_name = props.data.Nombres
   axios.post(`https://enlace-crm.com:3000/backend/whatsapp/meta/cupo-activo/${number}/${customer_name}`)
+  }
 
   mensajeError.value = "";
   const id = props.data.IdFlujoRegistro;
