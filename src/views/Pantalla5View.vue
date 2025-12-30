@@ -187,7 +187,7 @@ onMounted(async () => {
               </div>
                <div class="info-movimiento" v-if="mov.IdTipoMovimiento === 2">
                 <div class="detalle">
-                  <p class="fecha"><strong>Fecha:</strong> {{ formatFecha(mov.FechaHoraMovimiento) }}</p>
+                  <p class="fecha"><strong>Fecha:</strong> {{ formatFechaLocal(mov.FechaHoraMovimiento) }}</p>
                   <p class="descripcion"><strong>Descripción:</strong> {{ mov.Descripcion }}</p>
                   <p class="descripcion"><strong>Factura Alpina:</strong> {{ mov.NroFacturaAlpina || 'No aplica' }}</p>
                   <p class="descripcion"><strong>Abono capital:</strong> ${{ mov.Monto}}</p>
