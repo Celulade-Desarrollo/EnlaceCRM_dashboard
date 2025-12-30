@@ -197,11 +197,11 @@ onMounted(async () => {
                 </div>
               </div>
               <p :class="['monto', mov.IdTipoMovimiento === 2 ? 'positivo' : 'negativo']">
-  {{ mov.IdTipoMovimiento === 2
-    ? '+' + formatPesos((mov.Monto || 0) + (mov.Intereses || 0) + (mov.Fees || 0))
-    : '-' + formatPesos(mov.Monto || 0) 
-  }}
-</p>
+                {{ mov.IdTipoMovimiento === 2
+                  ? '+' + formatPesos((mov.Monto || 0) + (mov.Intereses || 0) + (mov.Fees || 0))
+                  : '-' + formatPesos(mov.Monto || 0) 
+                }}
+              </p>
             </div>
           </div>
         </div>
