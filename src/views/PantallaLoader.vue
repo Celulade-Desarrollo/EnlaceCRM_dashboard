@@ -37,19 +37,20 @@ onMounted(async () => {
       localStorage.setItem("idUsuario", data.idUsuario);
       localStorage.setItem("datosCuenta", JSON.stringify(data.cuenta));
       router.push("/Pantalla1View");
-    } else if(response.status === 207) {
-        window.location.href = `https://enlace-crm.com/Terminado`;
-      console.log("Estado pendiente, redirigiendo a pantalla de pendiente");
-    }
 
-  } catch (error) {
+    } else if(response.status === 207 && data.estado === "pendiente" && data.confirmacionIdentidad === null) {
+        window.location.href = `https://enlace-crm.com/Pantalla17View`;
+        
+    } else if (response.status === 207 && data.estado === "pendiente" && data.confirmacionIdentidad === 'success'){
+      window.location.href = `https://enlace-crm.com/Terminado`;
+    }
+  } catch (error) {   
     if (error.response && error.response.status === 400) {
      redirigirAFormulario(datos);
     } else if (error.response && error.response.status === 403) {
       window.location.href = `https://enlace-crm.com/Tendero`;
     }
     else {
-      
       console.error("Error inesperado en la petición:", error);
     }
   }
