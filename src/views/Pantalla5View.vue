@@ -32,14 +32,31 @@ function formatPesos(valor) {
   }).format(valor || 0);
 }
 
-function formatFecha(fechaISO) {
-  const fecha = new Date(fechaISO);
+// function formatFecha(fechaISO) {
+//   const fecha = new Date(fechaISO);
+//   return fecha.toLocaleDateString("es-CO", {
+//     year: "numeric",
+//     month: "long",
+//     day: "numeric"
+//   });
+// }
+
+const formatFechaLocal = (fechaISO) => {
+  if (!fechaISO) return '';
+
+  const [year, month, day] = fechaISO.split('T')[0].split('-');
+  const fecha = new Date(
+    Number(year),
+    Number(month) - 1,
+    Number(day)
+  );
+
   return fecha.toLocaleDateString("es-CO", {
     year: "numeric",
     month: "long",
     day: "numeric"
   });
-}
+};
 
 const goToPantallaAbonar = () => {
   router.push("/PantallaAbonoView");
@@ -125,10 +142,19 @@ onMounted(async () => {
               </div>
             </div>
           </div>
-          <div class="progress">
-            <div id="deuda-bar" class="progress-bar deuda-bar" :style="{ width: deudaTotal + cupoTotal ? ((deudaTotal / (deudaTotal + cupoTotal)) * 100) + '%' : '0%' }"></div>
-            <div id="cupo-bar" class="progress-bar cupo-bar" :style="{ width: deudaTotal + cupoTotal ? ((cupoTotal / (deudaTotal + cupoTotal)) * 100) + '%' : '0%' }"></div>
+          <div class="pill-progress">
+            <div
+              class="pill-bar-wrapper"
+              :style="{
+                width: deudaTotal + cupoTotal
+                  ? ((deudaTotal / (deudaTotal + cupoTotal)) * 100) + '%'
+                  : '0%'
+              }"
+            >
+            <div class="pill-bar"></div>
           </div>
+        </div>
+
         </div>
 
         <!-- Botón abonar -->
@@ -149,11 +175,12 @@ onMounted(async () => {
 
               <div class="info-movimiento" v-if="mov.IdTipoMovimiento === 1">
                 <div class="detalle">
-                  <p class="fecha"><strong>Fecha:</strong> {{ formatFecha(mov.FechaHoraMovimiento) }}</p>
+                  <p class="fecha"><strong>Fecha:</strong> {{ formatFechaLocal(mov.FechaHoraMovimiento) }}</p>
                   <p class="descripcion"><strong>Descripción:</strong> {{ mov.Descripcion }}</p>
-                  <p class="descripcion"><strong>Fecha Programada del pago del crédito:</strong>
-                    {{ mov.FechaPagoProgramado ? formatFecha(mov.FechaPagoProgramado) : 'No aplica' }}
-                  </p>
+                  <p class="descripcion descripcion-nowrap">
+                  <strong>Pago crédito:</strong>
+                  {{ mov.FechaPagoProgramado ? formatFechaLocal(mov.FechaPagoProgramado) : 'No aplica' }}
+                </p>
                   <p class="descripcion"><strong>Factura Alpina:</strong> {{ mov.NroFacturaAlpina || 'No aplica' }}</p>
                   <p class="descripcion"><strong>Tel. Transportista:</strong> {{ mov.TelefonoTransportista || 'No aplica' }}</p>
                 </div>
@@ -170,11 +197,11 @@ onMounted(async () => {
                 </div>
               </div>
               <p :class="['monto', mov.IdTipoMovimiento === 2 ? 'positivo' : 'negativo']">
-  {{ mov.IdTipoMovimiento === 2
-    ? '+' + formatPesos((mov.Monto || 0) + (mov.Intereses || 0) + (mov.Fees || 0))
-    : '-' + formatPesos(mov.Monto || 0) 
-  }}
-</p>
+                {{ mov.IdTipoMovimiento === 2
+                  ? '+' + formatPesos((mov.Monto || 0) + (mov.Intereses || 0) + (mov.Fees || 0))
+                  : '-' + formatPesos(mov.Monto || 0) 
+                }}
+              </p>
             </div>
           </div>
         </div>
@@ -208,25 +235,37 @@ onMounted(async () => {
   width: 100%;
   max-width: 400px;
 }
-.progress {
-  margin-top: 10px;
-  height: 25px;
-  background-color: #ddd;
-  border-radius: 10px;
+.pill-progress {
+  width: 100%;
+  height: 11px;
+  background-color: #E5E7EB;
+  border-radius: 999px;
   overflow: hidden;
 }
-.progress-bar {
-  transition: width 0.5s ease;
+
+.pill-progress {
+  width: 100%;
+  height: 11px;
+  background-color: #E5E7EB;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.pill-bar-wrapper {
   height: 100%;
+  overflow: hidden;
+  transition: width 0.4s ease;
 }
-.deuda-bar {
-  background-color: #007bff;
-  width: 0%;
+
+.pill-bar {
+  width: 100%;
+  height: 100%;
+  background-color: #3B82F6;
+  border-radius: 999px;
 }
-.cupo-bar {
-  background-color: #0aba33;
-  width: 0%;
-}
+
+
+
 .button-banner {
   display: flex;
   justify-content: center;
@@ -256,7 +295,6 @@ button:focus {
   box-shadow: none;
 }
 
-/* NUEVO: estilos movimientos */
 .lista-movimientos {
   width: 100%;
   max-width: 400px;
@@ -297,10 +335,14 @@ button:focus {
   font-weight: bold;
   font-size: 0.9rem;
 }
+.fecha-nowrap {
+  white-space: nowrap;
+}
 .descripcion {
   font-size: 0.85rem;
   color: #555;
 }
+
 .monto {
   font-weight: bold;
   font-size: 1rem;
