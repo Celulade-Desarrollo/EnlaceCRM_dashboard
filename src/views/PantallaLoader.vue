@@ -38,13 +38,21 @@ onMounted(async () => {
       localStorage.setItem("datosCuenta", JSON.stringify(data.cuenta));
       router.push("/Pantalla1View");
 
-    } else if(response.status === 207 && data.estado === "pendiente" && data.confirmacionIdentidad === null) {
-        window.location.href = `https://enlace-crm.com/Pantalla17View`;
-        
-    } else if (response.status === 207 && data.estado === "pendiente" && data.confirmacionIdentidad === 'success'){
-      window.location.href = `https://enlace-crm.com/Terminado`;
+    } else if (
+        response.status === 207 &&
+        ["pendiente", "confirmado", "aprobado"].includes(data.estado) &&
+        data.confirmacionIdentidad === null
+      ) {
+       window.location.href = "https://enlace-crm.com/Pantalla17View";
+
+     } else if (
+        response.status === 207 &&
+        ["pendiente", "confirmado", "aprobado"].includes(data.estado) &&
+        data.confirmacionIdentidad === "success"
+      ) {
+      window.location.href = "https://enlace-crm.com/Terminado";
     }
-  } catch (error) {   
+  } catch (error) { 
     if (error.response && error.response.status === 400) {
      redirigirAFormulario(datos);
     } else if (error.response && error.response.status === 403) {
