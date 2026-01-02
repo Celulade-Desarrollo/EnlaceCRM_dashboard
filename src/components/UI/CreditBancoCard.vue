@@ -103,7 +103,8 @@ const handleSiClick = async () => {
     return;
   }
 
-  if(props.bancowData.Pagare_Digital_Enviado.value === null && pagareEnviado.value === "si"){
+  console.log(props.bancowData.Pagare_Digital_Enviado);
+  if(props.bancowData.Pagare_Digital_Enviado == null && pagareEnviado.value === "si"){
         const number = props.data.Numero_Cliente;
         const customer_name = props.data.Nombres;
         const correo = props.data.Correo_Electronico || "";
