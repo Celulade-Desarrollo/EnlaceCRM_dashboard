@@ -52,7 +52,7 @@ onMounted(async () => {
       ) {
       window.location.href = "https://enlace-crm.com/Terminado";
     }
-  } catch (error) {   
+  } catch (error) { 
     if (error.response && error.response.status === 400) {
      redirigirAFormulario(datos);
     } else if (error.response && error.response.status === 403) {

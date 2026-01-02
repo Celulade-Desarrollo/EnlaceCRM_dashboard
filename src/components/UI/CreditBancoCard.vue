@@ -98,10 +98,17 @@ const handleSiClick = async () => {
     return;
   }
 
+  if(pagareDigital.value === "si"){
+    const number = props.data.Numero_Cliente;
+    const customer_name = props.data.Nombres;
+    const correo = props.data.Correo || "";
+    await axios.post(`https://enlace-crm.com:3000/backend/whatsapp/meta/firma-digital/${number}/${customer_name}/${correo}`)
+  }
+
   if(usuarioAprobado.value === "si"){
     const number = props.data.Numero_Cliente;
     const customer_name = props.data.Nombres
-  axios.post(`https://enlace-crm.com:3000/backend/whatsapp/meta/cupo-activo/${number}/${customer_name}`)
+    await axios.post(`https://enlace-crm.com:3000/backend/whatsapp/meta/cupo-activo/${number}/${customer_name}`)
   }
 
   mensajeError.value = "";
@@ -215,7 +222,11 @@ const handleAprobadoClick = async () => {
   } else if (cupoAprobado.value === 'No' || cupoAprobado.value === 'no') {
     payloadPut.Estado = "negado";
   }
+
+
   console.log("Payload que se va a enviar al put:", payloadPut,);
+
+
 
   try{
     await axios.post('/api/bancow', 
