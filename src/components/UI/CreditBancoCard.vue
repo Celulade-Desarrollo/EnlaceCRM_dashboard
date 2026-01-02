@@ -98,10 +98,10 @@ const handleSiClick = async () => {
     return;
   }
 
-  if(pagareDigital.value === "si"){
+  if(pagareEnviado.value === "si"){
     const number = props.data.Numero_Cliente;
     const customer_name = props.data.Nombres;
-    const correo = props.data.Correo || "";
+    const correo = props.data.Correo_Electronico || "";
     await axios.post(`https://enlace-crm.com:3000/backend/whatsapp/meta/firma-digital/${number}/${customer_name}/${correo}`)
   }
 
