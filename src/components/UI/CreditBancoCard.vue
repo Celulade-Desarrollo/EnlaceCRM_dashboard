@@ -51,17 +51,22 @@ onMounted(() => {
 
   if (registro) {
     bancoListas.value = registro.Validacion_Banco_listas || null;
+    bancoListas.value = registro.Validacion_Banco_listas || null;
     precargado.bancoListas.value = !!registro.Validacion_Banco_listas;
 
+    cupoAprobado.value = registro.Aprobacion_Cupo_sugerido || null;
     cupoAprobado.value = registro.Aprobacion_Cupo_sugerido || null;
     precargado.cupoAprobado.value = !!registro.Aprobacion_Cupo_sugerido;
 
     pagareDigital.value = registro.Pagare_Digital_Firmado || null;
+    pagareDigital.value = registro.Pagare_Digital_Firmado || null;
     precargado.pagareDigital.value = !!registro.Pagare_Digital_Firmado;
 
     pagareEnviado.value = registro.Pagare_Digital_Enviado || null;
+    pagareEnviado.value = registro.Pagare_Digital_Enviado || null;
     precargado.pagareEnviado.value = !!registro.Pagare_Digital_Enviado;
 
+    usuarioAprobado.value = registro.UsuarioAprobado || null;
     usuarioAprobado.value = registro.UsuarioAprobado || null;
     precargado.usuarioAprobado.value = !!registro.UsuarioAprobado;
   }
@@ -104,6 +109,7 @@ const handleSiClick = async () => {
         const correo = props.data.Correo_Electronico || "";
         await axios.post(`https://enlace-crm.com:3000/backend/whatsapp/meta/firma-digital/${number}/${customer_name}/${correo}`)
   }
+  
   
 
   if(usuarioAprobado.value === "si"){
