@@ -51,17 +51,22 @@ onMounted(() => {
 
   if (registro) {
     bancoListas.value = registro.Validacion_Banco_listas || null;
+    bancoListas.value = registro.Validacion_Banco_listas || null;
     precargado.bancoListas.value = !!registro.Validacion_Banco_listas;
 
+    cupoAprobado.value = registro.Aprobacion_Cupo_sugerido || null;
     cupoAprobado.value = registro.Aprobacion_Cupo_sugerido || null;
     precargado.cupoAprobado.value = !!registro.Aprobacion_Cupo_sugerido;
 
     pagareDigital.value = registro.Pagare_Digital_Firmado || null;
+    pagareDigital.value = registro.Pagare_Digital_Firmado || null;
     precargado.pagareDigital.value = !!registro.Pagare_Digital_Firmado;
 
     pagareEnviado.value = registro.Pagare_Digital_Enviado || null;
+    pagareEnviado.value = registro.Pagare_Digital_Enviado || null;
     precargado.pagareEnviado.value = !!registro.Pagare_Digital_Enviado;
 
+    usuarioAprobado.value = registro.UsuarioAprobado || null;
     usuarioAprobado.value = registro.UsuarioAprobado || null;
     precargado.usuarioAprobado.value = !!registro.UsuarioAprobado;
   }
@@ -98,12 +103,13 @@ const handleSiClick = async () => {
     return;
   }
 
-  if(props.bancowData.Pagare_Digital_Enviado === null && pagareEnviado.value === "si"){
+  if(props.bancowData.Pagare_Digital_Enviado.value === null && pagareEnviado.value === "si"){
         const number = props.data.Numero_Cliente;
         const customer_name = props.data.Nombres;
         const correo = props.data.Correo_Electronico || "";
         await axios.post(`https://enlace-crm.com:3000/backend/whatsapp/meta/firma-digital/${number}/${customer_name}/${correo}`)
   }
+  
   
 
   if(usuarioAprobado.value === "si"){
@@ -750,3 +756,4 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 
 </style>
+
