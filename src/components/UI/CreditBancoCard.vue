@@ -7,7 +7,7 @@ const props = defineProps({
     type: Object,
     required: true,
     default: () => ({
-      cedula: "", 
+      cedula: "",
     }),
   },
   bancowData: {
@@ -49,19 +49,25 @@ onMounted(() => {
     item => item.IdFlujoRegistro === props.data.IdFlujoRegistro
   );
 
+
   if (registro) {
+    bancoListas.value = registro.Validacion_Banco_listas || "";
     bancoListas.value = registro.Validacion_Banco_listas || "";
     precargado.bancoListas.value = !!registro.Validacion_Banco_listas;
 
     cupoAprobado.value = registro.Aprobacion_Cupo_sugerido || "";
+    cupoAprobado.value = registro.Aprobacion_Cupo_sugerido || "";
     precargado.cupoAprobado.value = !!registro.Aprobacion_Cupo_sugerido;
 
+    pagareDigital.value = registro.Pagare_Digital_Firmado || "";
     pagareDigital.value = registro.Pagare_Digital_Firmado || "";
     precargado.pagareDigital.value = !!registro.Pagare_Digital_Firmado;
 
     pagareEnviado.value = registro.Pagare_Digital_Enviado || "";
+    pagareEnviado.value = registro.Pagare_Digital_Enviado || "";
     precargado.pagareEnviado.value = !!registro.Pagare_Digital_Enviado;
 
+    usuarioAprobado.value = registro.UsuarioAprobado || "";
     usuarioAprobado.value = registro.UsuarioAprobado || "";
     precargado.usuarioAprobado.value = !!registro.UsuarioAprobado;
   }
@@ -98,14 +104,14 @@ const handleSiClick = async () => {
     return;
   }
 
-  if(pagareDigital.value === "si"){
-    const number = props.data.Numero_Cliente;
-    const customer_name = props.data.Nombres;
-    const correo = props.data.Correo || "";
-    await axios.post(`https://enlace-crm.com:3000/backend/whatsapp/meta/firma-digital/${number}/${customer_name}/${correo}`)
+  if(pagareEnviado.value === "si" && !precargado.pagareEnviado.value){
+        const number = props.data.Numero_Cliente;
+        const customer_name = props.data.Nombres;
+        const correo = props.data.Correo_Electronico || "";
+        await axios.post(`https://enlace-crm.com:3000/backend/whatsapp/meta/firma-digital/${number}/${customer_name}/${correo}`)
   }
-
-  if(usuarioAprobado.value === "si"){
+  
+  if(usuarioAprobado.value === "si" && !precargado.usuarioAprobado.value){
     const number = props.data.Numero_Cliente;
     const customer_name = props.data.Nombres
     await axios.post(`https://enlace-crm.com:3000/backend/whatsapp/meta/cupo-activo/${number}/${customer_name}`)
@@ -749,3 +755,5 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 
 </style>
+
+
