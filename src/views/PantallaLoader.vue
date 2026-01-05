@@ -41,7 +41,7 @@ onMounted(async () => {
     } else if (
         response.status === 207 &&
         ["pendiente", "confirmado", "aprobado"].includes(data.estado) &&
-        data.confirmacionIdentidad === null
+        data.confirmacionIdentidad === null || data.confirmacionIdentidad === "failure"
       ) {
        window.location.href = "https://enlace-crm.com/Pantalla17View";
 
