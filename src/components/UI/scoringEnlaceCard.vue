@@ -81,13 +81,13 @@ onMounted(() => {
     camposDeshabilitados.value = false;
     confirmacionHabilitada.value = false;
   }
-  // 🟢 Cargar confirmación del cliente SOLO si ya existe
+
 if (registro?.Cliente_Acepto === 'si' || registro?.Cliente_Acepto === 'SI') {
   confirmado.value = 'si';
 } else if (registro?.Cliente_Acepto === 'no' || registro?.Cliente_Acepto === 'NO') {
   confirmado.value = 'no';
 } else {
-  confirmado.value = null; // no mostrar nada al entrar
+  confirmado.value = null;
 }
 
 });
@@ -105,7 +105,6 @@ const puedeConfirmar = computed(() => {
   return camposLlenos && aprobadoBanco;
 });
 
-// ✅ no tocamos nada más desde aquí hacia abajo
 
 const handleconfirmado = async () => {
   if (!confirmado.value) {
