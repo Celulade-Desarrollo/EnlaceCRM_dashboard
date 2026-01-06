@@ -28,7 +28,9 @@ const localCupo = ref("");
 const localLatitud = ref("");
 const localLongitud = ref("");
 const mensajeError = ref("");
-const confirmado = ref("");
+const confirmado = ref("no");
+
+
 
 // Control de estados UI
 const camposDeshabilitados = ref(false);
@@ -80,6 +82,14 @@ onMounted(() => {
     camposDeshabilitados.value = false;
     confirmacionHabilitada.value = false;
   }
+
+if (registro?.Cliente_Acepto === 'si' || registro?.Cliente_Acepto === 'SI') {
+  confirmado.value = 'si';
+} else {
+  confirmado.value = 'no';
+}
+
+
 });
 
 const puedeConfirmar = computed(() => {
@@ -95,7 +105,14 @@ const puedeConfirmar = computed(() => {
   return camposLlenos && aprobadoBanco;
 });
 
-// ✅ no tocamos nada más desde aquí hacia abajo
+const datosCompletos = computed(() => {
+  return (
+    precargado.localScoring.value &&
+    precargado.localCupo.value &&
+    precargado.localLatitud.value &&
+    precargado.localLongitud.value
+  );
+});
 
 const handleconfirmado = async () => {
   if (!confirmado.value) {
@@ -185,6 +202,11 @@ const handleScoringCupo = async () => {
         "Content-Type": "application/json",
       },
     });
+// ✅ AQUÍ VA ESTO
+precargado.localScoring.value = true;
+precargado.localCupo.value = true;
+precargado.localLatitud.value = true;
+precargado.localLongitud.value = true;
 
     window.location.reload();
   } catch (error) {
@@ -289,16 +311,22 @@ function formatCurrency(event) {
               />
             </td>
             <td>
-              <select
-                class="tabla-input"
-                v-model="confirmado"
-                :disabled="!puedeConfirmar">
-                <option value="" selected>Selecciona una opción</option>
-                <option value="si">Sí</option>
-              </select>
-              <p v-if="!puedeConfirmar" class="nota">
-                Asegúrate de guardar Scoring, Cupo, Latitud y Longitud, y que el banco haya aprobado.
-              </p>
+
+  <template v-if="!datosCompletos">
+  </template>
+
+  <template v-else-if="confirmado === 'no'">
+    <span class="estado-confirmacion estado-no">NO</span>
+    <p class="nota">Pendiente por respuesta del cliente.</p>
+  </template>
+
+  <template v-else>
+    <span class="estado-confirmacion estado-si">SÍ</span>
+  </template>
+<p v-if="!datosCompletos" class="nota">
+  Asegúrate de guardar Scoring, Cupo, Latitud y Longitud, y que el banco haya aprobado.
+</p>
+
             </td>
           </tr>
         </tbody>
@@ -346,6 +374,26 @@ input:disabled {
   background-color: #fefefe;
   font-family: sans-serif;
 }
+.estado-confirmacion {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 0.95rem;
+}
+
+.estado-no {
+  background-color: #fdecea;
+  color: #d93025;
+  border: 2px solid #d93025;
+}
+
+.estado-si {
+  background-color: #e6f7ee;
+  color: #1e8e5a;
+  border: 2px solid #1e8e5a;
+}
+
 
 .cedula {
   background-color: #f0f0f0;
