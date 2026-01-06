@@ -28,7 +28,8 @@ const localCupo = ref("");
 const localLatitud = ref("");
 const localLongitud = ref("");
 const mensajeError = ref("");
-const confirmado = ref("");
+const confirmado = ref(null);
+
 
 // Control de estados UI
 const camposDeshabilitados = ref(false);
@@ -80,6 +81,15 @@ onMounted(() => {
     camposDeshabilitados.value = false;
     confirmacionHabilitada.value = false;
   }
+
+if (registro?.Cliente_Acepto === 'si' || registro?.Cliente_Acepto === 'SI') {
+  confirmado.value = 'si';
+} else if (registro?.Cliente_Acepto === 'no' || registro?.Cliente_Acepto === 'NO') {
+  confirmado.value = 'no';
+} else {
+  confirmado.value = null;
+}
+
 });
 
 const puedeConfirmar = computed(() => {
@@ -95,7 +105,6 @@ const puedeConfirmar = computed(() => {
   return camposLlenos && aprobadoBanco;
 });
 
-// ✅ no tocamos nada más desde aquí hacia abajo
 
 const handleconfirmado = async () => {
   if (!confirmado.value) {
@@ -289,13 +298,14 @@ function formatCurrency(event) {
               />
             </td>
             <td>
-              <select
-                class="tabla-input"
-                v-model="confirmado"
-                :disabled="!puedeConfirmar">
-                <option value="" selected>Selecciona una opción</option>
-                <option value="si">Sí</option>
-              </select>
+<select
+  class="tabla-input"
+  v-model="confirmado"
+  :disabled="!puedeConfirmar">
+  <option value="">Selecciona una opción</option>
+  <option value="si">Sí</option>
+</select>
+
               <p v-if="!puedeConfirmar" class="nota">
                 Asegúrate de guardar Scoring, Cupo, Latitud y Longitud, y que el banco haya aprobado.
               </p>
