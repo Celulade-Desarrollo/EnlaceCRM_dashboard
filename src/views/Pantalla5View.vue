@@ -192,7 +192,7 @@ onMounted(async () => {
                   <p class="descripcion"><strong>Factura Alpina:</strong> {{ mov.NroFacturaAlpina || 'No aplica' }}</p>
                   <p class="descripcion"><strong>Abono capital:</strong> ${{ mov.Monto}}</p>
                   <p class="descripcion"><strong>Intereses:</strong> ${{ mov.Intereses}}</p>
-                  <p class="descripcion"><strong>Fees:</strong> ${{ mov.Fees }}</p>
+                  <p class="descripcion"><strong>Seguros:</strong> ${{ mov.Fees }}</p>
 
                 </div>
               </div>
