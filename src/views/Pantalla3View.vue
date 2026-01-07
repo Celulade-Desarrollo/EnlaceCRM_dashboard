@@ -8,6 +8,9 @@ import axios from "axios";
 import SesionExpirada from "../components/UI/SesionExpirada.vue";
 import { activarSesionExpirada } from "../stores/session.js";
 
+const showModal = ref(false);
+const modalMessage = ref("");
+
 const whatsappURL = "/whatsapp/send-message";
 
 // Router
@@ -38,6 +41,14 @@ function formatPesos(valor) {
   }).format(valor || 0);
 }
 
+const mostrarModal = (mensaje) =>{
+  modalMessage.value = mensaje;
+  showModal.value = true;
+
+  setTimeout(() => {
+    showModal.value = false;
+  }, 3000);
+};
 // ------------- FUNCIÓN PRINCIPAL -------------
 const handlePagoClick = async () => {
   isLoading.value = true; 
@@ -70,39 +81,44 @@ const handlePagoClick = async () => {
     telefonoTransportista: telefono,
   };
 
-  // WhatsApp
-  const hora = new Date().toLocaleTimeString();
-  const pagoFormateado = formatPesos(pagarValor);
-  const number = "57" + telefono; // SOLO AQUÍ SE AGREGA 57
-
-  const message = `${datosCuenta.Nombres} envío un pago de la factura ${nroFacturaAlpina} por el valor de ${pagoFormateado} el día ${fechaActual.toLocaleDateString()} a la hora ${hora}`;
-
-  axios.post(
-    whatsappURL,
-    { number, message },
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    }
-  );
-
-  console.log("datosPagoFactura:", dataPagoFactura);
-
   try {
-    await axios.post("/api/movimientos", dataPagoFactura, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
+      // registrar el pago
+      await axios.post("/api/movimientos", dataPagoFactura, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
 
-    window.open("/Pantalla4View", "_parent");
-  } catch (error) {
-    isLoading.value = false;
-    console.error("Error al realizar el pago:", error);
-  }
+      //  si fue exitoso enviar WhatsApp
+      const hora = new Date().toLocaleTimeString();
+      const pagoFormateado = formatPesos(pagarValor);
+      const number = "57" + telefono;
+
+      const message = `${datosCuenta.Nombres} envío un pago de la factura ${nroFacturaAlpina} por el valor de ${pagoFormateado} el día ${fechaActual.toLocaleDateString()} a la hora ${hora}`;
+
+      await axios.post(
+        whatsappURL,
+        { number, message },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      window.open("/Pantalla4View", "_parent");
+
+    } catch (error) {
+      isLoading.value = false;
+
+      if (error.response?.data?.mensaje) {
+        mostrarModal(error.response.data.mensaje);
+      } else {
+        mostrarModal("Ocurrió un error inesperado.");
+      }
+    }
 };
 
 // Atrás
@@ -110,12 +126,6 @@ const handlePagina2Click = () => {
   window.open("/PantallaFacturasView", "_parent");
 };
 
-onMounted(() => {
-  const atras = document.getElementById("boton-atras");
-  if (atras) {
-    atras.addEventListener("click", handlePagina2Click);
-  }
-});
 </script>
 
 <template>
@@ -160,7 +170,7 @@ onMounted(() => {
           <p v-if="errorMessage & !isLoading" class="error-text">{{ errorMessage }}</p>
           <div v-if="!isLoading">
             <button type="button" id="boton-pago" class="boton" @click="handlePagoClick">Pagar</button>
-            <button type="button" id="boton-atras" class="boton">Atrás</button>
+            <button type="button" id="boton-atras" class="boton" @click="handlePagina2Click">Atrás</button>
           </div>
           <div v-else class="loader-container">
             <div class="loader"></div>
@@ -170,10 +180,54 @@ onMounted(() => {
       </div>
     </section>
     <SesionExpirada />
+    <div v-if="showModal" class="modal-overlay">
+      <div class="modal-box">
+        <p>{{ modalMessage }}</p>
+      </div>
+    </div>
   </motion.div>
 </template> 
 
 <style scoped>
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.modal-box {
+  background: #fff;
+  padding: 24px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.modal-box h3 {
+  margin-bottom: 12px;
+  font-size: 20px;
+}
+
+.modal-box p {
+  margin-bottom: 20px;
+  color: #444;
+}
+
+
+
+
+
+
+
+
 .loader-container {
   display: flex;
   flex-direction: column;
