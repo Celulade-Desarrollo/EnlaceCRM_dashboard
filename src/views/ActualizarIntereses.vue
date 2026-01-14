@@ -1,10 +1,6 @@
 <template>
-  <div class="movimientos-container">
-    <section class="logo-container">
-      <img src="/public/enlaceFiado.png" alt="logo Enlace CRM" class="logo-main" />
-      <!-- <Heading :mensaje="'Hola, Administrador'" /> -->
-    </section>
-    
+     <HeadingEnlace />
+<div class="movimientos-container">
     <div v-if="movimientos.length" v-for="movimiento in movimientos" :key="movimiento.IdMovimiento" class="movimiento-card">
       <div class="card-header">
         <h3>Movimiento #{{ movimiento.IdMovimiento }}</h3>
@@ -158,7 +154,7 @@
             </button>
           </template>
           <template v-else>
-            <button @click="iniciarEdicion(movimiento)" class="bg-[#dd3590] text-white p-2 pl-4 pr-4 rounded-xl">Actualizar Saldo</button>
+            <button @click="iniciarEdicion(movimiento)" class="bg-[#5A44D1] text-white p-2 pl-4 pr-4 rounded-xl">Actualizar Saldo</button>
           </template>
         </div>
       </div>
@@ -169,6 +165,7 @@
 <script setup>
 import { ref, watch, onMounted } from 'vue'
 import axios from 'axios'
+import HeadingEnlace from '../components/UI/headingEnlace.vue'
 
 
 const movimientos = ref([])
@@ -274,52 +271,58 @@ onMounted(obtenerMovimientos)
 </script>
 
 <style scoped>
-
-
-p{
-  padding: 2px
+p {
+  padding: 0.2rem;
 }
 
 .titulo {
-  font-size: 1.5rem;
+  font-size: clamp(1.2rem, 2vw, 1.5rem); /* se adapta al tamaño de pantalla */
   font-weight: bold;
-  color:white;
-  margin-bottom: 10px;
+  color: white;
+  margin-bottom: 1rem;
 }
+
 .logout {
   display: flex;
-  justify-content: right;
+  justify-content: flex-end;
   margin-top: 1rem;
 }
+
 .boton-logout {
-  padding: 10px 30px;
-  font-size: 15px;
+  padding: 0.6rem 2rem;
+  font-size: clamp(0.8rem, 1vw, 1rem);
   border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
-  background: #dd3590;
+  background: #5A44D1;
   color: #fff;
   outline: none;
   border: none;
+  transition: background 0.3s;
 }
+
 .boton-logout:hover {
-  background-color: #f15bab;
+  background-color: #5A44D1;
 }
+
 .logo-container {
   text-align: center;
   margin-block: 1.5rem;
 }
 
 .logo-main {
-  width: min(180px, 80%);
+  width: clamp(120px, 30%, 180px); /* ancho adaptativo */
   height: auto;
-  display: inline;
+  display: inline-block;
 }
+
 .movimientos-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 1rem;
   padding: 1rem;
+    max-width:500px;
+  margin: 0 auto;
 }
 
 .movimiento-card {
@@ -329,6 +332,11 @@ p{
   background-color: white;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   position: relative;
+  transition: transform 0.2s;
+}
+
+.movimiento-card:hover {
+  transform: translateY(-3px);
 }
 
 .card-header {
@@ -339,12 +347,13 @@ p{
 
 .card-header h3 {
   margin: 0;
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
   color: #2c3e50;
 }
 
 .fecha {
   color: #666;
-  font-size: 0.9rem;
+  font-size: clamp(0.8rem, 1vw, 0.9rem);
 }
 
 .card-body {
@@ -352,7 +361,8 @@ p{
 }
 
 .card-body p {
-  margin: 0.5rem 0;
+  margin: 0.3rem 0;
+  font-size: clamp(0.8rem, 1vw, 0.95rem);
 }
 
 strong {
@@ -362,49 +372,35 @@ strong {
 .botones {
   margin-top: 1rem;
   display: flex;
+  flex-wrap: wrap; /* se envían a la siguiente línea en pantallas pequeñas */
   gap: 0.5rem;
 }
 
 .btn-editar,
 .btn-actualizar,
 .btn-cancelar {
-  padding: 0.5rem 1rem;
+  padding: 0.4rem 0.8rem;
   border-radius: 4px;
   border: none;
   cursor: pointer;
   font-weight: bold;
+  font-size: clamp(0.75rem, 1vw, 0.9rem);
 }
 
-.btn-editar {
-  background-color: #3498db;
-  color: white;
-}
-
-.btn-actualizar {
-  background-color: #2ecc71;
-  color: white;
-}
-
-.btn-cancelar {
-  background-color: #e74c3c;
-  color: white;
-}
+.btn-editar { background-color: #3498db; color: white; }
+.btn-actualizar { background-color: #2ecc71; color: white; }
+.btn-cancelar { background-color: #e74c3c; color: white; }
 
 .monto-input {
-  width: 120px;
+  width: 100%;
+  max-width: 120px;
   padding: 0.3rem;
   border: 1px solid #ddd;
   border-radius: 4px;
 }
 
-button:hover {
-  opacity: 0.9;
-}
-
-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
+button:hover { opacity: 0.9; }
+button:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* Overlay y spinner */
 .card-overlay {
@@ -427,7 +423,11 @@ button:disabled {
   animation: spin 1s linear infinite;
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 500px) {
+  .titulo { text-align: center; }
+  .logout { justify-content: center; margin-top: 0.5rem; }
+  .botones { justify-content: center; }
 }
 </style>

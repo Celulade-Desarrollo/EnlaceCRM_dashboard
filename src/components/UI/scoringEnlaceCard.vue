@@ -488,13 +488,13 @@ input:disabled {
   border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
-  background: #dd3590;
+  background: #5A44D1;
   color: #fff;
   outline: none;
   border: none;
 }
 
 .boton-enviar:hover {
-  background-color: #f15bab;
+  background-color: #3A2CA8;
 }
 </style>
