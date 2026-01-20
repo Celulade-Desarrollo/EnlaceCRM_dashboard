@@ -141,7 +141,7 @@ onMounted(async () => {
               </h3>
             </div>  -->
             <h2 class="centered-title">
-              Corresponsales y oficinas cerca de ti
+              Puedes realizar tus pagos en corresponsales Efecty y oficinas del Banco w cerca de ti 
             </h2>
             <div
               id="map"

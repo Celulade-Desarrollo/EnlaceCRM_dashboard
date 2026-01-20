@@ -147,6 +147,12 @@ const routes = [
   name: "PantallaDistribuidores",
   component: () => import("../views/PantallaDistribuidoresview.vue"),
   meta: { requiresAuth: true,  role: "admin" },
+  },
+  {
+  path: "/PantallaBajarDispercionView",
+  name: "PantallaBajarDispercion",
+  component: () => import("../views/PantallaBajarDispercion.vue"),
+  meta: { requiresAuth: true,  role: "admin", empresa: "bancow" },
   }
   
 ];
