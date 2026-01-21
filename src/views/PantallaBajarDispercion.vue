@@ -2,16 +2,25 @@
 import { onMounted, ref, computed } from 'vue'
 import axios from 'axios'
 import BotonAtras from "../components/UI/BotonAtras.vue"
+import { fadeInUp } from "../motion/pageAnimation";
+import { motion } from "motion-v";
+import * as XLSX from "xlsx";
+import SesionExpiradaLogin from "../components/UI/SesionExpiradaLogin.vue";
+import { activarSesionExpirada } from "../stores/session.js"
 
-const mesSeleccionado = ref('Enero')
+const mesAnoSeleccionado = ref(new Date().toISOString().slice(0,7));
 
 const meses = [
   'Enero', 'Febrero', 'Marzo', 'Abril',
   'Mayo', 'Junio', 'Julio', 'Agosto',
   'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-]
+];
 
 const dispersiones = ref([])
+const confirmacionBanco = ref("");
+const mensajeError = ref("");
+const dispersionId = ref(null);
+const token = localStorage.getItem("admin_token");
 
 const mesANumero = (mes) => ({
   Enero: 0, Febrero: 1, Marzo: 2, Abril: 3,
@@ -26,81 +35,207 @@ const formatearMiles = (valor) => {
 
 const limpiarNumero = (valor) => valor.replace(/\./g, '')
 
-const filasFiltradas = computed(() => {
-  const mes = mesANumero(mesSeleccionado.value)
-  return dispersiones.value.filter(d => {
-    if (!d.fecha) return false
-    return new Date(d.fecha).getMonth() === mes
-  })
-})
 
-const guardar = () => {
-  console.log('Datos guardados:', dispersiones.value)
+const filasFiltradas = computed(() => {
+  return dispersiones.value.filter(d => {
+    if (!d.fecha) return false;
+    const fecha = new Date(d.fecha);
+    const fechaString = `${fecha.getFullYear()}-${String(fecha.getMonth()+1).padStart(2, '0')}`;
+    return fechaString === mesAnoSeleccionado.value;
+  });
+});
+
+async function downloadExcel() {
+  try {
+    const response = await axios.get("/api/listar/dispersion", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data = response.data;
+    
+    const dataArray = Array.isArray(data) ? data : [data];
+
+    // ✅ Se agregan Latitud y Longitud sin modificar nada más
+
+    const worksheet = XLSX.utils.json_to_sheet(dataArray);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Datos");
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    const blob = new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "historicoDispersiones.xlsx");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error("Error al generar Excel:", error);
+    alert("No se pudo descargar el archivo");
+    if (error.response?.status === 401) {
+      activarSesionExpirada();
+    }
+  }
+};
+const handleguardarConfirmar = async () => {
+    if (!confirmacionBanco.value) {
+    mensajeError.value = "Por favor, confirma la dispersión";
+    return;
+  }
+
+  if (!dispersionId.value) {
+    mensajeError.value = "No se encontró la dispersión";
+    return;
+  }
+
+  mensajeError.value = "";
+
+  const payloadPut = {
+    estado: true
+  };
+
+  console.log("ID:", dispersionId.value);
+  console.log("Payload que se va a enviar:", payloadPut);
+
+  try {
+    await axios.put(`/api/editar-dispersion/estadoBanco/${dispersionId.value}`,
+      payloadPut,
+      {
+        headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      }
+    );
+
+    window.location.reload();
+
+  } catch (error) {
+    console.error("Error al guardar confirmación:", error);
+     if (error.response?.status === 401) {
+      activarSesionExpirada();
+    }
+  }
 }
 
 onMounted(async () => {
   try {
-    const dispersionesData = await axios.get("/api/listar/dispersion",
-      // {
-      //   headers: {
-      //       Authorization: `Bearer ${token}`,
-      //       "Content-Type": "application/json"
-      //   }
-      // }
+    const dispersionesData = await axios.get("/api/listar/dispersion", 
+      {
+          headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
     )
     dispersiones.value = dispersionesData.data.map(fila => ({
       ...fila,
-      confirmacion: fila.banco_status === null ? 'No confirmado' : 'Confirmado'
+      confirmacion: fila.banco_status === true ? true : false
     }))
     console.log("dispersiones", dispersionesData.data)
   } catch (error) {
     console.error("Error cargando dispersiones", error)
+     if (error.response?.status === 401) {
+      activarSesionExpirada();
+    }
   }
 });
 </script>
 
 <template>
   <BotonAtras />
-
-  <div class="contenedor">
-    <div class="top">
-      <div class="box">
-        <span class="label-mes">Mes</span>
-        <select v-model="mesSeleccionado" class="select-mes">
-          <option v-for="mes in meses" :key="mes" :value="mes">
-            {{ mes }}
-          </option>
-        </select>
-      </div>
-    </div>
-    <div class="tabla">
-      <div class="thead">
-        <div>Fecha</div>
-        <div>Recaudo</div>
-        <div>Dispersión</div>
-        <div>Confirmación</div>
-      </div>
-      <div class="row" v-for="fila in filasFiltradas" :key="fila.id">
-        <div class="celda-valor">{{ fila.fecha.split('T')[0] }}</div>
-        <div class="celda-valor">{{ formatearMiles(fila.recaudo) }}</div>
-        <div class="celda-valor">{{ fila.dispersion }}</div>
-        <div>
-          <select v-model="fila.confirmacion">
-            <option value="No confirmado">No confirmado</option>
-            <option value="Confirmado">Confirmado</option>
-          </select>
-        </div>
-      </div>
-    </div>
-    <div class="acciones">
-      <button class="btn primary" @click="guardar">
-        Guardar
+  <motion.div v-bind="fadeInUp">
+    <div class="descargar-container">
+      <button @click="downloadExcel" class="boton">
+        <img src="/public/descargar.png" alt="Descargar Excel" class="icono-btn" />
+        Descargar Excel
       </button>
     </div>
-  </div>
+    <div class="contenedor">
+      <div class="top">
+        <div class="box">
+          <span class="label-mes">Mes y Año</span>
+            <input 
+              type="month" 
+              v-model="mesAnoSeleccionado" 
+              class="select-mes"
+            />
+        </div>
+      </div>
+      <div class="tabla">
+        <div class="thead">
+          <div>Fecha</div>
+          <div>Recaudo</div>
+          <div>Dispersión</div>
+          <div>Confirmación</div>
+        </div>
+        <div class="row" v-for="fila in filasFiltradas" :key="fila.id">
+          <div class="celda-valor">{{ fila.fecha.split('T')[0] }}</div>
+          <div class="celda-valor">{{ formatearMiles(fila.recaudo) }}</div>
+          <div class="celda-valor">{{ fila.dispersion }}</div>
+          <div>
+            <select
+              class="form-control text-center"
+              v-model="confirmacionBanco"
+              @change="dispersionId = fila.id"
+            >
+              <option value="">Selecciona</option>
+              <option value="si">Confirmado</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="acciones">
+        <button class="btn primary" @click="handleguardarConfirmar">
+          Guardar
+        </button>
+      </div>
+    </div>
+  <SesionExpiradaLogin />
+  </motion.div>
 </template>
 
 <style scoped>
+.descargar-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+.boton {
+  background-color: #dd3590;
+  color: white;
+  padding: 12px 50px;
+  border: none;
+  border-radius: 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  outline: none;
+  box-shadow: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+} 
+.boton:hover {
+  background-color: #f15bab;
+}
+.icono-btn {
+  width: 20px;
+  height: 20px;
+}
 /* CONTENEDOR */
 .contenedor {
   width: 700px;
