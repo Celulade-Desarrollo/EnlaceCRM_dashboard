@@ -58,9 +58,17 @@ async function downloadExcel() {
     
     const dataArray = Array.isArray(data) ? data : [data];
 
-    // ✅ Se agregan Latitud y Longitud sin modificar nada más
+     const formattedData = dataArray.map(item => ({
+      ...item,
+      tesoreria_status: item.tesoreria_status === true
+        ? "Confirmado"
+        : "No confirmado",
+      banco_status: item.banco_status === true
+        ? "Confirmado"
+        : "No confirmado",
+    }));
 
-    const worksheet = XLSX.utils.json_to_sheet(dataArray);
+    const worksheet = XLSX.utils.json_to_sheet(formattedData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Datos");
 
@@ -201,6 +209,9 @@ onMounted(async () => {
         <button class="btn primary" @click="handleguardarConfirmar">
           Guardar
         </button>
+      </div>
+      <div v-if="mensajeError" style="color: red; margin-bottom: 1rem; text-align: center;">
+        {{ mensajeError }}
       </div>
     </div>
   <SesionExpiradaLogin />
