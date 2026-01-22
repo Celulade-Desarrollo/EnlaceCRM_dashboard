@@ -60,8 +60,9 @@ async function downloadExcel() {
 
      const formattedData = dataArray.map(item => ({
       ...item,
+      
       tesoreria_status: item.tesoreria_status === true
-        ? "Confirmado"
+        ? "Confirmado"  
         : "No confirmado",
       banco_status: item.banco_status === true
         ? "Confirmado"
