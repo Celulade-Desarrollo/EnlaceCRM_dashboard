@@ -7,6 +7,7 @@ const router = useRouter();
 const goToRegistro = () => router.push("/Pantalla10View");
 const goToPagos = () => router.push("/PantallaPagos");
 const goToAbonos = () => router.push("/PantallasubirExcelView");
+const gotoDispercion = () => router.push("/PantallaBajarDispercionView");
 </script>
 
 <template>
@@ -48,15 +49,23 @@ const goToAbonos = () => router.push("/PantallasubirExcelView");
         abonos a créditos realizados por los tenderos
       </div>
     </div>
+
+     <div class="card">
+      <button class="btn" @click="gotoDispercion">
+        <!-- <img src="/abonos.png" alt="abonos" class="icon" /> -->
+        <span>Dispersión</span>
+      </button>
+      <div class="desc">
+        Descarga la información <br />
+        sobre la dispersión deseada por surtimientos
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
 .main-container {
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 80px;
   padding: 60px;
   height: auto;
   min-height: 70vh;
@@ -65,9 +74,13 @@ const goToAbonos = () => router.push("/PantallasubirExcelView");
   margin-top: 70px;
   flex-wrap: wrap;
   box-sizing: border-box;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: stretch;
+  gap: 20px;
 }
 
-.card {
+.card {  
   display: flex;
   flex-direction: column;
   align-items: center;
