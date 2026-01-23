@@ -147,8 +147,19 @@ const routes = [
   name: "PantallaDistribuidores",
   component: () => import("../views/PantallaDistribuidoresview.vue"),
   meta: { requiresAuth: true,  role: "admin" },
-  }
-  
+  },
+  {
+  path: "/PantallaTesoreriaView",
+  name: "PantallaTesoreria",
+  component: () => import("../views/PantallaTesoreriaView.vue"),
+  meta: { requiresAuth: true,  role: "admin" },
+},
+  {
+  path: "/PantallaDisView",
+  name: "PantallaDis",
+  component: () => import("../views/PantallaDisView.vue"),
+  meta: { requiresAuth: true,  role: "admin" },
+}
 ];
 
 const router = createRouter({
