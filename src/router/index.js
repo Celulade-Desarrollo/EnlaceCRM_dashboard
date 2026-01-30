@@ -148,8 +148,7 @@ const routes = [
   component: () => import("../views/PantallaDistribuidoresview.vue"),
   meta: { requiresAuth: true,  role: "admin" },
   },
-  {
-  path: "/PantallaTesoreriaView",
+   { path: "/PantallaTesoreriaView",
   name: "PantallaTesoreria",
   component: () => import("../views/PantallaTesoreriaView.vue"),
   meta: { requiresAuth: true,  role: "admin" },
@@ -159,7 +158,14 @@ const routes = [
   name: "PantallaDis",
   component: () => import("../views/PantallaDisView.vue"),
   meta: { requiresAuth: true,  role: "admin" },
-}
+},
+  {
+  path: "/PantallaBajarDispercionView",
+  name: "PantallaBajarDispercion",
+  component: () => import("../views/PantallaBajarDispercion.vue"),
+  meta: { requiresAuth: true,  role: "admin", empresa: "bancow" },
+  }
+  
 ];
 
 const router = createRouter({

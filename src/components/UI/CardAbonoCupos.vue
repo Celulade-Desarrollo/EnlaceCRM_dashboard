@@ -66,13 +66,13 @@ const deudaTotalCalculada = computed(() => {
 
   let total = 0;
 
-  facturas.forEach(f => {
+  facturas.forEach(fact => {
     const saldo = 
-      (f.MontoMasIntereses || f.Monto) -
-      (f.AbonoUsuario || 0) -
-      (f.Intereses || 0) -
-      (f.Fees || 0) -
-      (f.InteresesMora || 0);
+      (fact.MontoMasIntereses || fact.Monto) -
+      (fact.AbonoUsuario || 0);
+      //(fact.Intereses || 0);
+      // (fact.Fees || 0) -
+      // (f.InteresesMora || 0);
 
     if (saldo > 0) total += saldo;
   });
@@ -100,10 +100,10 @@ const valorProximoAbono = computed(() => {
   const total = facturasDelDia.reduce((acc, f) => {
     const saldo =
       (f.MontoMasIntereses || f.Monto) -
-      (f.AbonoUsuario || 0) -
-      (f.Intereses || 0) -
-      (f.Fees || 0) -
-      (f.InteresesMora || 0);
+      (f.AbonoUsuario || 0);
+      // (f.Intereses || 0) -
+      // (f.Fees || 0) -
+      // (f.InteresesMora || 0);
 
     return acc + Math.max(saldo, 0);
   }, 0);

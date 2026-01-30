@@ -3,144 +3,115 @@ import { ref, watch } from 'vue'
 import axios from 'axios'
 import headerDis from "../components/UI/headerDis.vue"
 
-/* =========================
-   UTILIDADES
-========================= */
+const mesAnoSeleccionado = ref('');
+
 const formatearMiles = v =>
   v ? v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') : ''
 
-/* =========================
-   ESTADO
-========================= */
-const meses = [
-  'Enero','Febrero','Marzo','Abril','Mayo','Junio',
-  'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'
-]
-
-const mesSeleccionado = ref('')
 const filas = ref([])
 const todosLosDatos = ref([])
 const datosOriginales = ref([])
 const opcionesDispersion = ['Alpina', 'Surtialimentos']
 
-/* =========================
-   LISTAR DATOS
-========================= */
 const listarDatos = async () => {
-  if (!mesSeleccionado.value) return
+  if (!mesAnoSeleccionado.value) return
 
   try {
-    const res = await axios.get(
-      'http://localhost:3000/tesoreria/consultar-datos-recaudo'
-    )
+    const res = await axios.get('/tesoreria/consultar-datos-recaudo')
+    const registros = Array.isArray(res.data?.data) ? res.data.data : res.data
 
-    const registros = Array.isArray(res.data?.data)
-      ? res.data.data
-      : res.data
-
-    // 👉 lo que viene de la BD, tal cual
     todosLosDatos.value = registros.map(d => ({
+      id: d.id,
       fecha: d.fecha.substring(0, 10),
       recaudo: d.recaudo,
-      dispersion: d.dispersion ?? '' // NULL → ''
+      dispersion: (d.dispersion || '').trim()
     }))
 
-    // copia para comparar
     datosOriginales.value = JSON.parse(JSON.stringify(todosLosDatos.value))
-
-    filtrarPorMes()
+    filtrarPorMesAno()
   } catch (e) {
-    console.error('❌ ERROR BACKEND:', e)
+    console.error('Error al cargar datos:', e)
     alert('Error al cargar datos del servidor')
   }
 }
 
-/* =========================
-   FILTRO POR MES
-========================= */
-const filtrarPorMes = () => {
-  const mesIndex = meses.indexOf(mesSeleccionado.value) + 1
-  const mes = mesIndex.toString().padStart(2, '0')
-
-  filas.value = todosLosDatos.value.filter(
-    f => f.fecha.substring(5, 7) === mes
+const filtrarPorMesAno = () => {
+  filas.value = todosLosDatos.value.filter(f => 
+    f.fecha.substring(0, 7) === mesAnoSeleccionado.value
   )
 }
 
-/* =========================
-   SOLO EDITABLE SI EN BD ERA NULL
-========================= */
 const esEditable = (fecha) => {
   const original = datosOriginales.value.find(d => d.fecha === fecha)
   return original && original.dispersion === ''
 }
 
-/* =========================
-   HAY CAMBIOS REALES?
-========================= */
 const tieneCambios = () => {
   return filas.value.some(fila => {
     const original = datosOriginales.value.find(d => d.fecha === fila.fecha)
-    return original &&
-           original.dispersion === '' &&
-           fila.dispersion !== ''
+    return original && original.dispersion === '' && fila.dispersion !== ''
   })
 }
 
-/* =========================
-   GUARDAR (SOLO LOS NULL)
-========================= */
 const guardar = async () => {
   try {
     const nuevos = filas.value.filter(fila => {
       const original = datosOriginales.value.find(d => d.fecha === fila.fecha)
-      return original &&
-             original.dispersion === '' &&
-             fila.dispersion !== ''
+      return original && original.dispersion === '' && fila.dispersion !== ''
     })
 
     if (!nuevos.length) {
-      alert('⚠️ No hay registros nuevos para guardar')
+      alert('No hay cambios para guardar')
       return
     }
 
     for (const fila of nuevos) {
-      await axios.post(
-        'http://localhost:3000/tesoreria/crear-registro-con-dispersion',
-        {
-          fecha: fila.fecha,
-          recaudo: fila.recaudo,
-          dispersion: fila.dispersion
-        }
-      )
+      if (!fila.id) {
+        alert('Error: Registro sin ID')
+        return
+      }
+
+      await axios.put('/tesoreria/actualizar-dispersion', {
+        id: fila.id,
+        dispersion: fila.dispersion
+      })
     }
 
-    alert('✅ Dispersión registrada correctamente')
-    listarDatos()
+    nuevos.forEach(fila => {
+      const index = datosOriginales.value.findIndex(d => d.fecha === fila.fecha)
+      if (index !== -1) {
+        datosOriginales.value[index].dispersion = fila.dispersion
+      }
+    })
+
+    alert('Dispersión actualizada correctamente')
+    await listarDatos()
   } catch (e) {
-    console.error('❌ Error backend:', e.response?.data || e)
-    alert('❌ Error al guardar')
+    console.error('Error al guardar:', e)
+    alert('Error al guardar: ' + (e.response?.data?.message || 'Error desconocido'))
   }
 }
 
-/* =========================
-   WATCH
-========================= */
-watch(mesSeleccionado, listarDatos)
+watch(mesAnoSeleccionado, listarDatos)
 </script>
 
 <template>
   <headerDis />
 
   <div class="contenedor">
-    <div class="top">
-      <div class="box">
-        <span class="label-mes">Mes</span>
-        <select v-model="mesSeleccionado" class="select-mes">
-          <option value="">Seleccione mes</option>
-          <option v-for="mes in meses" :key="mes">{{ mes }}</option>
-        </select>
+      <div class="top">
+        <div class="box">
+          <span class="label-mes">Mes y Año</span>
+            <input 
+              type="month" 
+              v-model="mesAnoSeleccionado" 
+              class="select-mes"
+            />
+        </div>
       </div>
+
+    <div v-if="!mesAnoSeleccionado" class="mensaje-seleccionar">
+      📅 Seleccione un mes y un año
     </div>
 
     <div class="tabla" v-if="filas.length">
@@ -152,25 +123,11 @@ watch(mesSeleccionado, listarDatos)
 
       <div class="row" v-for="fila in filas" :key="fila.fecha">
         <input type="date" :value="fila.fecha" disabled />
-
-        <input
-          type="text"
-          :value="formatearMiles(fila.recaudo)"
-          disabled
-        />
-
-        <select
-          v-model="fila.dispersion"
-          :disabled="!esEditable(fila.fecha)"
-        >
-          <option value="">Seleccione</option>
-          <option
-            v-for="op in opcionesDispersion"
-            :key="op"
-            :value="op"
-          >
-            {{ op }}
-          </option>
+        <input type="text" :value="formatearMiles(fila.recaudo)" disabled />
+        <select v-model="fila.dispersion" :disabled="!esEditable(fila.fecha)">
+          <option value="">{{ esEditable(fila.fecha) ? 'Seleccione' : '(No editable)' }}</option>
+          <option value="Alpina">Alpina</option>
+          <option value="Surtialimentos">Surtialimentos</option>
         </select>
       </div>
     </div>
@@ -180,7 +137,6 @@ watch(mesSeleccionado, listarDatos)
     </div>
   </div>
 </template>
-
 
 <style scoped>
 .contenedor {
