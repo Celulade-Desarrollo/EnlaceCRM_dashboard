@@ -56,7 +56,10 @@ const handleSubmit = async (event) => {
       router.push("/Pantalla13View");
     } else if (response.data.company === "alpina") {
       router.push("/PantallaDistribuidoresView");
+    } else if (response.data.company === "surtialimentos") {
+      router.push("/PantallaDisView");
     } else {
+      
       errorMessage.value = "Empresa no reconocida";
       setTimeout(() => (errorMessage.value = ""), 3000);
     }
