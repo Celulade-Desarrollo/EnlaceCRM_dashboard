@@ -52,7 +52,7 @@ const gotoDispercion = () => router.push("/PantallaBajarDispercionView");
 
      <div class="card">
       <button class="btn" @click="gotoDispercion">
-        <!-- <img src="/abonos.png" alt="abonos" class="icon" /> -->
+        <img src="/dispersion.png" alt="dispersión" class="icon" />
         <span>Dispersión</span>
       </button>
       <div class="desc">
