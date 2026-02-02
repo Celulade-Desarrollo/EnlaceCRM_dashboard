@@ -79,7 +79,7 @@ const goToActualizarIntereses = () => {
   align-items: center;
   justify-content: flex-start;
   gap: 20px;
-  width: 280px;
+  width: 240px;
   min-height: 260px;
   background-color: #ffffff;
   border: none;
@@ -106,7 +106,7 @@ const goToActualizarIntereses = () => {
   border: 2px solid #6C63FF;
   border-radius: 25px;
   cursor: pointer;
-  width: 320px;
+  width: 305px;
   height: 120px;
   transition: all 0.3s ease;
   box-shadow: 2px 3px 5px rgba(0, 0, 0, 0.25);
