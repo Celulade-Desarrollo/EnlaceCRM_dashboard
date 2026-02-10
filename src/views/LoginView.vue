@@ -8,7 +8,6 @@ const router = useRouter();
 const cedula = ref("");
 const password = ref("");
 const errorMessage = ref("");
-const telefonoRegex = /^[0-9]{10}$/;
 
 const soloNumeros = (e) => {
   cedula.value = e.target.value.replace(/\D/g, "");
@@ -24,8 +23,8 @@ const handleSubmit = async (event) => {
   }
 
   const dataLogin = {
-    Cedula: cedula.value,
-    Password: password.value,
+    Cedula: cedula.value.trim(),
+    Password: String(password.value).trim(),
   };
 
   try {
@@ -35,10 +34,16 @@ const handleSubmit = async (event) => {
       errorMessage.value = "Cédula o contraseña incorrecta";
       setTimeout(() => (errorMessage.value = ""), 3000);
       return;
-    } 
+    }
 
-    // Guardar datos del login administrador con prefijo para evitar conflictos
+    // 🔹 Log mínimo útil (opcional)
+    console.log("🆔 Admin ID:", response.data.id ?? response.data.Id);
+
     localStorage.setItem("admin_token", response.data.token);
+    localStorage.setItem(
+      "admin_id",
+      response.data.id ?? response.data.Id
+    );
     localStorage.setItem("company", response.data.company);
     localStorage.setItem("tipo", response.data.tipo);
     localStorage.setItem("admin_userData", JSON.stringify(response.data));
@@ -49,23 +54,24 @@ const handleSubmit = async (event) => {
       router.push("/Pantalla14View");
     } else if (response.data.company === "bancow") {
       router.push("/Pantalla13View");
-    }else if (response.data.company === "alpina") {
+    } else if (response.data.company === "alpina") {
       router.push("/PantallaDistribuidoresView");
+    } else if (response.data.company === "surtialimentos") {
+      router.push("/PantallaDisView");
     } else {
+      
       errorMessage.value = "Empresa no reconocida";
       setTimeout(() => (errorMessage.value = ""), 3000);
     }
 
   } catch (error) {
-    if (error.response) {
-      // El backend está respondiendo con error 500 aunque debería ser 401
-      if (error.response.status === 500) {
-        errorMessage.value = "Cédula o contraseña incorrecta";
-      } else if (error.response.status === 401 || error.response.status === 403) {
-        errorMessage.value = "Cédula o contraseña incorrecta";
-      } else {
-        errorMessage.value = `Error del servidor: ${error.response.status}`;
-      }
+    if (
+      error.response &&
+      [500, 401, 403].includes(error.response.status)
+    ) {
+      errorMessage.value = "Cédula o contraseña incorrecta";
+    } else if (error.response) {
+      errorMessage.value = `Error del servidor: ${error.response.status}`;
     } else {
       errorMessage.value = "No se pudo conectar al servidor";
     }
@@ -73,9 +79,8 @@ const handleSubmit = async (event) => {
     setTimeout(() => (errorMessage.value = ""), 3000);
   }
 };
-
-
 </script>
+
 
 <template>
   <motion.div v-bind="fadeInUp">

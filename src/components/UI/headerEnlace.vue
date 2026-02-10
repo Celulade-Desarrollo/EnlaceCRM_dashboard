@@ -7,9 +7,6 @@ const goToLogin = () => {
 router.push('/LoginView');
 };
 
-const goToConfig = () => {
-router.push('/Credenciales');
-};
 </script>
 
 <template>
@@ -22,20 +19,12 @@ router.push('/Credenciales');
         @click="goToLogin"
       />
     </div>
-    <div class="left-config">
-      <img 
-        src="/public/configuraciones.png" 
-        alt="Inicio" 
-        class="config-icon"
-        @click="goToConfig"
-      />
-    </div>
 
-    <h1 class="title">Portal de gestión del Banco W</h1>
+    <h1 class="title">Bienvenido al Portal de gestión enlaceCRM
+</h1>
 
     <div class="right-section">
       <img src="/public/enlaceFiado.png" alt="Enlace CRM" class="logo enlace" />
-      <img src="/public/bancoW.png" alt="Banco W" class="logo banco" />
     </div>
   </header>
 </template>
@@ -48,12 +37,12 @@ router.push('/Credenciales');
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #5e50a1;
+  background-color: #5A44D1;
   color: white;
-  padding: 17px 40px;
+  padding: 30px 40px;
   border-bottom: 4px solid #3a2c87;
   box-sizing: border-box;
-  flex-wrap: wrap; /* permite que los elementos bajen en pantallas pequeñas */
+  flex-wrap: wrap; 
 }
 
 .left-section {
@@ -68,36 +57,19 @@ router.push('/Credenciales');
   width: 40px;
   height: 40px;
   background-color: rgba(247, 243, 243, 0.39);
-  border-radius: 50%;
-  padding: 8px;
+  border-radius: 70%;
+  padding: 6px;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.config-icon {
-  cursor: pointer;
-  width: 40px;
-  height: 40px;
-  transform: translateX(20px);
-  background-color: rgba(247, 243, 243, 0.39);
-  border-radius: 50%;
-  padding: 8px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
 
 .home-icon:hover {
   background-color: #0c0c0c4f;
   transform: scale(1.05);
 }
 
-.config-icon:hover {
-  background-color: #0c0c0c4f;
-  transform: scale(1.05);
-  transform: translateX(20px);
-}
 
 .title {
   flex: 1;
@@ -122,7 +94,7 @@ router.push('/Credenciales');
 }
 
 .enlace {
-  height: 25px;
+  height: 35px;
   object-fit: contain;
 }
 
@@ -131,7 +103,7 @@ router.push('/Credenciales');
   object-fit: contain;
 }
 
-/* 📱 Responsividad */
+
 @media (max-width: 1024px) {
   .title {
     margin-left: 80px;
@@ -168,9 +140,6 @@ router.push('/Credenciales');
     gap: 12px;
   }
 
-  .banco {
-    height: 50px;
-  }
 
   .logo,
   .enlace {
@@ -199,9 +168,6 @@ router.push('/Credenciales');
     gap: 8px;
   }
 
-  .banco {
-    height: 45px;
-  }
 
   .logo,
   .enlace {

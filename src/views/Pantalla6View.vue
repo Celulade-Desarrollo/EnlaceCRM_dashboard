@@ -108,10 +108,7 @@ const guardarNumero = async () => {
 
   <motion.div v-bind="fadeInUp">
     
-    <Heading
-      :mensaje="'Hola, ' + datosCuenta.Nombres"
-      :showBackButton="true"
-    />
+ <Heading :mensaje="'Hola, ' + datosCuenta.Nombres" />
 
     <section class="content">
       <div class="card">

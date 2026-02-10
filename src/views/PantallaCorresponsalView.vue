@@ -126,7 +126,7 @@ onMounted(async () => {
       <div class="card">
         <div class="provider-content">
           <div class="info-container">
-            <div class="info-texts">
+            <!-- <div class="info-texts">
               <h2 class="title">
                 Deuda total $
                 <span class="bold-text">{{
@@ -139,9 +139,9 @@ onMounted(async () => {
                   formatFecha(estadoCuenta.FechaPagoProgramado)
                 }}</span>
               </h3>
-            </div>
+            </div>  -->
             <h2 class="centered-title">
-              Corresponsales y oficinas cerca de ti
+              Puedes realizar tus pagos en corresponsales Efecty y oficinas del Banco w cerca de ti 
             </h2>
             <div
               id="map"

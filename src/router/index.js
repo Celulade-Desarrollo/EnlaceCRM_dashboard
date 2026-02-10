@@ -50,6 +50,12 @@ const routes = [
     component: () => import("../views/LoginView.vue"),
     meta: { requiresAuth: false },
   },
+     {
+    path: "/Credenciales",
+    name: "Credenciales",
+    component: () => import("../views/Actualizarcredenciales.vue"),
+    meta: { requiresAuth: false },
+  },
   {
     path: "/Pantalla3View",
     name: "pantalla3",
@@ -139,8 +145,25 @@ const routes = [
   {
   path: "/PantallaDistribuidoresView",
   name: "PantallaDistribuidores",
-  component: () => import("../views/PantallaDistribuidoresView.vue"),
+  component: () => import("../views/PantallaDistribuidoresview.vue"),
   meta: { requiresAuth: true,  role: "admin" },
+  },
+   { path: "/PantallaTesoreriaView",
+  name: "PantallaTesoreria",
+  component: () => import("../views/PantallaTesoreriaView.vue"),
+  meta: { requiresAuth: true,  role: "admin" },
+},
+  {
+  path: "/PantallaDisView",
+  name: "PantallaDis",
+  component: () => import("../views/PantallaDisView.vue"),
+  meta: { requiresAuth: true,  role: "admin" },
+},
+  {
+  path: "/PantallaBajarDispercionView",
+  name: "PantallaBajarDispercion",
+  component: () => import("../views/PantallaBajarDispercion.vue"),
+  meta: { requiresAuth: true,  role: "admin", empresa: "bancow" },
   }
   
 ];

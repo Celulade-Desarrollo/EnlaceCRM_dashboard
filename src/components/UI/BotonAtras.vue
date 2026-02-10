@@ -4,7 +4,13 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 
 const goToLogin = () => {
-router.push('/Pantalla13View');
+  router.push('/Pantalla13View');
+};
+
+const logout = () => {
+  sessionStorage.clear();
+  localStorage.clear();
+  router.push('/LoginView');
 };
 </script>
 
@@ -18,16 +24,25 @@ router.push('/Pantalla13View');
         @click="goToLogin"
       />
     </div>
+
     <h1 class="title">Hola, Administrador banco w</h1>
 
     <div class="right-section">
-      <img src="/public/enlaceFiado.png" alt="Enlace CRM" class="logo enlace" />
-      <img src="/public/bancoW.png" alt="Banco W" class="logo banco" />
+      <!-- LOGOS -->
+      <div class="logos">
+        <img src="/public/enlaceFiado.png" alt="Enlace CRM" class="logo enlace" />
+        <img src="/public/bancoW.png" alt="Banco W" class="logo banco" />
+      </div>
+
+      <!-- BOTÓN DEBAJO -->
+<button class="btn-logout" @click="logout">
+  <img src="/public/sesion.png" alt="Usuario" class="logout-icon" />
+  Cerrar sesión
+</button>
+
     </div>
   </header>
 </template>
-
-
 
 <style scoped>
 .header-bar {
@@ -40,7 +55,7 @@ router.push('/Pantalla13View');
   padding: 17px 40px;
   border-bottom: 4px solid #3a2c87;
   box-sizing: border-box;
-  flex-wrap: wrap; /* permite que los elementos bajen en pantallas pequeñas */
+  flex-wrap: wrap;
 }
 
 .left-section {
@@ -76,12 +91,27 @@ router.push('/Pantalla13View');
   transition: all 0.3s ease;
 }
 
+/* 🔥 CAMBIO MÍNIMO AQUÍ */
 .right-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.logos {
   display: flex;
   align-items: center;
   gap: 16px;
-  flex-shrink: 0;
 }
+
+.logout-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
 
 .logo {
   height: 40px;
@@ -90,12 +120,10 @@ router.push('/Pantalla13View');
 
 .enlace {
   height: 25px;
-  object-fit: contain;
 }
 
 .banco {
   height: 70px;
-  object-fit: contain;
 }
 
 /* 📱 Responsividad */
@@ -105,7 +133,7 @@ router.push('/Pantalla13View');
     font-size: 20px;
   }
 
-  .right-section img {
+  .logos img {
     height: 35px;
   }
 }
@@ -122,7 +150,7 @@ router.push('/Pantalla13View');
     margin-left: 0;
     margin-top: 10px;
     font-size: 20px;
-    order: 2; /* el título baja debajo del ícono */
+    order: 2;
   }
 
   .left-section {
@@ -131,8 +159,8 @@ router.push('/Pantalla13View');
 
   .right-section {
     order: 3;
+    align-items: center;
     margin-top: 10px;
-    gap: 12px;
   }
 
   .banco {
@@ -143,6 +171,27 @@ router.push('/Pantalla13View');
   .enlace {
     height: 28px;
   }
+}
+
+.btn-logout {
+  background-color: #e83e8c;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.btn-logout:hover {
+  background-color: #d63384;
+  transform: scale(1.05);
 }
 
 @media (max-width: 480px) {
@@ -161,8 +210,6 @@ router.push('/Pantalla13View');
   }
 
   .right-section {
-    flex-wrap: wrap;
-    justify-content: center;
     gap: 8px;
   }
 
@@ -176,4 +223,3 @@ router.push('/Pantalla13View');
   }
 }
 </style>
-

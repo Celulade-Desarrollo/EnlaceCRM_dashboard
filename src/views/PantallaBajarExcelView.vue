@@ -4,6 +4,7 @@ import * as XLSX from "xlsx";
 import { motion } from "motion-v";
 import SesionExpiradaLogin from "../components/UI/SesionExpiradaLogin.vue";
 import { activarSesionExpirada } from "../stores/session.js";
+import HeadingEnlace from '../components/UI/headingEnlace.vue'
 
 const token = localStorage.getItem("admin_token");
 const company = localStorage.getItem("company");
@@ -55,18 +56,13 @@ async function downloadAbonosExcel() {
 </script>
 
 <template>
-  <motion.div v-bind="fadeInUp" class="page-container">
-    <section class="logo-container">
-      <img
-        src="/public/enlaceFiado.png"
-        alt="logo Enlace CRM"
-        class="logo-main"
-      />
-    </section>
-    <p class="titulo">Hola, Administrador enlaceCRM</p>
-    <div class="boton-container">
-      <button class="boton" @click="downloadAbonosExcel">
-        Descargar Abonos
+  <HeadingEnlace />
+  <motion.div v-bind="fadeInUp"    <div class="main-container">
+    <div class="card">
+      <button class="btn" @click="downloadAbonosExcel">
+        <img src="/descargar.png" alt="Descargar abonos " class="icon" />
+        <span>Descargar abonos 
+</span>
       </button>
     </div>
     <SesionExpiradaLogin />
@@ -74,49 +70,127 @@ async function downloadAbonosExcel() {
 </template>
 
 <style scoped>
-/* Contenedor principal que centra todo */
-.page-container {
+.main-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 80px;
+  padding: 60px;
+  height: auto;
+  min-height: 70vh;
+  background-color: #3A2CA8;
+  border: 9px solid #251786;
+  margin-top: 70px;
+  flex-wrap: wrap;
+  box-sizing: border-box;
+}
+
+.card {
   display: flex;
   flex-direction: column;
-  justify-content: center; /* centra vertical */
-  align-items: center;     /* centra horizontal */
-  min-height: 100vh;       /* ocupa toda la pantalla */
-  text-align: center;
-}
-
-.logo-main {
-  width: min(180px, 80%);
-  height: auto;
-  display: inline;
-  margin-bottom: 1rem;
-}
-
-.titulo {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: white;
-  margin-bottom: 20px;
-}
-
-.boton-container {
-  text-align: center;
-  margin-top: 20px;
-}
-
-.boton {
-  background-color: #dd3590;
-  color: white;
-  padding: 12px 50px;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 20px;
+  width: 280px;
+  min-height: 260px;
+  background-color: #3A2CA8;
   border: none;
-  border-radius: 20px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
   outline: none;
   box-shadow: none;
+  transition: transform 0.3s ease;
 }
-.boton:hover {
-  background-color: #f15bab;
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+
+.btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #5A44D1;
+  color: white;
+  font-size: 20px;
+  font-weight: 600;
+  padding: 16px 35px;
+  border: 2px solid #6C63FF;
+  border-radius: 25px;
+  cursor: pointer;
+  width: 320px;
+  height: 120px;
+  transition: all 0.3s ease;
+  box-shadow: 2px 3px 5px rgba(0, 0, 0, 0.25);
+}
+
+.btn:hover {
+  background-color: #3A2CA8;
+  transform: scale(1.05);
+}
+
+
+.icon {
+  position: absolute;
+  top: 8px;    
+  left: 15px;
+  width: 38px;
+  height: 48px;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+
+.btn:hover .icon {
+  transform: scale(1.2);
+}
+@media (max-width: 1024px) {
+  .main-container {
+    gap: 50px;
+    padding: 40px;
+  }
+
+  .card {
+    width: 240px;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+    padding: 30px;
+    border-width: 7px;
+  }
+
+  .card {
+    width: 80%;
+    max-width: 300px;
+  }
+
+  .btn {
+    font-size: 16px;
+    padding: 10px 28px;
+  }
+
+}
+
+@media (max-width: 480px) {
+  .main-container {
+    border-width: 6px;
+    padding: 20px;
+  }
+
+  .card {
+    width: 100%;
+    max-width: 280px;
+  }
+
+  .btn {
+    font-size: 15px;
+    padding: 10px 20px;
+  }
 }
 </style>
 

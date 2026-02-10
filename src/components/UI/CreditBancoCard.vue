@@ -7,7 +7,7 @@ const props = defineProps({
     type: Object,
     required: true,
     default: () => ({
-      cedula: "", 
+      cedula: "",
     }),
   },
   bancowData: {
@@ -49,19 +49,25 @@ onMounted(() => {
     item => item.IdFlujoRegistro === props.data.IdFlujoRegistro
   );
 
+
   if (registro) {
+    bancoListas.value = registro.Validacion_Banco_listas || "";
     bancoListas.value = registro.Validacion_Banco_listas || "";
     precargado.bancoListas.value = !!registro.Validacion_Banco_listas;
 
     cupoAprobado.value = registro.Aprobacion_Cupo_sugerido || "";
+    cupoAprobado.value = registro.Aprobacion_Cupo_sugerido || "";
     precargado.cupoAprobado.value = !!registro.Aprobacion_Cupo_sugerido;
 
+    pagareDigital.value = registro.Pagare_Digital_Firmado || "";
     pagareDigital.value = registro.Pagare_Digital_Firmado || "";
     precargado.pagareDigital.value = !!registro.Pagare_Digital_Firmado;
 
     pagareEnviado.value = registro.Pagare_Digital_Enviado || "";
+    pagareEnviado.value = registro.Pagare_Digital_Enviado || "";
     precargado.pagareEnviado.value = !!registro.Pagare_Digital_Enviado;
 
+    usuarioAprobado.value = registro.UsuarioAprobado || "";
     usuarioAprobado.value = registro.UsuarioAprobado || "";
     precargado.usuarioAprobado.value = !!registro.UsuarioAprobado;
   }
@@ -96,6 +102,19 @@ const handleSiClick = async () => {
   ) {
     mensajeError.value = "Por favor, completa al menos un campo para guardar";
     return;
+  }
+
+  if(pagareEnviado.value === "si" && !precargado.pagareEnviado.value){
+        const number = props.data.Numero_Cliente;
+        const customer_name = props.data.Nombres;
+        const correo = props.data.Correo_Electronico || "";
+        await axios.post(`https://enlace-crm.com:3000/backend/whatsapp/meta/firma-digital/${number}/${customer_name}/${correo}`)
+  }
+  
+  if(usuarioAprobado.value === "si" && !precargado.usuarioAprobado.value){
+    const number = props.data.Numero_Cliente;
+    const customer_name = props.data.Nombres
+    await axios.post(`https://enlace-crm.com:3000/backend/whatsapp/meta/cupo-activo/${number}/${customer_name}`)
   }
 
   mensajeError.value = "";
@@ -200,13 +219,23 @@ const handleAprobadoClick = async () => {
 
   if (cupoAprobado.value === 'si') {
     payloadPut.Estado = "aprobado";
-  } else {
+
+    const number = props.data.Numero_Cliente;
+    const customer_name = props.data.Nombres
+    const monto = props.data.Cupo
+      await axios.post(`https://enlace-crm.com:3000/backend/whatsapp/meta/cupo/${number}/${customer_name}/${monto}`)
+    
+  } else if (cupoAprobado.value === 'No' || cupoAprobado.value === 'no') {
     payloadPut.Estado = "negado";
   }
+
+
   console.log("Payload que se va a enviar al put:", payloadPut,);
 
+
+
   try{
-    const postInfo = await axios.post('api/bancow', 
+    await axios.post('/api/bancow', 
       payloadAprobado,
       {
         headers: {  
@@ -215,7 +244,7 @@ const handleAprobadoClick = async () => {
         }
       }
     );
-    const putInfo = await axios.put(`api/scoring/estado/update/${id}`, 
+      await axios.put(`api/scoring/estado/update/${id}`, 
       payloadPut,
       {
         headers: {  
@@ -223,10 +252,19 @@ const handleAprobadoClick = async () => {
           "Content-Type": "application/json"
         }
       })
+      await axios.put(`api/flujoRegistroEnlace/estado/pendiente/${id}`,
+        payloadPut,
+       {
+        headers: {
+          Authorization: `Bearer ${props.token}`,
+          "Content-Type": "application/json",
+        },
+      });
     window.location.reload();
   }catch(error){
     console.error("Error en alguno de los pasos:", error);
   }
+
 };
 </script>
 
@@ -717,3 +755,5 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 
 </style>
+
+
