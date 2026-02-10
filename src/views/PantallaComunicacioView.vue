@@ -7,6 +7,7 @@ const router = useRouter();
 const goToRegistro = () => router.push("/Pantalla10View");
 const goToPagos = () => router.push("/PantallaPagos");
 const goToAbonos = () => router.push("/PantallasubirExcelView");
+const gotoDispercion = () => router.push("/PantallaBajarDispercionView");
 </script>
 
 <template>
@@ -48,26 +49,38 @@ const goToAbonos = () => router.push("/PantallasubirExcelView");
         abonos a créditos realizados por los tenderos
       </div>
     </div>
+
+     <div class="card">
+      <button class="btn" @click="gotoDispercion">
+        <img src="/dispersion.png" alt="dispersión" class="icon" />
+        <span>Dispersión</span>
+      </button>
+      <div class="desc">
+        Descarga la información <br />
+        sobre la dispersión deseada por surtimientos
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
 .main-container {
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 80px;
   padding: 60px;
   height: auto;
   min-height: 70vh;
   background-color: #5c4cb8;
   border: 9px solid #251786;
   margin-top: 70px;
-  flex-wrap: wrap; /* Permite que las tarjetas bajen en pantallas pequeñas */
+  flex-wrap: wrap;
   box-sizing: border-box;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: stretch;
+  gap: 20px;
 }
 
-.card {
+.card {  
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -86,12 +99,12 @@ const goToAbonos = () => router.push("/PantallasubirExcelView");
   transform: translateY(-5px);
 }
 
-/* Botón superior */
+
 .btn {
-  position: relative;             /* Permite posicionar el ícono dentro */
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;        /* 🔹 Texto centrado */
+  justify-content: center;
   background-color: #e53e8d;
   color: white;
   font-size: 15px;
@@ -100,8 +113,8 @@ const goToAbonos = () => router.push("/PantallasubirExcelView");
   border: none;
   border-radius: 30px;
   cursor: pointer;
-  width: 280px;                   /* ancho fijo */
-  height: 60px;                   /* alto fijo */
+  width: 280px;
+  height: 60px;
   transition: all 0.3s ease;
   box-shadow: 2px 3px 5px rgba(0, 0, 0, 0.25);
 }
@@ -111,23 +124,23 @@ const goToAbonos = () => router.push("/PantallasubirExcelView");
   transform: scale(1.05);
 }
 
-/* 🔹 Ícono alineado a la izquierda sin mover el texto */
+
 .icon {
   position: absolute;
-  left: 20px;                     /* separa el ícono del borde izquierdo */
+  left: 20px;
   width: 40px;
   height: 40px;
   object-fit: contain;
   transition: transform 0.3s ease;
 }
 
-/* 🔹 Efecto suave al pasar el mouse */
+
 .btn:hover .icon {
   transform: scale(1.2);
 }
 
 
-/* Texto descriptivo */
+
 .desc {
   background-color: rgba(139, 124, 235, 0.85);
   text-align: center;
@@ -143,7 +156,7 @@ const goToAbonos = () => router.push("/PantallasubirExcelView");
   border-radius: 5px;
 }
 
-/* 📱 Responsividad */
+
 @media (max-width: 1024px) {
   .main-container {
     gap: 50px;

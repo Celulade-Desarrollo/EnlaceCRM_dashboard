@@ -4,11 +4,13 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 
 const goToLogin = () => {
-router.push('/LoginView');
+  router.push('/PantallaDisView');
 };
 
-const goToConfig = () => {
-router.push('/Credenciales');
+const logout = () => {
+  sessionStorage.clear();
+  localStorage.clear();
+  router.push('/LoginView');
 };
 </script>
 
@@ -16,31 +18,31 @@ router.push('/Credenciales');
   <header class="header-bar">
     <div class="left-section">
       <img 
-        src="/public/cerrar.png" 
+        src="/public/casa.png" 
         alt="Inicio" 
         class="home-icon"
         @click="goToLogin"
       />
     </div>
-    <div class="left-config">
-      <img 
-        src="/public/configuraciones.png" 
-        alt="Inicio" 
-        class="config-icon"
-        @click="goToConfig"
-      />
-    </div>
 
-    <h1 class="title">Portal de gestión del Banco W</h1>
+    <h1 class="title">Hola, Karen Obando </h1>
 
     <div class="right-section">
-      <img src="/public/enlaceFiado.png" alt="Enlace CRM" class="logo enlace" />
-      <img src="/public/bancoW.png" alt="Banco W" class="logo banco" />
+      <!-- LOGOS -->
+      <div class="logos">
+        <img src="/public/enlaceFiado.png" alt="Enlace CRM" class="logo enlace" />
+        <img src="/public/bancoW.png" alt="Banco W" class="logo banco" />
+      </div>
+
+      <!-- BOTÓN DEBAJO -->
+<button class="btn-logout" @click="logout">
+  <img src="/public/sesion.png" alt="Usuario" class="logout-icon" />
+  Cerrar sesión
+</button>
+
     </div>
   </header>
 </template>
-
-
 
 <style scoped>
 .header-bar {
@@ -50,10 +52,10 @@ router.push('/Credenciales');
   align-items: center;
   background-color: #5e50a1;
   color: white;
-  padding: 17px 40px;
+  padding: 5px 40px;
   border-bottom: 4px solid #3a2c87;
   box-sizing: border-box;
-  flex-wrap: wrap; /* permite que los elementos bajen en pantallas pequeñas */
+  flex-wrap: wrap;
 }
 
 .left-section {
@@ -61,7 +63,6 @@ router.push('/Credenciales');
   align-items: center;
   flex-shrink: 0;
 }
-
 
 .home-icon {
   cursor: pointer;
@@ -75,28 +76,9 @@ router.push('/Credenciales');
   align-items: center;
 }
 
-.config-icon {
-  cursor: pointer;
-  width: 40px;
-  height: 40px;
-  transform: translateX(20px);
-  background-color: rgba(247, 243, 243, 0.39);
-  border-radius: 50%;
-  padding: 8px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 .home-icon:hover {
   background-color: #0c0c0c4f;
   transform: scale(1.05);
-}
-
-.config-icon:hover {
-  background-color: #0c0c0c4f;
-  transform: scale(1.05);
-  transform: translateX(20px);
 }
 
 .title {
@@ -109,12 +91,27 @@ router.push('/Credenciales');
   transition: all 0.3s ease;
 }
 
+/* 🔥 CAMBIO MÍNIMO AQUÍ */
 .right-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.logos {
   display: flex;
   align-items: center;
   gap: 16px;
-  flex-shrink: 0;
 }
+
+.logout-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
 
 .logo {
   height: 40px;
@@ -123,12 +120,10 @@ router.push('/Credenciales');
 
 .enlace {
   height: 25px;
-  object-fit: contain;
 }
 
 .banco {
   height: 70px;
-  object-fit: contain;
 }
 
 /* 📱 Responsividad */
@@ -138,7 +133,7 @@ router.push('/Credenciales');
     font-size: 20px;
   }
 
-  .right-section img {
+  .logos img {
     height: 35px;
   }
 }
@@ -155,7 +150,7 @@ router.push('/Credenciales');
     margin-left: 0;
     margin-top: 10px;
     font-size: 20px;
-    order: 2; /* el título baja debajo del ícono */
+    order: 2;
   }
 
   .left-section {
@@ -164,8 +159,8 @@ router.push('/Credenciales');
 
   .right-section {
     order: 3;
+    align-items: center;
     margin-top: 10px;
-    gap: 12px;
   }
 
   .banco {
@@ -176,6 +171,27 @@ router.push('/Credenciales');
   .enlace {
     height: 28px;
   }
+}
+
+.btn-logout {
+  background-color: #e83e8c;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.btn-logout:hover {
+  background-color: #d63384;
+  transform: scale(1.05);
 }
 
 @media (max-width: 480px) {
@@ -194,8 +210,6 @@ router.push('/Credenciales');
   }
 
   .right-section {
-    flex-wrap: wrap;
-    justify-content: center;
     gap: 8px;
   }
 
@@ -209,4 +223,3 @@ router.push('/Credenciales');
   }
 }
 </style>
-

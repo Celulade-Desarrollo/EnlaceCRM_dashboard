@@ -8,7 +8,8 @@ import { motion } from 'motion-v'
 import SesionExpiradaLogin from "../components/UI/SesionExpiradaLogin.vue";
 import { activarSesionExpirada } from "../stores/session.js";
 import * as XLSX from "xlsx";
-
+import heading from '../components/UI/headingEnlace.vue'
+import HeadingEnlace from '../components/UI/headingEnlace.vue'
 const clientes = ref([])
 const creditDataRecords = ref([])
 const router = useRouter()
@@ -27,8 +28,11 @@ const logout = () => {
   localStorage.removeItem("admin_userData");
   localStorage.removeItem("admin_isAuthenticated");
 
+
+
   router.push("/LoginView");
 }
+ const MODO_PRUEBA = true;
 
 onMounted(async () => {
   // si no hay token o el company no es "enlace", redirige
@@ -170,23 +174,18 @@ async function downloadExcel() {
 </script>
 
 <template>
+    <HeadingEnlace />
   <motion.div v-bind="fadeInUp">
-    <section class="logo-container">
-      <img src="/public/enlaceFiado.png" alt="logo Enlace CRM" class="logo-main" />
-      <!-- <Heading :mensaje="'Hola, Administrador'" /> -->
-    </section>
-      <p class="titulo">Hola, Administrador enlaceCRM</p>
 
     <div class="descargar-container">
-      <button @click="downloadExcel" class="boton">
-        Descargar Excel
+      <button class="boton" @click="downloadAbonosExcel">
+        <img src="/descargar.png" alt="Descargar Excel  " class="icon" />
+        <span>Descargar Excel  
+</span>
       </button>
     </div>
 
     <section class="content">
-      <div class="logout">
-        <button class="boton-logout" @click="logout">Cerrar sesión</button>
-      </div>
       <ScoringEnlaceCard
         v-for="record in creditDataRecords"
         :key="record.id"
@@ -215,20 +214,35 @@ async function downloadExcel() {
 }
 
 .boton {
-  background-color: #dd3590;
+  position: relative;
+   top: 10px; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #5A44D1;
   color: white;
-  padding: 12px 50px;
-  border: none;
+  font-size: 20px;
+  font-weight: 600;
+  padding: 16px 20px;
+  border: 2px solid #6C63FF;
   border-radius: 20px;
-  font-size: 1rem;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-  outline: none;
-  box-shadow: none;
+  width: 310px;
+  transition: all 0.3s ease;
+}
+.icon {
+  position: absolute;
+  top: 8px;    
+  left: 10px;
+  width: 35px;
+  height: 35px;
+  object-fit: contain;
+  transition: transform 0.3s ease;
 }
 
+
 .boton:hover {
-  background-color: #f15bab;
+  background-color: #3A2CA8;
 }
 
 
@@ -243,13 +257,13 @@ async function downloadExcel() {
   border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
-  background: #dd3590;
+  background: #5A44D1;
   color: #fff;
   outline: none;
   border: none;
 }
 .boton-logout:hover {
-  background-color: #f15bab;
+  background-color: #3A2CA8;
 }
 .logo-container {
   text-align: center;
@@ -272,12 +286,12 @@ async function downloadExcel() {
   border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
-  background: #dd3590;
+  background: #5A44D1;
   color: #fff;
   outline: none;
   border: none;
 }
 .boton-enviar:hover {
-  background-color: #f15bab;
+  background-color: #3A2CA8;
 }
 </style>

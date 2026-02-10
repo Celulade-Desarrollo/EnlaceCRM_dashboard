@@ -8,6 +8,9 @@ import axios from "axios";
 import SesionExpirada from "../components/UI/SesionExpirada.vue";
 import { activarSesionExpirada } from "../stores/session.js";
 
+const showModal = ref(false);
+const modalMessage = ref("");
+
 const whatsappURL = "/whatsapp/send-message";
 
 // Router
@@ -21,6 +24,7 @@ const nroFacturaAlpina = facturas.join(",");
 const numeroTransportista = ref("");
 const token = localStorage.getItem("token");
 const errorMessage = ref("");
+const isLoading = ref(false);
 
 // Fechas
 const fechaActual = new Date();
@@ -37,22 +41,32 @@ function formatPesos(valor) {
   }).format(valor || 0);
 }
 
+const mostrarModal = (mensaje) =>{
+  modalMessage.value = mensaje;
+  showModal.value = true;
+
+  setTimeout(() => {
+    showModal.value = false;
+  }, 3000);
+};
 // ------------- FUNCIÓN PRINCIPAL -------------
 const handlePagoClick = async () => {
+  isLoading.value = true; 
   console.log("Número al presionar pagar:", numeroTransportista.value);
 
   if (!numeroTransportista.value) {
     errorMessage.value = "Por favor, ingresa el teléfono del transportista";
+    isLoading.value = false;
     return;
   }
 
   errorMessage.value = "";
 
-  // 🔥 LIMPIAR TELÉFONO PARA BD Y LOCALSTORAGE (SIN 57)
+  //  LIMPIAR TELÉFONO PARA BD Y LOCALSTORAGE (SIN 57)
   let telefono = String(numeroTransportista.value).trim();
-  telefono = telefono.replace(/^(\+57|57)/, ""); // <-- ESTA ES LA ÚNICA LÍNEA CRÍTICA
+  telefono = telefono.replace(/^(\+57|57)/, "");
 
-  // ✔️ Guardar limpio en localStorage para Pantalla 4
+  // Guardar limpio en localStorage para Pantalla 4
   localStorage.setItem("telefonoTransportista", telefono);
 
   // Datos del pago
@@ -64,41 +78,47 @@ const handlePagoClick = async () => {
     fechaPagoProgramado: fechaPagoProgramado,
     idMedioPago: 14,
     nroFacturaAlpina: nroFacturaAlpina,
-    telefonoTransportista: telefono, // <-- AHORA SIEMPRE LIMPIO
+    telefonoTransportista: telefono,
   };
 
-  // WhatsApp
-  const hora = new Date().toLocaleTimeString();
-  const pagoFormateado = formatPesos(pagarValor);
-  const number = "57" + telefono; // <-- SOLO AQUÍ SE AGREGA 57
-
-  const message = `${datosCuenta.Nombres} envío un pago de la factura ${nroFacturaAlpina} por el valor de ${pagoFormateado} el día ${fechaActual.toLocaleDateString()} a la hora ${hora}`;
-
-  axios.post(
-    whatsappURL,
-    { number, message },
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    }
-  );
-
-  console.log("datosPagoFactura:", dataPagoFactura);
-
   try {
-    await axios.post("/api/movimientos", dataPagoFactura, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
+      // registrar el pago
+      await axios.post("/api/movimientos", dataPagoFactura, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
 
-    window.open("/Pantalla4View", "_parent");
-  } catch (error) {
-    console.error("Error al realizar el pago:", error);
-  }
+      //  si fue exitoso enviar WhatsApp
+      const hora = new Date().toLocaleTimeString();
+      const pagoFormateado = formatPesos(pagarValor);
+      const number = "57" + telefono;
+
+      const message = `${datosCuenta.Nombres} envío un pago de la factura ${nroFacturaAlpina} por el valor de ${pagoFormateado} el día ${fechaActual.toLocaleDateString()} a la hora ${hora}`;
+
+      await axios.post(
+        whatsappURL,
+        { number, message },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      window.open("/Pantalla4View", "_parent");
+
+    } catch (error) {
+      isLoading.value = false;
+
+      if (error.response?.data?.mensaje) {
+        mostrarModal(error.response.data.mensaje);
+      } else {
+        mostrarModal("Ocurrió un error inesperado.");
+      }
+    }
 };
 
 // Atrás
@@ -106,22 +126,10 @@ const handlePagina2Click = () => {
   window.open("/PantallaFacturasView", "_parent");
 };
 
-// Montaje
-onMounted(() => {
-  const atras = document.getElementById("boton-atras");
-  if (atras) {
-    atras.addEventListener("click", handlePagina2Click);
-  }
-});
 </script>
-
-
-
 
 <template>
   <motion.div v-bind="fadeInUp">
-
-
     <Heading
       :mensaje="
         'Hola, ' + datosCuenta.Nombres
@@ -138,7 +146,6 @@ onMounted(() => {
         <h1 class="proveedores mb-4" id="cantidad-pagar">
           <span>{{ formatPesos(pagarValor) }}</span> a Alpina
         </h1>
-
         <div class="form-group">
           <label for="pagar" id="label-pagar" class="input-label">
             <input
@@ -160,17 +167,85 @@ onMounted(() => {
           </label>
         </div>
         <div class="button-banner-pedidos">
-          <p v-if="errorMessage" class="error-text">{{ errorMessage }}</p>
-          <button type="button" id="boton-pago" class="boton" @click="handlePagoClick">Pagar</button>
-          <button type="button" id="boton-atras" class="boton">Atrás</button>
+          <p v-if="errorMessage & !isLoading" class="error-text">{{ errorMessage }}</p>
+          <div v-if="!isLoading">
+            <button type="button" id="boton-pago" class="boton" @click="handlePagoClick">Pagar</button>
+            <button type="button" id="boton-atras" class="boton" @click="handlePagina2Click">Atrás</button>
+          </div>
+          <div v-else class="loader-container">
+            <div class="loader"></div>
+              <p>Procesando pago...</p>
+          </div>
         </div>
       </div>
     </section>
     <SesionExpirada />
+    <div v-if="showModal" class="modal-overlay">
+      <div class="modal-box">
+        <p>{{ modalMessage }}</p>
+      </div>
+    </div>
   </motion.div>
-</template>
+</template> 
 
 <style scoped>
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.modal-box {
+  background: #fff;
+  padding: 24px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.modal-box h3 {
+  margin-bottom: 12px;
+  font-size: 20px;
+}
+
+.modal-box p {
+  margin-bottom: 20px;
+  color: #444;
+}
+
+
+
+
+
+
+
+
+.loader-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 1rem;
+}
+.loader{
+  border: 5px solid #5708eb;
+  border-top: 5px solid #ff00f2;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin{
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); };
+}
 .error-text {
   color: red;
   font-size: 0.99rem;

@@ -3,21 +3,48 @@ import { onMounted, ref, computed } from 'vue'
 import { motion } from 'motion-v'
 import axios from 'axios'
 import { activarSesionExpirada } from "../stores/session.js";
+import { useRouter } from "vue-router";
+import headerDis from "../components/UI/headerDis.vue";
 
 const movimientosEnlace = ref([])
 const ruta = ref("asv545")
 const fechaSeleccionada = ref(new Date().toISOString().substr(0, 10))
+const filtroFactura = ref("");
+const filtroTelefono = ref("");
+
+const router = useRouter();
+
+const listaFacturas = computed(() => {
+  const facturas = movimientosEnlace.value.map(mov => mov.NroFacturaAlpina);
+  return [...new Set(facturas)];
+})
+
+const listaTelefonos = computed(()=>{
+  const telefonos = movimientosEnlace.value.map(mov => mov.TelefonoTransportista);
+  return [...new Set(telefonos)];
+})
 
 const formatoMiles = (numero) => {
   return new Intl.NumberFormat('es-ES').format(Number(numero));
 };
 
 const movimientosFiltrados = computed(() => {
-  return movimientosEnlace.value.filter(mov =>{
+  return movimientosEnlace.value.filter(mov => {
     const fechaMov = mov.FechaHoraMovimiento?.substring(0, 10);
-    return fechaMov === fechaSeleccionada.value;
+
+    const coincideFecha = fechaMov === fechaSeleccionada.value;
+
+    const coincideFactura =
+      !filtroFactura.value ||
+      mov.NroFacturaAlpina?.toString().includes(filtroFactura.value);
+
+    const coincideTelefono =
+      !filtroTelefono.value ||
+      mov.TelefonoTransportista?.toString().includes(filtroTelefono.value);
+
+    return coincideFecha && coincideFactura && coincideTelefono;
   });
-})
+});
 
 const totalRecaudo = computed(() => {
   return movimientosFiltrados.value.reduce((acc, mov) => acc + (mov.Monto || 0), 0)
@@ -35,38 +62,63 @@ onMounted(async () => {
     }
   }
 })
+const logout = () => {
+  localStorage.removeItem("admin_token");
+  localStorage.removeItem("company");
+  localStorage.removeItem("admin_tipo");
+  localStorage.removeItem("admin_userData");
+  localStorage.removeItem("admin_isAuthenticated");
+  router.push("/LoginView");
+};
 </script>
 
 <template>
+    <headerDis />
   <motion.div class="pantalla">
-    <section class="logo-container">
-      <img src="/public/enlaceFiado.png" alt="logo Enlace CRM" class="logo-main" />
-    </section>
-    
-    <div class="card">
-      <section class="total-recaudo">
-        <div class="recaudo-linea">
-          <span class="label">Total recaudo del día:</span>
-          <input type="date" v-model="fechaSeleccionada" />
-          <span class="monto-total">${{ formatoMiles(totalRecaudo)}}</span>
-        </div>
-      </section>
+    <div class="num_contacto">
+      Contacta soporte al siguiente número: 319-662-2476
+    </div>
 
+    <div class="card">
+      <div class="top">
+        <div class="box">
+          <span class="label-mes">Total recaudo del día:</span>
+          <input type="date" v-model="fechaSeleccionada" />
+          <span class="monto-header">
+            $ {{ formatoMiles(totalRecaudo) }}
+          </span>
+        </div>
+      </div>
+
+      <!-- FILTROS -->
+      <div class="inputs-wrapper">
+        <label class="input-label">
+          <input class="form-control" type="text" v-model="filtroFactura" placeholder="" />
+          <span class="floating-label">Buscar factura</span>
+        </label>
+
+        <label class="input-label">
+          <input class="form-control" type="text" v-model="filtroTelefono" placeholder="" />
+          <span class="floating-label">Buscar teléfono</span>
+        </label>
+      </div>
+
+      <!-- TABLA -->
       <section class="tabla">
-        <div class="titulosTabla">
-          <span>Factura</span>
-          <span>Teléfono Transportista</span>
-          <span>Monto</span>
+        <div class="thead">
+          <div>Factura</div>
+          <div>Teléfono Transportista</div>
+          <div>Monto</div>
         </div>
 
         <div
+          class="row"
           v-for="mov in movimientosFiltrados"
           :key="mov.IdMovimiento"
-          class="fila"
         >
-          <span>{{ mov.NroFacturaAlpina }}</span>
-          <span>{{ mov.TelefonoTransportista }}</span>
-          <span>${{ formatoMiles(mov.Monto) }}</span>
+          <input type="text" :value="mov.NroFacturaAlpina" disabled />
+          <input type="text" :value="mov.TelefonoTransportista" disabled />
+          <input type="text" :value="`$ ${formatoMiles(mov.Monto)}`" disabled />
         </div>
       </section>
     </div>
@@ -76,112 +128,241 @@ onMounted(async () => {
 <style scoped>
 
 .pantalla {
-  background-color: #1a0f8b;
+  background: #251886;
   min-height: 100vh;
-  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding-top: 40px;
-  font-family: Arial, sans-serif;
+  font-family: 'Segoe UI', Arial, sans-serif;
 }
-
 .logo-container {
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 
 .logo-main {
   height: 70px;
-  object-fit: contain;
 }
 
-.total-recaudo {
+.logout {
+  width: 100%;
+  max-width: 900px;
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-bottom: 2rem;
-  
+  justify-content: flex-end;
 }
 
-.recaudo-linea {
+.boton-logout {
+  padding: 10px 30px;
+  border-radius: 20px;
+  border: none;
+  background: #dd3590;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.boton-logout:hover {
+  background: #f15bab;
+}
+
+.num_contacto {
+  color: white;
+  font-weight: bold;
+  width: 100%;
+  max-width: 900px;
+  text-align: right;
+  margin: 15px 0;
+  transform: translateX(-100px);
+}
+.card {
+  width: 700px;
+  background: #f4f7fb;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+}
+
+.top {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 25px;
+}
+
+.box {
+  background: #251886;
+  padding: 16px 25px;
+  border-radius: 15px;
+}
+
+.header-recaudo {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  justify-content: space-between;
 }
 
-.label {
-  color: #dd3590;
-  font-weight: 900;
+.info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.label-mes {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
   white-space: nowrap;
-  font-size: 1.2rem;
+  transform: translateX(-30px);
+}
+
+
+input[type="date"] {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid white;
+  color: white;
+  font-size: 14px;
+  padding-bottom: 2px;
+}
+
+.monto-header {
+  color: white;
+  font-size: 1.6rem;
+  font-weight: bold;
+}
+
+.monto-header {
+  color: white;
+  font-size: 1.6rem;
+  font-weight: bold;
 }
 
 input[type="date"] {
-  border: none;
-  border-bottom: 2px solid #0043ce;
-  padding: 4px 2px;
   background: transparent;
-  color: #0043ce;
-  font-size: 1.1rem;
-  outline: none;
-  width: 170px;
+  border: none;
+  border-bottom: 2px solid #ffffff;
+  color: white;
+  margin: 5px 0;
+  transform: translateX(8px);
 }
 
 
-.monto-total {
-  font-size: 1.7rem;
-  font-weight: bold;
-  color: #0043ce;
-  white-space: nowrap;
-}
-
-/* TABLA */
-.tabla {
+.inputs-wrapper {
   display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
+  gap: 15px;
+  margin-bottom: 20px;
 }
 
-.titulosTabla {
-  display: flex; 
-  justify-content: space-between; 
-  font-weight: bold; 
-  color: #dd3590;
-  margin-bottom: 0.5rem;
-  font-size: 1.1rem;
+.input-label {
+  position: relative;
+  width: 100%;
+  outline: none;
 }
 
-.fila {
-  display: flex; 
-  justify-content: space-between; 
-  border-top: 1px solid #9bb1ff;
-  padding-top: 0.5rem;
-  color: #0043ce;
-  font-size: 1.1rem;
+.form-control {
+  width: 100%;
+  border: none;
+  outline: none;
+  border-bottom: 2px solid #251886;
+  padding: 8px 0;
+  background: transparent;
 }
 
-body, html {
-  background-color: #1a1a7e !important;
-  margin: 0;
-  padding: 0;
-  height: 100%;
+.floating-label {
+  position: absolute;
+  top: 8px;
+  left: 0;
+  font-size: 14px;
+  outline: none;
+  box-shadow: none;
+  transition: 0.3s;
+  
 }
 
-* {
-  background-color: transparent !important;
+.form-control:focus + .floating-label,
+.form-control:not(:placeholder-shown) + .floating-label {
+  top: -12px;
+  font-size: 11px;
+  outline: none;
+  box-shadow: none;
+  border-color: #251886; /* o transparent */
 }
 
-.card {
-  background-color: white !important;
-  padding: 50px;
-  border-radius: 25px;
-  width: 1040px;
-  margin: 60px auto;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+.tabla {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  
 }
 
-.main-container, .container, .wrapper, .fondo, .page {
-  background-color: transparent !important;
+.thead {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  background: #251886;
+  color: white;
+  padding: 12px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 15px;
+  padding: 18px;
+  border-bottom: 1px solid #ffffff;
+}
+
+.row:hover {
+  background: #ffffff;
+}
+
+.row input {
+  border: 1.5px solid #ffffff;
+  border-radius: 6px;
+  padding: 8px;
+  text-align: center;
+  background: #f9fafb;
+}
+
+@media (max-width: 768px) {
+  .card {
+    width: 95%;
+  }
+
+  .inputs-wrapper {
+    flex-direction: column;
+  }
+
+  .num_contacto {
+    text-align: center;
+  }
+}
+
+:deep(input:focus),
+:deep(input:focus-visible),
+:deep(input:active) {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Chrome / Edge focus ring */
+:deep(input[type="text"]:focus-visible) {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Autofill / focus interno */
+:deep(input:-webkit-autofill),
+:deep(input:-webkit-autofill:focus) {
+  -webkit-box-shadow: 0 0 0 1000px #f4f7fb inset !important;
+  box-shadow: 0 0 0 1000px #f4f7fb inset !important;
+  -webkit-text-fill-color: #000 !important;
+}
+
+/* Evitar highlight azul al click */
+:deep(*) {
+  -webkit-tap-highlight-color: transparent;
 }
 
 </style>
