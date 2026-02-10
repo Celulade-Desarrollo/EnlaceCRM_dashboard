@@ -1,116 +1,90 @@
 <script setup>
-import { computed, ref, onMounted } from 'vue';
-import { motion } from "motion-v";
-import axios from 'axios';
+import { computed, ref, onMounted } from 'vue'
+import { motion } from "motion-v"
+import axios from 'axios'
 
 const props = defineProps({
-  cupoTotal: {
-    type: String,
-    required: true
-  },
-  cupoDisp:{
-    type: String,
-    required: true
-  },
-  fechaAbono:{
-    type: String,
-    required: true
-  }
-});
+  cupoTotal: { type: String, required: true },
+  cupoDisp: { type: String, required: true },
+  fechaAbono: { type: String, required: true }
+})
 
-const estadoCuenta = ref({});
-const token = localStorage.getItem("token");
-const datosCuenta = JSON.parse(localStorage.getItem("datosCuenta")) || {};
-console.log("datosCuenta en CardAbonoCupos:", datosCuenta);
-const bloqueoMora = (datosCuenta.BloqueoPorMora);
-//const valorProximoAbono =
+const estadoCuenta = ref({})
+const token = localStorage.getItem("token")
+const datosCuenta = JSON.parse(localStorage.getItem("datosCuenta")) || {}
+const bloqueoMora = datosCuenta.BloqueoPorMora
 
-const formatoMiles = (numero) => {
-  return new Intl.NumberFormat('es-ES').format(Number(numero));
-};
+const formatoMiles = (numero) =>
+  new Intl.NumberFormat('es-ES').format(Number(numero || 0))
 
 const fechaFormateada = computed(() => {
-  if (!props.fechaAbono) return '';
-  
-  const [year, month, day] = props.fechaAbono.split('T')[0].split('-');
-  const fecha = new Date(Number(year), Number(month) - 1, Number(day));
-
-  return fecha.toLocaleDateString('es-ES', {
+  if (!props.fechaAbono) return ''
+  const [y, m, d] = props.fechaAbono.split('T')[0].split('-')
+  return new Date(y, m - 1, d).toLocaleDateString('es-ES', {
     day: 'numeric',
     month: 'long',
     year: 'numeric'
-  });
-});
+  })
+})
 
-onMounted (async () => {
- const estadoCuentaResponse = await axios.get(
-      "/api/pagos/estado-cuenta",
-      {
-        params: { identificadorTendero: datosCuenta.Cedula_Cliente },
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json"
-        }
+onMounted(async () => {
+  const response = await axios.get(
+    '/api/pagos/estado-cuenta',
+    {
+      params: { identificadorTendero: datosCuenta.Cedula_Cliente },
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
       }
-    );
+    }
+  )
+  estadoCuenta.value = response.data
+})
 
-  estadoCuenta.value = estadoCuentaResponse.data;
-  console.log("estadocuentaa",estadoCuenta.value)
-});
+const movimientos = computed(() =>
+  estadoCuenta.value.movimientos || []
+)
 
-//deuda calculada
+const facturas = computed(() =>
+  movimientos.value.filter(m => m.IdTipoMovimiento === 1)
+)
+
+const saldoFactura = (f) => {
+  const capitalPendiente = (f.Monto || 0) - (f.AbonoUsuario || 0)
+  if (capitalPendiente <= 0) return 0
+  const interesesProyectados = (f.AbonoUsuario || 0) === 0
+    ? Math.max((f.MontoMasIntereses || 0) - (f.Monto || 0), 0)
+    : 0
+
+  return capitalPendiente + interesesProyectados
+};
+
+
 const deudaTotalCalculada = computed(() => {
-  if (!estadoCuenta.value.movimientos) return 0;
-
-  const facturas = estadoCuenta.value.movimientos.filter(m => m.IdTipoMovimiento === 1);
-
-  let total = 0;
-
-  facturas.forEach(fact => {
-    const saldo = 
-      (fact.MontoMasIntereses || fact.Monto) -
-      (fact.AbonoUsuario || 0);
-      //(fact.Intereses || 0);
-      // (fact.Fees || 0) -
-      // (f.InteresesMora || 0);
-
-    if (saldo > 0) total += saldo;
-  });
-
-  return total;
+  return facturas.value.reduce((acc, f) => {
+    return acc + saldoFactura(f)
+  }, 0)
 });
 
-// valor proixmo de abono
 const valorProximoAbono = computed(() => {
-  if (!estadoCuenta.value.movimientos) return 0;
+  const pendientes = facturas.value
+    .map(f => ({
+      ...f,
+      saldo: saldoFactura(f),
+      fecha: new Date(f.FechaPagoProgramado)
+    }))
+    .filter(f => f.saldo > 0)
 
-  const facturas = estadoCuenta.value.movimientos.filter(m => m.IdTipoMovimiento === 1);
+  if (pendientes.length === 0) return 0
 
-  if (facturas.length === 0) return 0;
+  const fechaMin = pendientes
+    .map(f => f.fecha)
+    .reduce((min, f) => f < min ? f : min)
 
-
-  const fechaMin = facturas
-    .map(f => new Date(f.FechaPagoProgramado))
-    .reduce((min, fecha) => fecha < min ? fecha : min);
-
-  const facturasDelDia = facturas.filter(
-    f => new Date(f.FechaPagoProgramado).toDateString() === fechaMin.toDateString()
-  );
-
-  const total = facturasDelDia.reduce((acc, f) => {
-    const saldo =
-      (f.MontoMasIntereses || f.Monto) -
-      (f.AbonoUsuario || 0);
-      // (f.Intereses || 0) -
-      // (f.Fees || 0) -
-      // (f.InteresesMora || 0);
-
-    return acc + Math.max(saldo, 0);
-  }, 0);
-
-  return total;
+  return pendientes
+    .filter(f => f.fecha.toDateString() === fechaMin.toDateString())
+    .reduce((acc, f) => acc + f.saldo, 0)
 });
-
 </script>
 
 <template>
