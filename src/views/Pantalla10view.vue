@@ -84,48 +84,49 @@ async function downloadExcel() {
 
     // ✅ Se agregan Latitud y Longitud sin modificar nada más
     const dataTransformada = dataArray.map(
-      ({
-        Id,
-        Estado_Scoring,
-        Numero_de_Cliente_Alpina,
-        nbCliente,
-        nbAgenteComercial,
-        Estado,
-        ...rest
-      }) => {
-        return {
-          ...rest,
-          Autorizacion_Habeas_Data: rest.Autorizacion_Habeas_Data ? "Sí" : "No",
-          Autorizacion_Medios_de_Contacto: rest.Autorizacion_Medios_de_Contacto
-            ? "Sí"
-            : "No",
-          Registrado_Camara_Comercio: rest.Registrado_Camara_Comercio
-            ? "Sí"
-            : "No",
-          Declara_Renta: rest.Declara_Renta ? "Sí" : "No",
-          Esta_obligado_a_tener_RUT_por_tu_actividad_economica:
-            rest.Esta_obligado_a_tener_RUT_por_tu_actividad_economica
-              ? "Sí"
-              : "No",
-          Persona_expuesta_politicamente_PEP:
-            rest.Persona_expuesta_politicamente_PEP ? "Sí" : "No",
-          Familiar_expuesto_politicamente_PEP:
-            rest.Familiar_expuesto_politicamente_PEP ? "Sí" : "No",
-          Operaciones_moneda_extranjera: rest.Operaciones_moneda_extranjera
-            ? "Sí"
-            : "No",
-          Declaracion_de_nacionalidad_y_residencia_fiscal_en_Colombia:
-            rest.Declaracion_de_nacionalidad_y_residencia_fiscal_en_Colombia
-              ? "Sí"
-              : "No",
-          // ✅ Campos nuevos agregados
-          Latitud: rest.Latitud || "",
-          Longitud: rest.Longitud || "",
-          Fecha_Envio_Formulario: rest.Fecha_Envio_Formulario ? new Date(rest.Fecha_Envio_Formulario) : "",
-          Estado: Estado,
-        };
-      }
-    );
+  ({
+    Id,
+    Estado_Scoring,
+    Numero_de_Cliente_Alpina,
+    nbCliente,
+    nbAgenteComercial,
+    Estado,
+    ...rest
+  }) => {
+    const nombreTienda = Array.isArray(rest.Nombre_Tienda)
+      ? rest.Nombre_Tienda.find(v => v) || ""
+      : rest.Nombre_Tienda ?? "";
+
+    return {
+      ...rest,
+
+      Nombre_Tienda: nombreTienda,
+
+      Autorizacion_Habeas_Data: rest.Autorizacion_Habeas_Data ? "Sí" : "No",
+      Autorizacion_Medios_de_Contacto:
+        rest.Autorizacion_Medios_de_Contacto ? "Sí" : "No",
+      Registrado_Camara_Comercio:
+        rest.Registrado_Camara_Comercio ? "Sí" : "No",
+      Declara_Renta: rest.Declara_Renta ? "Sí" : "No",
+      Esta_obligado_a_tener_RUT_por_tu_actividad_economica:
+        rest.Esta_obligado_a_tener_RUT_por_tu_actividad_economica ? "Sí" : "No",
+      Persona_expuesta_politicamente_PEP:
+        rest.Persona_expuesta_politicamente_PEP ? "Sí" : "No",
+      Familiar_expuesto_politicamente_PEP:
+        rest.Familiar_expuesto_politicamente_PEP ? "Sí" : "No",
+      Operaciones_moneda_extranjera:
+        rest.Operaciones_moneda_extranjera ? "Sí" : "No",
+      Declaracion_de_nacionalidad_y_residencia_fiscal_en_Colombia:
+        rest.Declaracion_de_nacionalidad_y_residencia_fiscal_en_Colombia
+          ? "Sí"
+          : "No",
+
+      Latitud: rest.Latitud || "",
+      Longitud: rest.Longitud || "",
+      Estado: Estado,
+    };
+  }
+);
 
     const worksheet = XLSX.utils.json_to_sheet(dataTransformada);
     const workbook = XLSX.utils.book_new();
