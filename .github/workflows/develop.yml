@@ -1,5 +1,4 @@
-name: Deploy EnlaceCRM dashboard entorno desarrollo en servidor windows automatico
-name: Deploy EnlaceCRM dashboard entorno desarrollo en servidor windows automatico
+name: Deploy EnlaceCRM Entorno desarrollo dashboard en servidor windows automatico
 
 on:
   push:
@@ -19,15 +18,7 @@ jobs:
             git fetch --all
             git reset --hard origin/develop
           }
-      - name: Clonar repositorio en la ruta destino
-        shell: powershell
-        run: |
-          $destino = "C:\EnlaceCRM\EnlaceCRM_desarrollo\EnlaceCRM_dashboard"
-          if (Test-Path $destino) {
-            Set-Location $destino
-            git fetch --all
-            git reset --hard origin/develop
-          }
+
 
       - name: Instalar dependencias
         shell: powershell
