@@ -31,7 +31,6 @@ jobs:
           Set-Location "C:\EnlaceCRM\EnlaceCRM_desarrollo\EnlaceCRM_dashboard"
           npm run build
 
-      - name: Copiar archivos compilados a ruta de Nginx
         shell: powershell
         run: |
           $origen = "C:\EnlaceCRM\EnlaceCRM_desarrollo\EnlaceCRM_dashboard\dist"
