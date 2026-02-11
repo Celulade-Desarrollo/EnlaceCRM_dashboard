@@ -75,9 +75,9 @@ async function downloadExcel() {
   <div class="main-container">
     <!-- Tarjeta 1 -->
       <div class="card">
-        <button class="btn" @click="downloadExcel">
-          <!-- <img src="/dispersion.png" alt="dispersion" class="icon" /> -->
-          <span>Descargar estados cupo</span>
+        <button class="btn" @click="downloadExcel">          
+          <img src="/descargar.png" class="icon-download" />
+          <span>Descargar estados cupo disponible</span>
         </button>
       </div>
 
@@ -158,6 +158,21 @@ async function downloadExcel() {
   transform: scale(1.05);
 }
 
+.btn-download {
+  width: 300px;
+  height: 120px; 
+  justify-content: flex-start;
+  padding-left: 30px;
+  gap: 20px;
+}
+
+
+.icon-download {
+  position: static;
+  width: 45px;
+  height: 45px;
+  object-fit: contain;
+}
 
 .icon {
   position: absolute;
