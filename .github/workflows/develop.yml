@@ -34,34 +34,12 @@ jobs:
         run: |
           Set-Location "C:\EnlaceCRM\EnlaceCRM_desarrollo\EnlaceCRM_dashboard"
           npm install
-        shell: powershell
-        run: |
-          Set-Location "C:\EnlaceCRM\EnlaceCRM_desarrollo\EnlaceCRM_dashboard"
-          npm install
 
       - name: Compilar Vue app
         shell: powershell
         run: |
           Set-Location "C:\EnlaceCRM\EnlaceCRM_desarrollo\EnlaceCRM_dashboard"
           npm run build
-        shell: powershell
-        run: |
-          Set-Location "C:\EnlaceCRM\EnlaceCRM_desarrollo\EnlaceCRM_dashboard"
-          npm run build
-
-        shell: powershell
-        run: |
-          $origen = "C:\EnlaceCRM\EnlaceCRM_desarrollo\EnlaceCRM_dashboard\dist"
-          $destino = "C:\EnlaceCRM\EnlaceCRM_desarrollo\EnlaceCRM_dashboard"
-          $origen = "C:\EnlaceCRM\EnlaceCRM_desarrollo\EnlaceCRM_dashboard\dist"
-          $destino = "C:\EnlaceCRM\EnlaceCRM_desarrollo\EnlaceCRM_dashboard"
-          if (Test-Path $destino) {
-            Remove-Item -Recurse -Force "$destino\*"
-          } else {
-            New-Item -ItemType Directory -Path $destino | Out-Null
-          }
-          Copy-Item -Path "$origen\*" -Destination $destino -Recurse
-          Copy-Item -Path "$origen\*" -Destination $destino -Recurse
 
       - name: Reiniciar Nginx
         shell: powershell
