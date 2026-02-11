@@ -1,5 +1,4 @@
-name: Deploy EnlaceCRM dashboard entorno desarrollo en servidor windows automatico
-name: Deploy EnlaceCRM dashboard entorno desarrollo en servidor windows automatico
+name: Deploy EnlaceCRM Entorno desarrollo dashboard en servidor windows automatico
 
 on:
   push:
@@ -10,15 +9,6 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      - name: Clonar repositorio en la ruta destino
-        shell: powershell
-        run: |
-          $destino = "C:\EnlaceCRM\EnlaceCRM_desarrollo\EnlaceCRM_dashboard"
-          if (Test-Path $destino) {
-            Set-Location $destino
-            git fetch --all
-            git reset --hard origin/develop
-          }
       - name: Clonar repositorio en la ruta destino
         shell: powershell
         run: |
@@ -40,6 +30,17 @@ jobs:
         run: |
           Set-Location "C:\EnlaceCRM\EnlaceCRM_desarrollo\EnlaceCRM_dashboard"
           npm run build
+
+        shell: powershell
+        run: |
+          $origen = "C:\EnlaceCRM\EnlaceCRM_dashboard\dist"
+          $destino = "C:\Nginx\html\EnlaceCRM_dashboard"
+          if (Test-Path $destino) {
+            Remove-Item -Recurse -Force "$destino\*"
+          } else {
+            New-Item -ItemType Directory -Path $destino | Out-Null
+          }
+          Copy-Item -Path "$origen\*" -Destination $destino -Recurse
 
       - name: Reiniciar Nginx
         shell: powershell
