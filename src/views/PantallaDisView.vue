@@ -158,7 +158,6 @@ async function downloadExcel() {
   transform: scale(1.05);
 }
 
-
 .icon {
   position: absolute;
   top: 10px;
