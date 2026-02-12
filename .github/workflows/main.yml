@@ -17,8 +17,6 @@ jobs:
             Set-Location $destino
             git fetch --all
             git reset --hard origin/main
-          } else {
-            git clone https://github.com/TU_ORG/TU_REPO.git $destino
           }
 
       - name: Instalar dependencias
