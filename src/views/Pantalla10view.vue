@@ -169,4 +169,98 @@ async function downloadExcel() {
   Descargar Excel
 </button>
 
+    </div>
+     <section class="content">
+      <CreditBancoCard
+        v-for="record in creditDataRecords"
+        :key="record.id"
+        :data="record"
+        :bancowData="bancowData"
+        :token="token"
+      />
+    </section>
+    <SesionExpiradaLogin />
+  </motion.div>
+</template>
+
+<style scoped>
+.titulo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color:white;
+  margin-bottom: 10px;
+}
+.logout {
+  display: flex;
+  justify-content: right;
+  margin-top: 1rem;
+}
+.boton-logout {
+  padding: 10px 30px;
+  font-size: 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 600;
+  background: #dd3590;
+  color: #fff;
+  outline: none;
+  border: none;
+}
+.boton-logout:hover {
+  background-color: #f15bab;
+}
+.logo-container {
+  text-align: center;
+  margin-block: 1.5rem;
+}
+
+.logo-main {
+  width: min(180px, 80%);
+  height: auto;
+  display: inline;
+}
+
+.content {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.descargar-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.boton {
+  background-color: #dd3590;
+  color: white;
+  padding: 12px 50px;
+  border: none;
+  border-radius: 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  outline: none;
+  box-shadow: none;
+}
+.boton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.icono-btn {
+  width: 20px;
+  height: 20px;
+}
+
+
+.boton:hover {
+  background-color: #f15bab;
+}
+</style>
+
  
