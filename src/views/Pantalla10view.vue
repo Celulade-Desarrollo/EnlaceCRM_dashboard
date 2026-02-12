@@ -82,51 +82,51 @@ async function downloadExcel() {
     
     const dataArray = Array.isArray(data) ? data : [data];
 
-    // ✅ Se agregan Latitud y Longitud sin modificar nada más
-    const dataTransformada = dataArray.map(
-  ({
-    Id,
-    Estado_Scoring,
-    Numero_de_Cliente_Alpina,
-    nbCliente,
-    nbAgenteComercial,
-    Estado,
-    ...rest
-  }) => {
-    const nombreTienda = Array.isArray(rest.Nombre_Tienda)
-      ? rest.Nombre_Tienda.find(v => v) || ""
-      : rest.Nombre_Tienda ?? "";
-
-    return {
-      ...rest,
-
-      Nombre_Tienda: nombreTienda,
-
-      Autorizacion_Habeas_Data: rest.Autorizacion_Habeas_Data ? "Sí" : "No",
-      Autorizacion_Medios_de_Contacto:
-        rest.Autorizacion_Medios_de_Contacto ? "Sí" : "No",
-      Registrado_Camara_Comercio:
-        rest.Registrado_Camara_Comercio ? "Sí" : "No",
-      Declara_Renta: rest.Declara_Renta ? "Sí" : "No",
-      Esta_obligado_a_tener_RUT_por_tu_actividad_economica:
-        rest.Esta_obligado_a_tener_RUT_por_tu_actividad_economica ? "Sí" : "No",
-      Persona_expuesta_politicamente_PEP:
-        rest.Persona_expuesta_politicamente_PEP ? "Sí" : "No",
-      Familiar_expuesto_politicamente_PEP:
-        rest.Familiar_expuesto_politicamente_PEP ? "Sí" : "No",
-      Operaciones_moneda_extranjera:
-        rest.Operaciones_moneda_extranjera ? "Sí" : "No",
-      Declaracion_de_nacionalidad_y_residencia_fiscal_en_Colombia:
-        rest.Declaracion_de_nacionalidad_y_residencia_fiscal_en_Colombia
-          ? "Sí"
-          : "No",
-
-      Latitud: rest.Latitud || "",
-      Longitud: rest.Longitud || "",
-      Estado: Estado,
-    };
-  }
-);
+  // mostrar exel
+   const dataTransformada = dataArray.map(
+    ({
+      Id,
+      Estado_Scoring,
+      Numero_de_Cliente_Alpina,
+      nbCliente,
+      nbAgenteComercial,
+      Estado,
+      ...rest
+    }) => {
+      const nombreTienda = Array.isArray(rest.Nombre_Tienda)
+        ? rest.Nombre_Tienda.find(v => v) || ""
+        : rest.Nombre_Tienda ?? "";
+  
+      return {
+        ...rest,
+  
+        Nombre_Tienda: nombreTienda,
+  
+        Autorizacion_Habeas_Data: rest.Autorizacion_Habeas_Data ? "Sí" : "No",
+        Autorizacion_Medios_de_Contacto:
+          rest.Autorizacion_Medios_de_Contacto ? "Sí" : "No",
+        Registrado_Camara_Comercio:
+          rest.Registrado_Camara_Comercio ? "Sí" : "No",
+        Declara_Renta: rest.Declara_Renta ? "Sí" : "No",
+        Esta_obligado_a_tener_RUT_por_tu_actividad_economica:
+          rest.Esta_obligado_a_tener_RUT_por_tu_actividad_economica ? "Sí" : "No",
+        Persona_expuesta_politicamente_PEP:
+          rest.Persona_expuesta_politicamente_PEP ? "Sí" : "No",
+        Familiar_expuesto_politicamente_PEP:
+          rest.Familiar_expuesto_politicamente_PEP ? "Sí" : "No",
+        Operaciones_moneda_extranjera:
+          rest.Operaciones_moneda_extranjera ? "Sí" : "No",
+        Declaracion_de_nacionalidad_y_residencia_fiscal_en_Colombia:
+          rest.Declaracion_de_nacionalidad_y_residencia_fiscal_en_Colombia
+            ? "Sí"
+            : "No",
+  
+        Latitud: rest.Latitud || "",
+        Longitud: rest.Longitud || "",
+        Estado: Estado,
+      };
+    }
+  );
 
     const worksheet = XLSX.utils.json_to_sheet(dataTransformada);
     const workbook = XLSX.utils.book_new();
@@ -169,96 +169,4 @@ async function downloadExcel() {
   Descargar Excel
 </button>
 
-    </div>
-     <section class="content">
-      <CreditBancoCard
-        v-for="record in creditDataRecords"
-        :key="record.id"
-        :data="record"
-        :bancowData="bancowData"
-        :token="token"
-      />
-    </section>
-    <SesionExpiradaLogin />
-  </motion.div>
-</template>
-
-<style scoped>
-.titulo {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color:white;
-  margin-bottom: 10px;
-}
-.logout {
-  display: flex;
-  justify-content: right;
-  margin-top: 1rem;
-}
-.boton-logout {
-  padding: 10px 30px;
-  font-size: 16px;
-  border-radius: 20px;
-  cursor: pointer;
-  font-weight: 600;
-  background: #dd3590;
-  color: #fff;
-  outline: none;
-  border: none;
-}
-.boton-logout:hover {
-  background-color: #f15bab;
-}
-.logo-container {
-  text-align: center;
-  margin-block: 1.5rem;
-}
-
-.logo-main {
-  width: min(180px, 80%);
-  height: auto;
-  display: inline;
-}
-
-.content {
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  align-items: center;
-}
-
-.descargar-container {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 1.5rem;
-}
-
-.boton {
-  background-color: #dd3590;
-  color: white;
-  padding: 12px 50px;
-  border: none;
-  border-radius: 20px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  outline: none;
-  box-shadow: none;
-}
-.boton {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-}
-.icono-btn {
-  width: 20px;
-  height: 20px;
-}
-
-
-.boton:hover {
-  background-color: #f15bab;
-}
-</style>
+ 
