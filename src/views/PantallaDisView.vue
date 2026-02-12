@@ -1,11 +1,72 @@
 <script setup>
 import { useRouter } from "vue-router";
 import HeaderDis from "../components/UI/headerDis.vue";
+import SesionExpiradaLogin from "../components/UI/SesionExpiradaLogin.vue";
+import { activarSesionExpirada } from "../stores/session.js";
+import axios from "axios";
+import * as XLSX from "xlsx";
+
+
+const token = localStorage.getItem("admin_token");
 
 const router = useRouter();
 
 const goToTesoreria = () => router.push("/PantallaTesoreriaView");
 const goToDistribuidores = () => router.push("/PantallaDistribuidoresView");
+
+async function downloadExcel() {
+  try {
+    const response = await axios.get("/api/flujoRegistroEnlace/consultarEstadoCupo/todos", {
+       headers: {
+         Authorization: `Bearer ${token}`,
+         "Content-Type": "application/json",
+       },
+    });
+
+    const data = response.data;
+    
+    const dataArray = Array.isArray(data) ? data : [data];
+
+    //  const formattedData = dataArray.map(item => ({
+    //   ...item,
+      
+    //   tesoreria_status: item.tesoreria_status === true
+    //     ? "Confirmado"  
+    //     : "No confirmado",
+    //   banco_status: item.banco_status === true
+    //     ? "Confirmado"
+    //     : "No confirmado",
+    // }));
+
+    const worksheet = XLSX.utils.json_to_sheet(dataArray);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Datos");
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    const blob = new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "EstadoCupoDisponible.xlsx");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error("Error al generar Excel:", error);
+    alert("No se pudo descargar el archivo");
+    if (error.response?.status === 401) {
+      activarSesionExpirada();
+    }
+  }
+};
 </script>
 
 <template>
@@ -13,6 +74,13 @@ const goToDistribuidores = () => router.push("/PantallaDistribuidoresView");
   
   <div class="main-container">
     <!-- Tarjeta 1 -->
+      <div class="card">
+        <button class="btn" @click="downloadExcel">
+          <!-- <img src="/dispersion.png" alt="dispersion" class="icon" /> -->
+          <span>Descargar estados cupo</span>
+        </button>
+      </div>
+
     <div class="card">
       <button class="btn" @click="goToTesoreria">
         <img src="/dispersion.png" alt="dispersion" class="icon" />
@@ -27,6 +95,7 @@ const goToDistribuidores = () => router.push("/PantallaDistribuidoresView");
       </button>
     </div>
   </div>
+  <SesionExpiradaLogin />
 </template>
 
 <style scoped>
