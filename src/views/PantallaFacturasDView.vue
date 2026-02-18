@@ -21,7 +21,6 @@ const estadoCuenta = ref(null)
 const bloquearBotones = ref(false);
 const isLoading = ref(true);
 const facturasEnMora = ref([]);
-
 const router = useRouter();
 
 const bloqueoMora = datosCuenta.BloqueoPorMora;
@@ -179,7 +178,7 @@ onMounted(async () => {
 
     console.log("Facturas pendientes:", facturasDisponibles.value);
     console.log("Estado de cuenta:", estadoCuentaResponse.data);
-
+    console.log("estadoCuenta.value:", estadoCuenta.value.cupoDisponible);
   } catch (error) {
     console.error("Error al cargar facturas o el estado de cuenta:", error);
     if (error.response?.status === 401) {
@@ -241,7 +240,7 @@ onMounted(async () => {
     </div>
 
     <div class="header-container">
-      <h3 class="header-text">Cupo disponible: {{ formatPesos(datosCuenta.CupoDisponible) }}</h3>
+      <h3 class="header-text">Cupo disponible: {{ formatPesos(estadoCuenta.cupoDisponible) }}</h3>
     </div>
 
         <div v-if="bloqueoMora" class="alert alert-danger mt-3">
