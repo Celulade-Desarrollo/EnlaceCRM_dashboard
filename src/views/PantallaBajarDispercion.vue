@@ -99,39 +99,30 @@ async function downloadExcel() {
   }
 };
 const handleguardarConfirmar = async () => {
-    if (!confirmacionBanco.value) {
-    mensajeError.value = "Por favor, confirma la dispersión";
-    return;
-  }
-
-  if (!dispersionId.value) {
-    mensajeError.value = "No se encontró la dispersión";
+  const filasConfirmadas = dispersiones.value.filter(f => f.confirmacion === true && f.banco_status !== true);
+    if (filasConfirmadas.length === 0) {
+    mensajeError.value = "Debes confirmar al menos una dispersión para guardar";
     return;
   }
 
   mensajeError.value = "";
 
-  const payloadPut = {
-    estado: true
-  };
-
-  console.log("ID:", dispersionId.value);
-  console.log("Payload que se va a enviar:", payloadPut);
-
-  try {
-    await axios.put(`/api/editar-dispersion/estadoBanco/${dispersionId.value}`,
-      payloadPut,
+try {
+  for (const fila of filasConfirmadas) {
+    await axios.put(`/api/editar-dispersion/estadoBanco/${fila.id}`,
+      {estado: true},
       {
         headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       }
     );
+  }
 
     window.location.reload();
 
-  } catch (error) {
+} catch (error) {
     console.error("Error al guardar confirmación:", error);
      if (error.response?.status === 401) {
       activarSesionExpirada();
@@ -197,11 +188,11 @@ onMounted(async () => {
           <div>
             <select
               class="form-control text-center"
-              v-model="confirmacionBanco"
-              @change="dispersionId = fila.id"
+              v-model="fila.confirmacion"
+              :disabled="fila.banco_status === true"
             >
-              <option value="">Selecciona</option>
-              <option value="si">Confirmado</option>
+              <option :value="false">Selecciona</option>
+              <option :value="true">Confirmado</option>
             </select>
           </div>
         </div>
