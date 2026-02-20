@@ -17,6 +17,9 @@ const bloqueoMora = datosCuenta.BloqueoPorMora
 const formatoMiles = (numero) => {
   return Number(numero || 0).toLocaleString('es-CO');
 };
+const formatoMiles = (numero) => {
+  return Number(numero || 0).toLocaleString('es-CO');
+};
 
 const fechaFormateada = computed(() => {
   if (!props.fechaAbono) return ''
@@ -95,8 +98,8 @@ const valorProximoAbono = computed(() => {
     <h3 class="font-bold text-lg">Estado de Mi crédito</h3>
     <div class="flex gap-3 flex-column mb-3">
       <h3 class="flex gap-2">
-        Cupo total  $
-        <p class="font-bold">{{ cupoTotal }}</p>
+        Cupo total
+        <p class="font-bold">$ {{ cupoTotal }}</p>
       </h3>
       <h3 class="flex gap-2"> Cupo disponible $ <p class="font-bold">{{ formatoMiles(props.cupoDisp) }}</p></h3>
       
@@ -123,7 +126,6 @@ const valorProximoAbono = computed(() => {
 </section>
 </motion.div>
 </template>
-
 <style scoped>
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {

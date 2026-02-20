@@ -88,6 +88,7 @@ const goToPantalla5 = () => {
   <Heading :mensaje="'Hola, ' + datosCuenta.Nombres" />
   <motion.div v-bind="fadeInUp">
     <section class="content">
+      
       <CardAbonoCupos
         :cupoTotal="estadoCuenta.CupoFinal"
         :cupoDisp="estadoCuenta.CupoDisponible"
@@ -96,6 +97,7 @@ const goToPantalla5 = () => {
         @abonar="goToPantallaAbonar"
         @movimientos="goToPantalla5"
       />
+      
       
       <!-- Tarjeta de proveedor -->
       <div class="card">
@@ -163,6 +165,7 @@ const goToPantalla5 = () => {
   border: none;
   outline: none;
   box-shadow: none;
+
 }
 .card-header {
   background-color: #251886;
