@@ -18,8 +18,6 @@ const formatoMiles = (numero) => {
   return Number(numero || 0).toLocaleString('es-CO');
 };
 
-
-
 const fechaFormateada = computed(() => {
   if (!props.fechaAbono) return ''
   const [y, m, d] = props.fechaAbono.split('T')[0].split('-')
