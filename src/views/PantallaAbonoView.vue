@@ -160,8 +160,8 @@ const proximoPagoMonto = computed(() => {
         <div class="provider-content">
           <div class="bg-white w-full rounded-xl flex flex-col items-center relative justify-start pt-3">
             <div class="flex gap-3 flex-column mb-3">
-              <h2 class="text-xl flex gap-3 mt-4">Deuda total $<p class="font-bold">{{ formatoMiles(estadoCuenta.deudaTotal) }}</p></h2>
-              <h3 class="flex text-[13px]">Proximo pago$: <p  class="font-bold">{{ formatoMiles(proximoPagoMonto) }}</p></h3>
+              <h2 class="text-xl flex gap-3 mt-4">Deuda total<p class="font-bold">$ {{ formatoMiles(estadoCuenta.deudaTotal) }}</p></h2>
+              <h3 class="flex text-[13px]">Proximo pago:<p  class="font-bold">$ {{ formatoMiles(proximoPagoMonto) }}</p></h3>
               <h3 class="flex text-[13px]">Fecha del siguiente abono: <p class="font-bold">{{ fechaFormateada  }}</p></h3>
 
             </div>
@@ -184,7 +184,8 @@ const proximoPagoMonto = computed(() => {
                 Pago en Corresponsales y oficinas
               </span>
               <button class="button" @click="goToPantallaCorresponsal">
-                ver mapa
+              <img src="../../public/mapa.png" alt="Mapa" class="icono" />
+
               </button>
             </div>
           </div>
@@ -211,22 +212,20 @@ const proximoPagoMonto = computed(() => {
 }
 
 .button {
-  background-color: #dd3590;
-  color: white;
-  border: none;
-  padding: 1px 25px;
-  border-radius: 25px;
-  font-weight: bold;
-  cursor: pointer;
-  width: 200px;
-  margin-left: 8px;
-  display: block;
-  text-align: center;
-  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.icono {
+  width: 65%;
+  margin-left: 25px;
 }
 
 .button:hover {
-  background-color: #f15bab;
+  background-color: #F3F4F6
+;
 }
 
 .button:focus {
