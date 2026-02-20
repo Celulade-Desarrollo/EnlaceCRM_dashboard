@@ -14,8 +14,11 @@ const token = localStorage.getItem("token")
 const datosCuenta = JSON.parse(localStorage.getItem("datosCuenta")) || {}
 const bloqueoMora = datosCuenta.BloqueoPorMora
 
-const formatoMiles = (numero) =>
-  new Intl.NumberFormat('es-ES').format(Number(numero || 0))
+const formatoMiles = (numero) => {
+  return Number(numero || 0).toLocaleString('es-CO');
+};
+
+
 
 const fechaFormateada = computed(() => {
   if (!props.fechaAbono) return ''

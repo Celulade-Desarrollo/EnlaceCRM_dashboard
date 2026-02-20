@@ -54,9 +54,7 @@ const handleSubmit = async (event) => {
       router.push("/Pantalla14View");
     } else if (response.data.company === "bancow") {
       router.push("/Pantalla13View");
-    } else if (response.data.company === "alpina") {
-      router.push("/PantallaDistribuidoresView");
-    } else if (response.data.company === "surtialimentos") {
+    }  else if (response.data.company === "distribuidor") {
       router.push("/PantallaDisView");
     } else {
       
