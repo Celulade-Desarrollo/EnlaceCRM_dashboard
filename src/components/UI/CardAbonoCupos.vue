@@ -17,9 +17,7 @@ const bloqueoMora = datosCuenta.BloqueoPorMora
 const formatoMiles = (numero) => {
   return Number(numero || 0).toLocaleString('es-CO');
 };
-const formatoMiles = (numero) => {
-  return Number(numero || 0).toLocaleString('es-CO');
-};
+
 
 const fechaFormateada = computed(() => {
   if (!props.fechaAbono) return ''
