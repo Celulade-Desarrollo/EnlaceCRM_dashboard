@@ -73,7 +73,20 @@ async function downloadExcel() {
   <HeaderDis />
   
   <div class="main-container">
-    <!-- Tarjeta 1 -->
+    <div class="card">
+      <button class="btn" @click="goToDistribuidores">
+        <img src="/ruta.png" alt="ruta" class="icon" />
+        <span>Cierre de Ruta</span>
+      </button>
+    </div>
+    
+     <div class="card">
+      <button class="btn" @click="goToTesoreria">
+        <img src="/dispersion.png" alt="dispersion" class="icon" />
+        <span>Dispersión</span>
+      </button>
+    </div>
+
       <div class="card">
         <button class="btn" @click="downloadExcel">
           <!-- <img src="/dispersion.png" alt="dispersion" class="icon" /> -->
@@ -81,19 +94,9 @@ async function downloadExcel() {
         </button>
       </div>
 
-    <div class="card">
-      <button class="btn" @click="goToTesoreria">
-        <img src="/dispersion.png" alt="dispersion" class="icon" />
-        <span>Dispersión</span>
-      </button>
-    </div>
+   
 
-    <div class="card">
-      <button class="btn" @click="goToDistribuidores">
-        <img src="/ruta.png" alt="ruta" class="icon" />
-        <span>Cierre de Ruta</span>
-      </button>
-    </div>
+    
   </div>
   <SesionExpiradaLogin />
 </template>

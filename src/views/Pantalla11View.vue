@@ -100,7 +100,8 @@ async function downloadExcel() {
     
     const dataArray = Array.isArray(data) ? data : [data];
 
-    const dataTransformada = dataArray.map(
+// mostrar exel
+ const dataTransformada = dataArray.map(
   ({
     Id,
     Estado_Scoring,
@@ -144,7 +145,6 @@ async function downloadExcel() {
     };
   }
 );
-
 
     const worksheet = XLSX.utils.json_to_sheet(dataTransformada);
     const workbook = XLSX.utils.book_new();

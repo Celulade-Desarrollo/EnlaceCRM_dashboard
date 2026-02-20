@@ -75,8 +75,9 @@ const goToPantallaCorresponsal = () => {
   router.push("/PantallaCorresponsalView");
 };
 const formatoMiles = (numero) => {
-  return new Intl.NumberFormat('es-ES').format(Number(numero));
+  return Number(numero || 0).toLocaleString('es-CO');
 };
+
 
 // function formatFecha(fechaISO) {
 //   if (!fechaISO) return '';
@@ -89,23 +90,29 @@ const formatoMiles = (numero) => {
 //   });
 // }
 
-const fechaFormateada = computed(() => {
-  const fechaISO = estadoCuenta.value.FechaPagoProgramado;
-  if (!fechaISO) return '';
+const fechaProximoAbono = computed(() => {
+  const pendientes = facturas.value
+    .map(f => ({
+      ...f,
+      saldo: saldoFactura(f)
+    }))
+    .filter(f => f.saldo > 0);
 
-  const [year, month, day] = fechaISO.split('T')[0].split('-');
-  const fecha = new Date(
-    Number(year),
-    Number(month) - 1,
-    Number(day)
-  );
+  if (pendientes.length === 0) return '';
 
-  return fecha.toLocaleDateString('es-ES', {
+  const fechaMin = pendientes
+    .map(f => f.FechaPagoProgramado)
+    .reduce((min, fecha) => fecha < min ? fecha : min);
+
+  const [y, m, d] = fechaMin.split('T')[0].split('-');
+
+  return new Date(y, m - 1, d).toLocaleDateString('es-ES', {
     day: 'numeric',
     month: 'long',
     year: 'numeric'
   });
 });
+
 
 const proximoPagoMonto = computed(() => {
   const movimientos = estadoMovimientoPago.value.movimientos || [];
@@ -150,6 +157,55 @@ const proximoPagoMonto = computed(() => {
   return montoTotal;
 });
 
+const movimientos = computed(() =>
+  estadoMovimientoPago.value.movimientos || []
+);
+
+const facturas = computed(() =>
+  movimientos.value.filter(m => m.IdTipoMovimiento === 1)
+);
+
+const saldoFactura = (f) => {
+  const capitalPendiente = (f.Monto || 0) - (f.AbonoUsuario || 0);
+
+  if (capitalPendiente <= 0) return 0;
+
+  const interesesProyectados =
+    (f.AbonoUsuario || 0) === 0
+      ? Math.max((f.MontoMasIntereses || 0) - (f.Monto || 0), 0)
+      : 0;
+
+  return capitalPendiente + interesesProyectados;
+};
+
+const deudaTotalCalculada = computed(() => {
+  return facturas.value.reduce((acc, f) => {
+    return acc + saldoFactura(f);
+  }, 0);
+});
+
+const valorProximoAbono = computed(() => {
+  const pendientes = facturas.value
+    .map(f => ({
+      ...f,
+      saldo: saldoFactura(f),
+      fecha: new Date(f.FechaPagoProgramado)
+    }))
+    .filter(f => f.saldo > 0);
+
+  if (pendientes.length === 0) return 0;
+
+  const fechaMin = pendientes
+    .map(f => f.fecha)
+    .reduce((min, f) => (f < min ? f : min));
+
+  return pendientes
+    .filter(f => f.fecha.toDateString() === fechaMin.toDateString())
+    .reduce((acc, f) => acc + f.saldo, 0);
+});
+
+
+
 </script>
 
 <template>
@@ -160,9 +216,9 @@ const proximoPagoMonto = computed(() => {
         <div class="provider-content">
           <div class="bg-white w-full rounded-xl flex flex-col items-center relative justify-start pt-3">
             <div class="flex gap-3 flex-column mb-3">
-              <h2 class="text-xl flex gap-3 mt-4">Deuda total $<p class="font-bold">{{ formatoMiles(estadoCuenta.deudaTotal) }}</p></h2>
-              <h3 class="flex text-[13px]">Proximo pago$: <p  class="font-bold">{{ formatoMiles(proximoPagoMonto) }}</p></h3>
-              <h3 class="flex text-[13px]">Fecha del siguiente abono: <p class="font-bold">{{ fechaFormateada  }}</p></h3>
+              <h2 class="text-xl flex gap-3 mt-4">Deuda total $<p class="font-bold">{{ formatoMiles(deudaTotalCalculada) }}</p></h2>
+              <h3 class="flex text-[13px]">Proximo pago$: <p  class="font-bold">{{ formatoMiles(valorProximoAbono) }}</p></h3>
+              <h3 class="flex text-[13px]">Fecha del siguiente abono: <p class="font-bold">{{ fechaProximoAbono   }}</p></h3>
 
             </div>
             <h2 class="w-full text-center font-bold mb-2">¿Cómo quieres pagar?</h2>

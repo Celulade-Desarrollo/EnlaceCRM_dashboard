@@ -14,8 +14,11 @@ const token = localStorage.getItem("token")
 const datosCuenta = JSON.parse(localStorage.getItem("datosCuenta")) || {}
 const bloqueoMora = datosCuenta.BloqueoPorMora
 
-const formatoMiles = (numero) =>
-  new Intl.NumberFormat('es-ES').format(Number(numero || 0))
+const formatoMiles = (numero) => {
+  return Number(numero || 0).toLocaleString('es-CO');
+};
+
+
 
 const fechaFormateada = computed(() => {
   if (!props.fechaAbono) return ''
@@ -101,7 +104,7 @@ const valorProximoAbono = computed(() => {
       
       <h2 class="text-xl flex gap-3 mt-1">Deuda total $<p class="font-bold">{{ formatoMiles(deudaTotalCalculada) }}</p></h2>
       <h2 class="text-xl flex gap-3 mt-1">Valor siguiente abono: <p class="font-bold">{{ formatoMiles(valorProximoAbono) }}</p></h2>
-      <h3 v-if="Number(deudaTotal) > 0" class=" flex text-[13px]"> Fecha del siguiente abono:  <p class="font-bold">{{ fechaFormateada }}</p></h3>
+      <h3 v-if="deudaTotalCalculada > 0" class=" flex text-[13px]"> Fecha del siguiente abono:  <p class="font-bold">{{ fechaFormateada }}</p></h3>
      <div v-if="bloqueoMora" class="alert alert-danger mt-3">
         <p><strong>⚠ Estas bloqueado por mora </strong></p>
       </div>
