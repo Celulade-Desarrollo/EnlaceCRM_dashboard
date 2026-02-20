@@ -18,8 +18,6 @@ const formatoMiles = (numero) => {
   return Number(numero || 0).toLocaleString('es-CO');
 };
 
-
-
 const fechaFormateada = computed(() => {
   if (!props.fechaAbono) return ''
   const [y, m, d] = props.fechaAbono.split('T')[0].split('-')
@@ -97,14 +95,15 @@ const valorProximoAbono = computed(() => {
     <h3 class="font-bold text-lg">Estado de Mi crédito</h3>
     <div class="flex gap-3 flex-column mb-3">
       <h3 class="flex gap-2">
-        Cupo total  $
-        <p class="font-bold">{{ cupoTotal }}</p>
+        Cupo total
+        <p class="font-bold">$ {{ cupoTotal }}</p>
       </h3>
-      <h3 class="flex gap-2"> Cupo disponible $ <p class="font-bold">{{ formatoMiles(props.cupoDisp) }}</p></h3>
-      
-      <h2 class="text-xl flex gap-3 mt-1">Deuda total $<p class="font-bold">{{ formatoMiles(deudaTotalCalculada) }}</p></h2>
-      <h2 class="text-xl flex gap-3 mt-1">Valor siguiente abono: <p class="font-bold">{{ formatoMiles(valorProximoAbono) }}</p></h2>
-      <h3 v-if="deudaTotalCalculada > 0" class=" flex text-[13px]"> Fecha del siguiente abono:  <p class="font-bold">{{ fechaFormateada }}</p></h3>
+      <h3 class="flex gap-2"> Cupo disponible<p class="font-bold">$ {{ formatoMiles(props.cupoDisp) }}</p></h3>
+      <h2 class="text-xl flex gap-3 mt-1">Deuda total<p class="font-bold">$ {{ formatoMiles(deudaTotalCalculada) }}</p></h2>
+      <h2 class="text-xl flex gap-3 mt-1">Valor siguiente abono:
+      <p class="font-bold">$ {{ formatoMiles(valorProximoAbono) }}</p></h2>
+      <h3 class="flex text-[13px]">Fecha del siguiente abono: <p class="font-bold">{{ fechaFormateada  }}</p></h3>
+      <h3 v-if="Number(deudaTotal) > 0" class=" flex text-[13px]"> Fecha del siguiente abono:  <p class="font-bold">{{ fechaFormateada }}</p></h3>
      <div v-if="bloqueoMora" class="alert alert-danger mt-3">
         <p><strong>⚠ Estas bloqueado por mora </strong></p>
       </div>
@@ -125,7 +124,6 @@ const valorProximoAbono = computed(() => {
 </section>
 </motion.div>
 </template>
-
 <style scoped>
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
