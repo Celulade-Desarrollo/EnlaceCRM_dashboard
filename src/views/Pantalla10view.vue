@@ -82,7 +82,7 @@ async function downloadExcel() {
     
     const dataArray = Array.isArray(data) ? data : [data];
 
-  // mostrar exel
+// mostrar exel
    const dataTransformada = dataArray.map(
     ({
       Id,
