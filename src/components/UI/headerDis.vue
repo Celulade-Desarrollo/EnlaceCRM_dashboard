@@ -25,7 +25,7 @@ const logout = () => {
       />
     </div>
 
-    <h1 class="title">Hola, Karen Obando </h1>
+    <h1 class="title">Hola, Surtialimentos</h1>
 
     <div class="right-section">
       <!-- LOGOS -->
