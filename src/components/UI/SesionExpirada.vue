@@ -35,7 +35,7 @@ onUnmounted(() => {
   <div v-if="sesionExpirada" class="modal-overlay">
     <div class="modal-content">
       <h2>Sesión expirada</h2>
-      <p>Por favor, regresa a la tienda y accede microcréditos.</p>
+      <p>Por favor, regresa a la tienda y accede al boton alianzas.</p>
     </div>
   </div>
 </template>

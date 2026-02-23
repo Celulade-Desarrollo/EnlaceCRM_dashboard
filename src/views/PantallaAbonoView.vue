@@ -217,7 +217,7 @@ const valorProximoAbono = computed(() => {
           <div class="bg-white w-full rounded-xl flex flex-col items-center relative justify-start pt-3">
             <div class="flex gap-3 flex-column mb-3">
               <h2 class="text-xl flex gap-3 mt-4">Deuda total $<p class="font-bold">{{ formatoMiles(deudaTotalCalculada) }}</p></h2>
-              <h3 class="flex text-[13px]">Proximo pago$: <p  class="font-bold">{{ formatoMiles(valorProximoAbono) }}</p></h3>
+              <h3 class="flex text-[13px]">Proximo pago:<p  class="font-bold">$ {{ formatoMiles(valorProximoAbono) }}</p></h3>
               <h3 class="flex text-[13px]">Fecha del siguiente abono: <p class="font-bold">{{ fechaProximoAbono   }}</p></h3>
 
             </div>
@@ -240,8 +240,8 @@ const valorProximoAbono = computed(() => {
                 Pago en Corresponsales y oficinas
               </span>
               <button class="button" @click="goToPantallaCorresponsal">
-                ver mapa
-              </button>
+  <img src="../../public/mapa.png" alt="" class="button-icon" />
+</button>
             </div>
           </div>
         </div>
@@ -267,22 +267,32 @@ const valorProximoAbono = computed(() => {
 }
 
 .button {
-  background-color: #dd3590;
+  background-color: #F3F4F6;
   color: white;
   border: none;
-  padding: 1px 25px;
+  padding: 0.5rem;
   border-radius: 25px;
   font-weight: bold;
   cursor: pointer;
   width: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   margin-left: 8px;
-  display: block;
-  text-align: center;
-  margin-top: 1rem;
+  margin-top: -0rem;
+}
+
+.button-icon {
+  width: 55px;
+  height: 55px;
+  position: relative;
+  left: 9px;
+  top: -5px;
 }
 
 .button:hover {
-  background-color: #f15bab;
+  background-color: #F3F4F6;
 }
 
 .button:focus {
