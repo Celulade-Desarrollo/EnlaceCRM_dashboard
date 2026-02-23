@@ -88,7 +88,6 @@ const valorProximoAbono = computed(() => {
     .reduce((acc, f) => acc + f.saldo, 0)
 });
 </script>
-
 <template>
 <motion.div v-bind="fadeInUp">
 <section>
@@ -124,6 +123,8 @@ const valorProximoAbono = computed(() => {
 </section>
 </motion.div>
 </template>
+
+
 <style scoped>
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
