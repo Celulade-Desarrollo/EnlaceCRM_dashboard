@@ -99,10 +99,10 @@ const valorProximoAbono = computed(() => {
         Cupo total
         <p class="font-bold">$ {{ cupoTotal }}</p>
       </h3>
-      <h3 class="flex gap-2"> Cupo disponible $ <p class="font-bold">{{ formatoMiles(props.cupoDisp) }}</p></h3>
+      <h3 class="flex gap-2"> Cupo disponible<p class="font-bold">$ {{ formatoMiles(props.cupoDisp) }}</p></h3>
       
-      <h2 class="text-xl flex gap-3 mt-1">Deuda total $<p class="font-bold">{{ formatoMiles(deudaTotalCalculada) }}</p></h2>
-      <h2 class="text-xl flex gap-3 mt-1">Valor siguiente abono: <p class="font-bold">{{ formatoMiles(valorProximoAbono) }}</p></h2>
+      <h2 class="text-xl flex gap-3 mt-1">Deuda total<p class="font-bold">$ {{ formatoMiles(deudaTotalCalculada) }}</p></h2>
+      <h2 class="text-xl flex gap-3 mt-1">Valor siguiente abono:<p class="font-bold">$ {{ formatoMiles(valorProximoAbono) }}</p></h2>
       <h3 v-if="deudaTotalCalculada > 0" class=" flex text-[13px]"> Fecha del siguiente abono:  <p class="font-bold">{{ fechaFormateada }}</p></h3>
      <div v-if="bloqueoMora" class="alert alert-danger mt-3">
         <p><strong>⚠ Estas bloqueado por mora </strong></p>
