@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import axios from "axios";
 import Heading from "../components/UI/Heading.vue";
 import { motion } from "motion-v";
@@ -20,9 +20,38 @@ const mostrarMovimientos = ref(true);
 const datosCuenta = ref(null);
 const movimientos = ref([]);
 
+
 // Nuevas variables del merge
 const interesesPagados = ref(0);
 const feesPagados = ref(500);
+
+const facturas = computed(() =>
+  movimientos.value.filter(m => m.IdTipoMovimiento === 1)
+);
+
+const saldoFactura = (f) => {
+  const monto = Number(f.Monto || 0);
+  const abono = Number(f.AbonoUsuario || 0);
+  const montoMasIntereses = Number(f.MontoMasIntereses || 0);
+
+  const capitalPendiente = monto - abono;
+
+  // Si ya pagó todo
+  if (capitalPendiente <= 0) return 0;
+
+  // 🔥 Si NO ha hecho ningún abono → mostrar intereses
+  if (abono === 0) {
+    const intereses = Math.max(montoMasIntereses - monto, 0);
+    return capitalPendiente + intereses;
+  }
+
+  // 🔥 Si ya hizo abono (parcial o total) → NO sumar intereses
+  return capitalPendiente;
+};
+
+const deudaTotalCalculada = computed(() => {
+  return facturas.value.reduce((acc, f) => acc + saldoFactura(f), 0);
+});
 
 function formatPesos(valor) {
   return new Intl.NumberFormat("es-CO", {
@@ -134,7 +163,7 @@ onMounted(async () => {
             <div class="d-flex justify-content-between w-100">
               <div class="text-start">
                 <h2 class="deuda-total">Deuda total</h2>
-                <p class="cantidad-total mb-2" id="deuda-total">{{ formatPesos(deudaTotal) }}</p>
+                <p class="cantidad-total mb-2" id="deuda-total">{{ formatPesos(deudaTotalCalculada)}}</p>
               </div>
               <div class="text-end">
                 <h2 class="cupo-total">Cupo disponible</h2>
