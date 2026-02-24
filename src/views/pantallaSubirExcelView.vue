@@ -111,6 +111,50 @@ const validarDatos = (data) => {
 
   return errores;
 };
+async function downloadExcelPlantilla() {
+  try {
+    const data = [
+      {								
+        Operacion: "",
+        CuentaCliente: "",
+        NumeroID: "",
+        Persona: "",
+        IdEstadoProducto: "",
+        FecTransaccion: "Sí/No",
+        CAPITAL: "Sí/No",
+        INTERESES: "Sí/No",
+        INTERES_MORA: "Sí/No",
+        SEGUROS: "",
+        TOTAL_PAGADO: "",
+        DIAS_MORA: "",
+      },
+    ];
+
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Plantilla");
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    const blob = new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "plantillaAbonos.xlsx");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error("Error al generar Excel:", error);
+  }
+};
 
 const enviarCSV = async () => {
   const errores = validarDatos(excelData.value);
@@ -173,20 +217,21 @@ const enviarCSV = async () => {
 <template>
   <BotonAtras />
   <motion.div v-bind="fadeInUp" class="page-container">
+
 <div class="card-subir-excel">
-    <div class="boton-container">
-      <input
-        ref="fileInputRef"
-        type="file"
-        @change="handleFileUpload"
-        accept=".xlsx, .xls, .csv"
-        hidden
-      />
-      <button class="boton" @click="triggerFileInput">
-        <img src="/public/archivo.png" class="icono-btn" />
-        Subir Archivo
-      </button>
-    </div>
+  <div class="boton-container">
+    <input
+      ref="fileInputRef"
+      type="file"
+      @change="handleFileUpload"
+      accept=".xlsx, .xls, .csv"
+      hidden
+    />
+    <button class="boton" @click="triggerFileInput">
+      <img src="/public/archivo.png" class="icono-btn" />
+      Subir Archivo
+    </button>
+  </div>
 
     <p v-if="fileLoaded" class="mensaje ok">
       Archivo cargado y listo para enviar
@@ -201,11 +246,26 @@ const enviarCSV = async () => {
         Enviar
       </button>
     </div>
-    <div>
-  </div>
 </div>
-
-    <SesionExpiradaLogin />
+<div class="card-subir-excel">
+  <div class="boton-container">
+    <input
+      ref="fileInputRef"
+      type="file"
+      @change="handleFileUpload"
+      accept=".xlsx, .xls, .csv"
+      hidden
+    />
+    <button class="boton" @click="downloadExcelPlantilla">
+      <img src="/public/bajarArchivo.png" class="icono-btn" />
+      Bajar Plantilla
+    </button>
+  </div>
+    <p class="mensaje">
+      Descargar plantilla de ejemplo
+    </p>
+</div>
+  <SesionExpiradaLogin />
   </motion.div>
 </template>
 
@@ -237,12 +297,10 @@ const enviarCSV = async () => {
 
 .boton-container {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
-  width: 100%;
-  max-width: 600px;
+  width: 260px;
   margin: 0 auto 30px auto;
-  position: relative;
 }
 
 .button {

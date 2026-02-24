@@ -74,11 +74,6 @@ async function downloadExcel() {
 
     const data = response.data;
     
-    // 🔍 LOGS PARA DEBUGGING - AGREGADOS AQUÍ
-    console.log("🔍 Datos completos del API:", data[0]);
-    console.log("🔍 Latitud:", data[0]?.Latitud);
-    console.log("🔍 Longitud:", data[0]?.Longitud);
-    console.log("🔍 Todas las propiedades:", Object.keys(data[0]));
     
     const dataArray = Array.isArray(data) ? data : [data];
 
