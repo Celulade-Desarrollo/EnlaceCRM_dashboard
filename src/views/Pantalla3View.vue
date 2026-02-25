@@ -217,8 +217,6 @@ const handlePagina2Click = () => {
   color: #444;
 }
 
-
-
 .loader-container {
   display: flex;
   flex-direction: column;
