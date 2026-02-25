@@ -58,7 +58,7 @@ const handleContinuarClick = () => {
   }
 
   if (valorPago > totalFacturas) {
-    errorMessage.value = "No puede ingresar un valor mayor al total de las facturas seleccionadas";
+    errorMessage.value = "No puede ingresar un valor mayor al total de la factura seleccionada";
     return;
   }
 
