@@ -13,7 +13,7 @@ const emit = defineEmits(["update-total"]);
 const seleccionadas = ref(null);
 
 const emitirTotal = () => {
-  const total = seleccionadas.value ? seleccionadas.value.faltante : 0; // Se suma solo el faltante
+  const total = seleccionadas.value ? seleccionadas.value.faltante : 0;
   emit("update-total", total, seleccionadas.value ? [seleccionadas.value]: []);
 };
 </script>
@@ -21,7 +21,6 @@ const emitirTotal = () => {
 <template>
   <div class="facturas">
     <label v-for="factura in facturas" :key="factura.factura">
-      <!-- Checkbox oculto pero funcional -->
       <input
         type="radio"
         class="custom-radio"
@@ -29,20 +28,13 @@ const emitirTotal = () => {
         v-model="seleccionadas"
         @change="emitirTotal"
       />
-      <!-- Estilo visual del checkbox -->
       <span class="checkbox-visual"></span>
 
-      <!-- Contenedor de texto de la factura -->
       <div class="factura-info">
-        <!-- Línea principal -->
         <div class="factura-linea">
-          Factura {{ factura.factura }} — Total: ${{ factura.valor.toLocaleString() }}
+          Factura {{ factura.factura }} — Total: ${{ factura.valor.toLocaleString() }}<br/><br/>
         </div>
-        <!-- Detalles debajo -->
-        <div class="factura-detalle">
-          Pagado: ${{ factura.pagado.toLocaleString() }}<br />
-          Faltante: ${{ factura.faltante.toLocaleString() }}
-        </div>
+        
       </div>
     </label>
   </div>
@@ -51,7 +43,7 @@ const emitirTotal = () => {
 <style scoped>
 .facturas label {
   display: flex;
-  align-items: flex-start; /* Alinea el texto arriba del checkbox */
+  align-items: flex-start;
   cursor: pointer;
   margin-bottom: 15px;
 }
@@ -87,7 +79,6 @@ const emitirTotal = () => {
  border-radius: 50%;
 }
 
-/* Estilos nuevos para estructurar la info */
 .factura-info {
   display: flex;
   flex-direction: column;

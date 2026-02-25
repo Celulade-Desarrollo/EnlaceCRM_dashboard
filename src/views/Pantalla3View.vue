@@ -13,10 +13,8 @@ const modalMessage = ref("");
 
 const whatsappURL = "/whatsapp/send-message";
 
-// Router
 const router = useRouter();
 
-// Datos
 const pagarValor = localStorage.getItem("pagarValor");
 const datosCuenta = JSON.parse(localStorage.getItem("datosCuenta")) || {};
 const facturas = JSON.parse(localStorage.getItem("numeroFactura")) || [];
@@ -26,7 +24,6 @@ const token = localStorage.getItem("token");
 const errorMessage = ref("");
 const isLoading = ref(false);
 
-// Fechas
 const fechaActual = new Date();
 const fechaProgramada = new Date(fechaActual);
 fechaProgramada.setDate(fechaProgramada.getDate() + 15);
@@ -49,7 +46,7 @@ const mostrarModal = (mensaje) =>{
     showModal.value = false;
   }, 3000);
 };
-// ------------- FUNCIÓN PRINCIPAL -------------
+
 const handlePagoClick = async () => {
   isLoading.value = true; 
   console.log("Número al presionar pagar:", numeroTransportista.value);
@@ -82,21 +79,12 @@ const handlePagoClick = async () => {
   };
 
   try {
-      // registrar el pago
-      await axios.post("/api/movimientos", dataPagoFactura, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      //  si fue exitoso enviar WhatsApp
-      const hora = new Date().toLocaleTimeString();
+    const hora = new Date().toLocaleTimeString();
       const pagoFormateado = formatPesos(pagarValor);
       const number = "57" + telefono;
 
       const message = `${datosCuenta.Nombres} envío un pago de la factura ${nroFacturaAlpina} por el valor de ${pagoFormateado} el día ${fechaActual.toLocaleDateString()} a la hora ${hora}`;
-
+      
       await axios.post(
         whatsappURL,
         { number, message },
@@ -108,6 +96,14 @@ const handlePagoClick = async () => {
         }
       );
 
+      // registrar el pago
+      await axios.post("/api/movimientos", dataPagoFactura, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
       window.open("/Pantalla4View", "_parent");
 
     } catch (error) {
@@ -116,7 +112,7 @@ const handlePagoClick = async () => {
       if (error.response?.data?.mensaje) {
         mostrarModal(error.response.data.mensaje);
       } else {
-        mostrarModal("Ocurrió un error inesperado.");
+        mostrarModal("No se pudo enviar el mensaje. El pago no fue registrado");
       }
     }
 };
@@ -220,11 +216,6 @@ const handlePagina2Click = () => {
   margin-bottom: 20px;
   color: #444;
 }
-
-
-
-
-
 
 
 
