@@ -1,13 +1,20 @@
 <template>
-     <HeadingEnlace />
-<div class="movimientos-container">
+  <HeadingEnlace />
+  <div class="movimientos-container">
+    
+    <div class="descarga-container">
+      <button class="btn-descargar-intereses" @click="descargarExcelSubido">
+        <img src="/descargar.png" alt="Descargar" class="icon-btn" />
+        Descargar Intereses
+      </button>
+    </div>
+
     <div v-if="movimientos.length" v-for="movimiento in movimientos" :key="movimiento.IdMovimiento" class="movimiento-card">
       <div class="card-header">
         <h3>Movimiento #{{ movimiento.IdMovimiento }}</h3>
         <span class="fecha"> Realizado el {{ formatearFecha(movimiento.FechaHoraMovimiento) }}</span>
       </div>
       <div class="card-body">
-        <!-- Overlay de carga -->
         <div v-if="movimiento.cargando" class="card-overlay">
           <div class="spinner"></div>
         </div>
@@ -72,36 +79,7 @@
           </template>
         </p>
 
-    <!-- 
-        <p class="bg-green-200">
-          <strong>Abono Capital:</strong>
-          <template v-if="movimiento.editando">
-            <input 
-              type="number" 
-              v-model.number="movimiento.abonoCapital" 
-              class="monto-input"
-            >
-          </template>
-          <template v-else>
-            ${{ formatearMonto(movimiento.abonoCapital) }}
-          </template>
-        </p>
-         <p class="bg-green-200">
-          <strong>Abono Intereses:</strong>
-          <template v-if="movimiento.editando">
-            <input 
-              type="number" 
-              v-model.number="movimiento.abonoIntereses" 
-              class="monto-input"
-            >
-          </template>
-          <template v-else>
-            ${{ formatearMonto(movimiento.abonoIntereses) }}
-          </template>
-        </p>
--->
-
-         <p>
+        <p>
           <strong>Cobro fees:</strong>
           <template v-if="movimiento.editando">
             <input 
@@ -115,27 +93,11 @@
           </template>
         </p>
 
-        <!-- 
-         <p class="bg-green-200">
-          <strong>Abono fees:</strong>
-          <template v-if="movimiento.editando">
-            <input 
-              type="number" 
-              v-model.number="movimiento.abonoFees" 
-              class="monto-input"
-            >
-          </template>
-          <template v-else>
-            ${{ formatearMonto(movimiento.abonoFees) }}
-          </template>
-        </p>
-        -->
         <p><strong>Descripción:</strong> {{ movimiento.Descripcion }}</p>
         <p><strong>Fecha de Pago Programado:</strong> {{ formatearFecha(movimiento.FechaPagoProgramado) }}</p>
         
         <div class="botones">
           <template v-if="movimiento.editando">
-           <!-- <button @click="actualizarMonto( movimiento.Cedula_Usuario, actualizarSaldo.abonoCapital )" class="p-2 bg-green-400 rounded-xl pl-3 pr-3 text-green-800">Realizar Abono</button>-->
             <button 
               @click="actualizarIntereses(movimiento)" 
               :disabled="movimiento.cargando"
@@ -144,7 +106,6 @@
               Actualizar Intereses
             </button> 
 
-      
             <button 
               @click="cancelarEdicion(movimiento)" 
               :disabled="movimiento.cargando"
@@ -166,6 +127,33 @@
 import { ref, watch, onMounted } from 'vue'
 import axios from 'axios'
 import HeadingEnlace from '../components/UI/headingEnlace.vue'
+
+const token = localStorage.getItem("admin_token")
+
+const descargarExcelSubido = async () => {
+  try {
+    const res = await axios.get("/api/utilizacion/descargar-admin", {
+      responseType: "blob",
+      headers: { Authorization: `Bearer ${token}` },
+    })
+
+    const url = window.URL.createObjectURL(new Blob([res.data]))
+    const link = document.createElement("a")
+    link.href = url
+    link.setAttribute("download", "reporte_intereses.xlsx")
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+  } catch (error) {
+    console.error("Error al descargar intereses:", error)
+    if (error.response?.status === 404) {
+      alert("Aún no hay datos cargados para descargar.")
+    } else {
+      alert("No se pudo descargar el archivo de intereses.")
+    }
+  }
+}
 
 
 const movimientos = ref([])
@@ -271,12 +259,47 @@ onMounted(obtenerMovimientos)
 </script>
 
 <style scoped>
+/* Estilos para el nuevo botón de descarga */
+.descarga-container {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.btn-descargar-intereses {
+  background-color: #5A44D1;
+  color: white;
+  font-size: 1rem;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 29px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.btn-descargar-intereses:hover {
+  background-color: #5A44D1;
+  transform: translateY(-2px);
+}
+
+.icon-btn {
+  width: 20px;
+  height: 20px;
+}
+
+/* Tus estilos originales se mantienen intactos */
 p {
   padding: 0.2rem;
 }
 
 .titulo {
-  font-size: clamp(1.2rem, 2vw, 1.5rem); /* se adapta al tamaño de pantalla */
+  font-size: clamp(1.2rem, 2vw, 1.5rem);
   font-weight: bold;
   color: white;
   margin-bottom: 1rem;
@@ -311,7 +334,7 @@ p {
 }
 
 .logo-main {
-  width: clamp(120px, 30%, 180px); /* ancho adaptativo */
+  width: clamp(120px, 30%, 180px);
   height: auto;
   display: inline-block;
 }
@@ -321,7 +344,7 @@ p {
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 1rem;
   padding: 1rem;
-    max-width:500px;
+  max-width: 500px;
   margin: 0 auto;
 }
 
@@ -372,7 +395,7 @@ strong {
 .botones {
   margin-top: 1rem;
   display: flex;
-  flex-wrap: wrap; /* se envían a la siguiente línea en pantallas pequeñas */
+  flex-wrap: wrap;
   gap: 0.5rem;
 }
 
@@ -402,7 +425,6 @@ strong {
 button:hover { opacity: 0.9; }
 button:disabled { opacity: 0.5; cursor: not-allowed; }
 
-/* Overlay y spinner */
 .card-overlay {
   position: absolute;
   inset: 0;

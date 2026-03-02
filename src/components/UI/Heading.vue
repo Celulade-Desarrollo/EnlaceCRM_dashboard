@@ -3,9 +3,9 @@
     <div class="izquierda">
       <div class="top-row">
         <BackButton v-if="showBackButton" class="back-button-container" />
-        <span class="icon-left icon-circle">
-          <i class="fas fa-user"></i>
-        </span>
+      <span class="icon-left icon-circle" @click="irAHome">
+        <i class="fas fa-user"></i>
+      </span>
       </div>
       <p class="mensaje">{{ mensaje }}</p>
     </div>
@@ -30,6 +30,9 @@ const router = useRouter();
  
 function irAAyuda() {
   router.push('/ayuda'); // Cambia '/ayuda' por la ruta real que tengas
+}
+function irAHome() {
+  router.push('/Pantalla1View');
 }
  
 defineProps({

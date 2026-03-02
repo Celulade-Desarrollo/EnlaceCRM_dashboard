@@ -3,6 +3,13 @@
  <div class="movimientos-container">
     <!-- Componente de error global -->
     <Errormsj v-if="errorMessage" :message="errorMessage" @close="errorMessage = ''" />
+        <!-- BOTÓN UNO SOLO ARRIBA DE TODO -->
+    <div class="descarga-container">
+      <button class="btn-descargar-abonos" @click="downloadAbonosExcel">
+        <img src="/descargar.png" alt="Descargar" class="icon-btn" />
+        Descargar Abonos
+      </button>
+    </div>
 
     <!-- comen-->
     <div v-if="movimientos.length" v-for="movimiento in movimientos" :key="movimiento.IdMovimiento" class="movimiento-card">
@@ -10,7 +17,7 @@
         <h3>Movimiento #{{ movimiento.IdMovimiento }}</h3>
         <span class="fecha"> Realizado el {{ formatearFecha(movimiento.FechaHoraMovimiento) }}</span>
       </div>
-      
+
       <div class="card-body">
         <div v-if="movimiento.cargando" class="card-overlay">
           <div class="spinner"></div>
@@ -151,6 +158,7 @@ import { ref, onMounted } from 'vue'
 import Errormsj from '../components/UI/Alerta.vue'
 import axios from 'axios'
 import HeadingEnlace from '../components/UI/headingEnlace.vue'
+import * as XLSX from "xlsx";
 
 // ============================================
 // ESTADO
@@ -259,6 +267,44 @@ const puedeActualizar = (movimiento) => {
   const validacionIntereses = validarAbonoIntereses(movimiento)
   
   return !validacionCapital.error && !validacionIntereses.error
+}
+
+const token = localStorage.getItem("admin_token")
+
+const downloadAbonosExcel = async () => {
+  try {
+    const response = await axios.get("api/bajarAbonos", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    })
+
+    const data = response.data
+    const dataArray = Array.isArray(data) ? data : [data]
+    const dataTransformada = dataArray.map((row) => ({ ...row }))
+
+    const worksheet = XLSX.utils.json_to_sheet(dataTransformada)
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Abonos")
+
+    const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" })
+    const blob = new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    })
+
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement("a")
+    link.href = url
+    link.setAttribute("download", "abonos.xlsx")
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+  } catch (error) {
+    console.error("Error al descargar Abonos:", error)
+    alert("No se pudo descargar el archivo de abonos")
+  }
 }
 
 // ============================================
@@ -427,6 +473,38 @@ p {
 
 .movimiento-card:hover {
   transform: translateY(-3px);
+}
+
+.descarga-container {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.btn-descargar-abonos {
+  background-color: #5A44D1;
+  color: white;
+  font-size: 1rem;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 29px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.btn-descargar-abonos:hover {
+  background-color: #5A44D1;
+  transform: translateY(-2px);
+}
+
+.icon-btn {
+  width: 20px;
+  height: 20px;
 }
 
 .card-header {
