@@ -7,9 +7,12 @@ import SesionExpiradaLogin from "../components/UI/SesionExpiradaLogin.vue";
 import { activarSesionExpirada } from "../stores/session.js";
 
 const token = localStorage.getItem("admin_token");
-
 const router = useRouter();
-// Descargar Excel
+const cargando = ref(false);
+
+/* ============================================================
+   1. TRANSACCIONES
+   ============================================================ */
 const exportarExcel = async () => {
   try {
     const res = await axios.get("/api/transacciones/excel", {
@@ -19,7 +22,6 @@ const exportarExcel = async () => {
       },
     });
 
-    // Crear enlace temporal para descargar
     const url = window.URL.createObjectURL(new Blob([res.data]));
     const link = document.createElement("a");
     link.href = url;
@@ -27,22 +29,14 @@ const exportarExcel = async () => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    window.URL.revokeObjectURL(url); // Liberar memoria
+    window.URL.revokeObjectURL(url);
   } catch (error) {
     console.error("Error al descargar el Excel:", error);
     alert("No se pudo descargar el archivo Excel.");
-    if (error.response?.status === 401) {
-      activarSesionExpirada();
-    }
+    if (error.response?.status === 401) activarSesionExpirada();
   }
 };
 
-const logout = () => {
-  localStorage.removeItem("admin_token");
-  router.push("/LoginView");
-};
-
-// Refrescar / ver todas transacciones
 const cargarTransacciones = async () => {
   try {
     const res = await axios.get("/api/transacciones", {
@@ -55,137 +49,181 @@ const cargarTransacciones = async () => {
   } catch (error) {
     console.error("Error al refrescar:", error);
     alert("No se pudo refrescar.");
-    if (error.response?.status === 401) {
-      activarSesionExpirada();
-    }
+    if (error.response?.status === 401) activarSesionExpirada();
   }
-
 };
 
+/* ============================================================
+   2. SUBIR EXCEL (UTILIZACION)
+   ============================================================ */
+const inputArchivo = ref(null);
+
+const abrirSelectorArchivo = () => {
+  inputArchivo.value.click();
+};
+
+const manejarArchivo = async (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  cargando.value = true;
+  try {
+    await axios.post("/api/utilizacion/subir-banco", formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    alert("Excel de intereses subido correctamente ✅");
+  } catch (error) {
+    console.error("Error al subir Excel:", error);
+    alert("No se pudo subir el Excel de intereses.");
+    if (error.response?.status === 401) activarSesionExpirada();
+  } finally {
+    cargando.value = false;
+    event.target.value = "";
+  }
+};
+
+/* ============================================================
+   4. LOGOUT
+   ============================================================ */
+const logout = () => {
+  localStorage.removeItem("admin_token");
+  router.push("/LoginView");
+};
 </script>
 
 <template>
-    <BotonAtras />
+  <BotonAtras />
 
-<div class="card-botones">
-  <h3 class="titulo-card">Utilización</h3>
+  <div class="card-botones">
+    <h3 class="titulo-card">Módulo de Utilización</h3>
 
-  <div class="botones-container">
-    <button class="btn" @click="cargarTransacciones">
-      <img src="/public/actualizar.png" alt="Refrescar" />
-      Refrescar
-    </button>
+    <div class="botones-container">
 
-    <button class="btn" @click="exportarExcel">
-      <img src="/public/descargar.png" alt="Descargar Excel" />
-      Descargar Excel
-    </button>
+      <div class="bloque-boton">
+        <button class="btn" @click="exportarExcel" :disabled="cargando">
+          <img src="/descargar.png" alt="Descargar Excel" />
+          Descargar Excel
+        </button>
+        <div class="descripcion">
+          Descarga de la utilización del crédito por los tenderos
+        </div>
+      </div>
+
+      <div class="bloque-boton">
+        <button class="btn" @click="abrirSelectorArchivo" :disabled="cargando">
+          <img src="/archivo.png" alt="Subir Excel" />
+          {{ cargando ? 'Subiendo...' : 'Subir Excel' }}
+        </button>
+        <input
+          type="file"
+          ref="inputArchivo"
+          accept=".xlsx,.xls"
+          style="display:none"
+          @change="manejarArchivo"
+        />
+        <div class="descripcion">
+          Carga de intereses proyectados definidos por el core bancario
+        </div>
+      </div>
+
+    </div>
   </div>
-</div>
 
   <SesionExpiradaLogin />
 </template>
 
 <style scoped>
-
-.titulo {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color:white;
-  margin-bottom: 10px;
-  margin-left: -200px;
-    margin-top: 20px;
-  
+/* Tus estilos originales se mantienen perfectos */
+.btn:disabled {
+  background-color: #a5a5a5;
+  cursor: not-allowed;
 }
 
+/* TARJETA PRINCIPAL */
+.card-botones {
+  padding: 60px;
+  min-height: 70vh;
+  background-color: #5c4cb8;
+  border: 9px solid #251786;
+  margin-top: 60px;
+  box-sizing: border-box;
+  text-align: center;
+}
 
+/* TITULO */
 .titulo-card {
-  width: 100%;  
-  text-align: center; 
   color: white;
   font-size: 1.6rem;
   font-weight: 500;
   margin-bottom: 50px;
 }
 
-
-
-.logout {
-  display: flex;
-  justify-content: right;
-  margin-top: 1rem;
-}
-/* TARJETA */
-.card-botones {
-   display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 80px;
-  padding:50px;
-  height: auto;
-  min-height: 70vh;
-  background-color: #5c4cb8;
-  border: 9px solid #251786;
-  margin-top: 60px;
-  flex-wrap: wrap;
-  box-sizing: border-box;
-}
-
-/* CONTENEDOR DE BOTONES */
+/* CONTENEDOR */
 .botones-container {
   display: flex;
-  gap: 30px;
   justify-content: center;
-  padding:50px;
-
+  gap: 60px;
+  flex-wrap: wrap;
 }
 
-/* BOTONES */
+/* COLUMNA */
+.bloque-boton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 280px;
+}
+
+/* BOTON */
 .btn {
   background-color: #dd3590;
   color: white;
   font-size: 1rem;
-  padding: 14px 26px;
+  padding: 16px 26px;
   border: none;
   border-radius: 29px;
   cursor: pointer;
-  min-width: 220px;
- display: flex;
+  width: 100%;
+  display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  margin-top: -40px;
-  transform: translateY(-100px);
+  margin-bottom: 20px;
+  transition: 0.3s ease;
+}
+
+.btn:hover {
+  background-color: #f15bab;
 }
 
 .btn img {
-  width: 20px;
-  height: 20px;
+  width: 30px;
+  height: 30px;
 }
 
-.btn:hover {
-  background-color: #f15bab;
-}
-
-
-.botones-container {
+/* DESCRIPCION */
+.descripcion {
+  background-color: #D4CFF5;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 14px;
+  min-height: 110px;
   display: flex;
-  gap: 1rem;
+  align-items: center;
   justify-content: center;
-  margin-top: 2rem;
-  
+  transition: transform 0.6s ease;
 }
 
-.logo-main {
-  width: min(195px, 80%);
-  height: auto;
-  display: block;
-  margin: 20px auto 0 auto;
-    margin-top: 100px;
+.descripcion:hover {
+  transform: translateY(-5px);
 }
 
-
-.btn:hover {
-  background-color: #f15bab;
-}
 </style>

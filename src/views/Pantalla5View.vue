@@ -61,6 +61,15 @@ function formatPesos(valor) {
   }).format(valor || 0);
 }
 
+function formatPesosDecimales(valor) {
+  return new Intl.NumberFormat("es-CO", {
+    style: "currency",
+    currency: "COP",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(valor || 0);
+}
+
 // function formatFecha(fechaISO) {
 //   const fecha = new Date(fechaISO);
 //   return fecha.toLocaleDateString("es-CO", {
@@ -219,10 +228,17 @@ onMounted(async () => {
                   <p class="fecha"><strong>Fecha:</strong> {{ formatFechaLocal(mov.FechaHoraMovimiento) }}</p>
                   <p class="descripcion"><strong>Descripción:</strong> {{ mov.Descripcion }}</p>
                   <p class="descripcion"><strong>Factura Alpina:</strong> {{ mov.NroFacturaAlpina || 'No aplica' }}</p>
-                  <p class="descripcion"><strong>Abono capital:</strong> ${{ mov.Monto}}</p>
-                  <p class="descripcion"><strong>Intereses:</strong> ${{ mov.Intereses}}</p>
-                  <p class="descripcion"><strong>Seguros:</strong> ${{ mov.Fees }}</p>
+                  <p class="descripcion">
+                  <strong>Abono capital:</strong> {{ formatPesosDecimales(mov.Monto) }}
+                  </p>
 
+                  <p class="descripcion">
+                  <strong>Intereses:</strong> {{ formatPesosDecimales(mov.Intereses) }}
+                  </p>
+
+                  <p class="descripcion">
+                  <strong>Seguros:</strong> {{ formatPesosDecimales(mov.Fees) }}
+                  </p>
                 </div>
               </div>
               <p :class="['monto', mov.IdTipoMovimiento === 2 ? 'positivo' : 'negativo']">
