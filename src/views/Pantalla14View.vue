@@ -30,26 +30,18 @@ const goToActualizarIntereses = () => {
       </button>
     </div>
 
-        <div class="card">
-      <button class="btn" @click="goToAbonos">
-        <img src="/credito.png" alt="Abonos a crédito " class="icon" />
-        <span>Abonos a crédito 
+    <div class="card">
+      <button class="btn" @click="goToActualizarIntereses">
+        <img src="/intereses.png" alt="Actualizar saldos" class="icon" />
+        <span>Actualizar intereses
 </span>
       </button>
     </div>
 
     <div class="card">
       <button class="btn" @click="goToActualizar">
-        <img src="/saldo.png" alt="Actualizar saldos" class="icon" />
+        <img src="/saldo.png" alt="Actualizar intereses" class="icon" />
         <span>Actualizar saldos
-</span>
-      </button>
-    </div>
-
-    <div class="card">
-      <button class="btn" @click="goToActualizarIntereses">
-        <img src="/intereses.png" alt="Actualizar intereses" class="icon" />
-        <span>Actualizar intereses
 </span>
       </button>
     </div>
