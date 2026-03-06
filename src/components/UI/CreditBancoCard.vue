@@ -33,8 +33,6 @@ const botonAprobado = true;
 const camposBloqueados = ref(false);
 const token = localStorage.getItem("token");
 const payloadPut = { Estado: ""};
-const cupoConfirmado = ref(false);
-const cupoGuardado = ref(false);
 
 const precargado = {
   bancoListas: ref(false),
@@ -77,7 +75,11 @@ onMounted(() => {
 
 const isFieldDisabled = (campo) => {
 
-  if (!cupoGuardado.value) {
+  if (campo === "cupoAprobado") {
+    return false;
+  }
+
+  if (!props.data.CupoConfirmado) {
     return true;
   }
 
@@ -101,7 +103,6 @@ const isFieldDisabled = (campo) => {
 
   return camposBloqueados.value;
 };
-
 const handleSiClick = async () => {
   if (
     !pagareDigital.value &&
@@ -211,6 +212,18 @@ const handleAprobadoClick = async () => {
   console.log("Payload que se va a enviar al put:", payloadPut,);
 
   try{
+     if (!props.data.CupoConfirmado) {
+
+      await axios.put(`/api/editar-cupo/${id}`, {
+        cupo: props.data.Cupo
+      }, {
+        headers: {
+          Authorization: `Bearer ${props.token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+    }
     await axios.post('/api/bancow', 
       payloadAprobado,
       {
@@ -244,39 +257,14 @@ const handleAprobadoClick = async () => {
 const handleCupoInput = (event) => {
   let valor = event.target.value;
 
-  // eliminar todo lo que no sea número
   valor = valor.replace(/\D/g, "");
 
-  // formato con puntos
-  const formateado = formatearMiles(valor);
+  const formateado = valor.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
   props.data.Cupo = formateado;
 };
-const formatearMiles = (valor) => {
-  const numero = valor.replace(/\D/g, "");
-  return numero.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-};
 
-const guardarCupo = async () => {
-  try {
 
-    const id = props.data.IdFlujoRegistro;
-
-    await axios.put(`/api/editar-cupo/${id}`, {
-      cupo: props.data.Cupo
-    }, {
-      headers: {
-        Authorization: `Bearer ${props.token}`,
-        "Content-Type": "application/json",
-      },
-    });
-
-    cupoGuardado.value = true;
-
-  } catch (error) {
-    console.error("Error guardando cupo", error);
-  }
-};
 </script>
 
 <template>
@@ -294,9 +282,11 @@ const guardarCupo = async () => {
             <span class="info-field-label">Cupo:</span>
             <input
               class="info-field-value"
-              :value="data.Cupo"
+              v-model="data.Cupo"
               @input="handleCupoInput"
-              :disabled="cupoGuardado"
+              inputmode="numeric"
+              pattern="[0-9]*"
+              :disabled="data.CupoConfirmado"
             />
           </div>
         </div>
@@ -389,20 +379,21 @@ const guardarCupo = async () => {
           Guardar
         </button>
         <button 
-          v-if="props.data.Estado === 'confirmado' && cupoGuardado"
+          v-if="props.data.Estado === 'confirmado' && props.data.CupoConfirmado"
           type="button" 
           class="btn-si"
           @click="handleSiClick"
+
         >
           Guardar
         </button>
-        <button
+        <!-- <button
           v-if="!cupoGuardado"
           class="btn-si"
           @click="guardarCupo"
         >
           Guardar cupo
-        </button>
+        </button> -->
       </div>
     </div>
   </div>
