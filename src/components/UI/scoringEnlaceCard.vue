@@ -114,6 +114,11 @@ const datosCompletos = computed(() => {
   );
 });
 
+const truoraConfirmada = computed(() => {
+  const val = props.data.Confirmacion_Identidad;
+  return val !== null && val !== undefined && val !== 'NULL' && val !== '';
+});
+
 const handleconfirmado = async () => {
   if (!confirmado.value) {
     mensajeError.value = "Por favor, confirma si el usuario aceptó el cupo";
@@ -277,7 +282,7 @@ function formatCurrency(event) {
                 class="tabla-input"
                 type="number"
                 placeholder="Ej: 40"
-                :disabled="precargado.localScoring.value"
+                :disabled="precargado.localScoring.value || !truoraConfirmada"
               />
             </td>
             <td>
@@ -287,7 +292,7 @@ function formatCurrency(event) {
                 type="text"
                 @input="formatCurrency"
                 placeholder="Ej: 1.000.000"
-                :disabled="precargado.localCupo.value"
+                :disabled="precargado.localCupo.value || !truoraConfirmada"
               />
             </td>
             <td>
@@ -297,7 +302,7 @@ function formatCurrency(event) {
                 type="text"
                 placeholder="Ej: 4.6486"
                 @input="autoFormatCoordenada($event, 'lat')"
-                :disabled="precargado.localLatitud.value"
+                :disabled="precargado.localLatitud.value || !truoraConfirmada"
               />
             </td>
             <td>
@@ -307,25 +312,29 @@ function formatCurrency(event) {
                 type="text"
                 placeholder="Ej: -74.2479"
                 @input="autoFormatCoordenada($event, 'lon')"
-                :disabled="precargado.localLongitud.value"
+                :disabled="precargado.localLongitud.value || !truoraConfirmada"
               />
             </td>
             <td>
 
-  <template v-if="!datosCompletos">
-  </template>
+<template v-if="!truoraConfirmada">
+  <span class="estado-confirmacion estado-truora">TRUORA PENDIENTE</span>
+  <p class="nota">Esperando confirmación de identidad del cliente.</p>
+</template>
 
-  <template v-else-if="confirmado === 'no'">
-    <span class="estado-confirmacion estado-no">NO</span>
-    <p class="nota">Pendiente por respuesta del cliente.</p>
-  </template>
+<template v-else-if="!datosCompletos">
+  <span class="estado-confirmacion estado-truora-ok">TRUORA ✓</span>
+  <p class="nota">Asegúrate de guardar Scoring, Cupo, Latitud y Longitud, y que el banco haya aprobado.</p>
+</template>
 
-  <template v-else>
-    <span class="estado-confirmacion estado-si">SÍ</span>
-  </template>
-<p v-if="!datosCompletos" class="nota">
-  Asegúrate de guardar Scoring, Cupo, Latitud y Longitud, y que el banco haya aprobado.
-</p>
+<template v-else-if="confirmado === 'no'">
+  <span class="estado-confirmacion estado-no">NO</span>
+  <p class="nota">Pendiente por respuesta del cliente.</p>
+</template>
+
+<template v-else>
+  <span class="estado-confirmacion estado-si">SÍ</span>
+</template>
 
             </td>
           </tr>
@@ -363,6 +372,18 @@ input:disabled {
   background-color: #f0f0f0;
   border: 2px solid #ccc !important;
   box-shadow: none !important;
+}
+
+.estado-truora {
+  background-color: #fff8e1;
+  color: #856404;
+  border: 2px solid #ffc107;
+}
+
+.estado-truora-ok {
+  background-color: #e8f4fd;
+  color: #0c63a4;
+  border: 2px solid #0c63a4;
 }
 
 .tarjeta {
