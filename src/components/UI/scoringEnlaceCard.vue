@@ -184,6 +184,7 @@ const handleScoringCupo = async () => {
     Cliente_Acepto: confirmado.value,
     Cedula_Cliente: props.data.Cedula_Cliente.toString(),
     Numero_Cliente: props.data.Numero_Celular.toString(),
+    
   };
 
   const payloadput = { Estado: "aprobado" };
@@ -202,7 +203,7 @@ const handleScoringCupo = async () => {
         "Content-Type": "application/json",
       },
     });
-// ✅ AQUÍ VA ESTO
+
 precargado.localScoring.value = true;
 precargado.localCupo.value = true;
 precargado.localLatitud.value = true;

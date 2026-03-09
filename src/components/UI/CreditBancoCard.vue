@@ -74,6 +74,15 @@ onMounted(() => {
 });
 
 const isFieldDisabled = (campo) => {
+
+  if (campo === "cupoAprobado") {
+    return false;
+  }
+
+  if (!props.data.CupoConfirmado) {
+    return true;
+  }
+
   const camposFinales = ['pagareDigital', 'pagareEnviado', 'usuarioAprobado'];
 
   if (precargado[campo] && precargado[campo].value) {
@@ -87,13 +96,13 @@ const isFieldDisabled = (campo) => {
       camposBloqueados.value
     );
   }
+
   if (camposFinales.includes(campo) && props.data.Estado === 'pendiente') {
     return true;
   }
 
   return camposBloqueados.value;
 };
-
 const handleSiClick = async () => {
   if (
     !pagareDigital.value &&
@@ -174,35 +183,6 @@ const handleSiClick = async () => {
   }
 };
 
-const handleNoClick = async () => {
-  if (
-    !bancoListas.value ||
-    !cupoAprobado.value 
-  ) {
-    mensajeError.value = "Por favor, completa los campos banco listas y cupo aprobado";
-    return;
-  }
-  mensajeError.value = "";
-  const id = props.data.IdFlujoRegistro;
-   
-  const payloadPut = {
-    Estado: "negado",
-  };
-  try{
-    const putInfo = await axios.put(`api/scoring/estado/update/${id}`, 
-      payloadPut,
-      {
-        headers: {  
-          Authorization: `Bearer ${props.token}`,
-          "Content-Type": "application/json"
-        }
-      })
-    window.location.reload();
-  }catch(error){
-    console.error("Error en alguno de los pasos:", error);
-  }
-};
-
 const handleAprobadoClick = async () => {
   if (!cupoAprobado.value) {
     mensajeError.value = "Por favor, completa el campo cupo aprobado";
@@ -229,12 +209,21 @@ const handleAprobadoClick = async () => {
     payloadPut.Estado = "negado";
   }
 
-
   console.log("Payload que se va a enviar al put:", payloadPut,);
 
-
-
   try{
+     if (!props.data.CupoConfirmado) {
+
+      await axios.put(`/api/editar-cupo/${id}`, {
+        cupo: props.data.Cupo
+      }, {
+        headers: {
+          Authorization: `Bearer ${props.token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+    }
     await axios.post('/api/bancow', 
       payloadAprobado,
       {
@@ -264,8 +253,18 @@ const handleAprobadoClick = async () => {
   }catch(error){
     console.error("Error en alguno de los pasos:", error);
   }
-
 };
+const handleCupoInput = (event) => {
+  let valor = event.target.value;
+
+  valor = valor.replace(/\D/g, "");
+
+  const formateado = valor.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+  props.data.Cupo = formateado;
+};
+
+
 </script>
 
 <template>
@@ -281,7 +280,14 @@ const handleAprobadoClick = async () => {
           </div>
           <div class="info-field">
             <span class="info-field-label">Cupo:</span>
-            <span class="info-field-value">{{ data.Cupo }}</span>
+            <input
+              class="info-field-value"
+              v-model="data.Cupo"
+              @input="handleCupoInput"
+              inputmode="numeric"
+              pattern="[0-9]*"
+              :disabled="data.CupoConfirmado"
+            />
           </div>
         </div>
       </div>
@@ -373,13 +379,20 @@ const handleAprobadoClick = async () => {
           Guardar
         </button>
         <button 
-          v-if="props.data.Estado === 'confirmado'"
+          v-if="props.data.Estado === 'confirmado' && props.data.CupoConfirmado"
           type="button" 
           class="btn-si"
           @click="handleSiClick"
         >
           Guardar
         </button>
+        <!-- <button
+          v-if="!cupoGuardado"
+          class="btn-si"
+          @click="guardarCupo"
+        >
+          Guardar cupo
+        </button> -->
       </div>
     </div>
   </div>
