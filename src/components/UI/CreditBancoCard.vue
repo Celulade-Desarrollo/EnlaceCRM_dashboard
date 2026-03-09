@@ -383,7 +383,6 @@ const handleCupoInput = (event) => {
           type="button" 
           class="btn-si"
           @click="handleSiClick"
-
         >
           Guardar
         </button>
