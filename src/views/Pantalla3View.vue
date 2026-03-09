@@ -29,6 +29,25 @@ const fechaProgramada = new Date(fechaActual);
 fechaProgramada.setDate(fechaProgramada.getDate() + 15);
 const fechaPagoProgramado = fechaProgramada.toISOString().split("T")[0];
 
+
+
+const tasaEfectivaAnual = 0.49;
+const valorFactorSeguro = 0.00083;
+const tasaDiaria = (1 + tasaEfectivaAnual) ** (1 / 365) - 1;
+const diasCuota = 15;
+const saldoInicial = Number(pagarValor);
+
+const interesCalculado = saldoInicial * ((1 + tasaDiaria) ** diasCuota - 1);
+const interes = Math.round(interesCalculado * 100) / 100;
+
+const valorPorCuota = Math.round(saldoInicial * valorFactorSeguro * 100) / 100;
+const montoMasIntereses = saldoInicial + interes + valorPorCuota;
+
+console.log("interes:", interes);
+console.log("valor por cuota:", valorPorCuota);
+console.log("monto más intereses:", montoMasIntereses);
+
+
 // Format pesos
 function formatPesos(valor) {
   return new Intl.NumberFormat("es-CO", {
@@ -75,26 +94,29 @@ const handlePagoClick = async () => {
     fechaPagoProgramado: fechaPagoProgramado,
     idMedioPago: 14,
     nroFacturaAlpina: nroFacturaAlpina,
+    MontoMasIntereses: montoMasIntereses,
+    Intereses: interes,
+    Fees: valorPorCuota,
     telefonoTransportista: telefono,
   };
 
   try {
-    const hora = new Date().toLocaleTimeString();
-      const pagoFormateado = formatPesos(pagarValor);
-      const number = "57" + telefono;
+    // const hora = new Date().toLocaleTimeString();
+    //   const pagoFormateado = formatPesos(pagarValor);
+    //   const number = "57" + telefono;
 
-      const message = `${datosCuenta.Nombres} envío un pago de la factura ${nroFacturaAlpina} por el valor de ${pagoFormateado} el día ${fechaActual.toLocaleDateString()} a la hora ${hora}`;
+    //   const message = `${datosCuenta.Nombres} envío un pago de la factura ${nroFacturaAlpina} por el valor de ${pagoFormateado} el día ${fechaActual.toLocaleDateString()} a la hora ${hora}`;
       
-      await axios.post(
-        whatsappURL,
-        { number, message },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+    //   await axios.post(
+    //     whatsappURL,
+    //     { number, message },
+    //     {
+    //       headers: {
+    //         Authorization: `Bearer ${token}`,
+    //         "Content-Type": "application/json",
+    //       },
+    //     }
+    //   );
 
       // registrar el pago
       await axios.post("/api/movimientos", dataPagoFactura, {
