@@ -29,23 +29,13 @@ const fechaProgramada = new Date(fechaActual);
 fechaProgramada.setDate(fechaProgramada.getDate() + 15);
 const fechaPagoProgramado = fechaProgramada.toISOString().split("T")[0];
 
+const tasaEfectivaAnual = ref();
+const valorFactorSeguro = ref();
 
+const interes = ref(0);
+const valorPorCuota = ref(0);
+const montoMasIntereses = ref(0);
 
-const tasaEfectivaAnual = 0.49;
-const valorFactorSeguro = 0.00083;
-const tasaDiaria = (1 + tasaEfectivaAnual) ** (1 / 365) - 1;
-const diasCuota = 15;
-const saldoInicial = Number(pagarValor);
-
-const interesCalculado = saldoInicial * ((1 + tasaDiaria) ** diasCuota - 1);
-const interes = Math.round(interesCalculado * 100) / 100;
-
-const valorPorCuota = Math.round(saldoInicial * valorFactorSeguro * 100) / 100;
-const montoMasIntereses = saldoInicial + interes + valorPorCuota;
-
-console.log("interes:", interes);
-console.log("valor por cuota:", valorPorCuota);
-console.log("monto más intereses:", montoMasIntereses);
 
 
 // Format pesos
@@ -94,9 +84,9 @@ const handlePagoClick = async () => {
     fechaPagoProgramado: fechaPagoProgramado,
     idMedioPago: 14,
     nroFacturaAlpina: nroFacturaAlpina,
-    MontoMasIntereses: montoMasIntereses,
-    Intereses: interes,
-    Fees: valorPorCuota,
+    MontoMasIntereses: montoMasIntereses.value,
+    Intereses: interes.value,
+    Fees: valorPorCuota.value,
     telefonoTransportista: telefono,
   };
 
@@ -143,6 +133,44 @@ const handlePagoClick = async () => {
 const handlePagina2Click = () => {
   window.open("/PantallaFacturasView", "_parent");
 };
+
+onMounted(async () => {
+  try {
+    const intreses = await axios.get("api/tasaIntereses", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    tasaEfectivaAnual.value = intreses.data[0].tasaEfectivaAnual;
+    valorFactorSeguro.value = intreses.data[0].valorFactorSeguro;
+
+    const tasaDiaria = (1 + tasaEfectivaAnual.value) ** (1 / 365) - 1;
+    const diasCuota = 15;
+    const saldoInicial = Number(pagarValor);
+
+    const interesCalculado = saldoInicial * ((1 + tasaDiaria) ** diasCuota - 1);
+    interes.value = Math.round(interesCalculado * 100) / 100;
+
+    valorPorCuota.value =
+      Math.round(saldoInicial * valorFactorSeguro.value * 100) / 100;
+
+    montoMasIntereses.value =
+      saldoInicial + interes.value + valorPorCuota.value;
+
+    console.log("interes:", interes.value);
+    console.log("valor por cuota:", valorPorCuota.value);
+    console.log("monto más intereses:", montoMasIntereses.value);
+
+  } catch (error) {
+    console.error("Error cargando datos:", error);
+    if (error.response?.status === 401) {
+      activarSesionExpirada();
+    }
+  }
+});
+
 
 </script>
 

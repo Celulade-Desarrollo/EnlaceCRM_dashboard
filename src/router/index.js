@@ -24,14 +24,14 @@ const routes = [
     meta: { requiresAuth: true },
   },
 
-{
+  {
     path: "/Pantalla13View",
     name: "Comunicacion",
     component: () => import("../views/PantallaComunicacioView.vue"),
     meta: { requiresAuth: true },
   },
 
-{
+  {
     path: "/PantallaPagos",
     name: "Pagos",
     component: () => import("../views/PantallaPagosView.vue"),
@@ -75,7 +75,7 @@ const routes = [
     meta: { requiresAuth: true, role: "usuario" }
   },
 
-    {
+  {
     path: "/Pantalla6View",
     name: "pantalla6",
     component: () => import("../views/Pantalla6View.vue"),
@@ -91,8 +91,8 @@ const routes = [
   {
     path: "/Pantalla10view",
     name: "pantalla10",
-  component: () => import("../views/Pantalla10view.vue"),
-  meta: { requiresAuth: true, role: "admin", empresa: "bancow"}
+    component: () => import("../views/Pantalla10view.vue"),
+    meta: { requiresAuth: true, role: "admin", empresa: "bancow"}
   },
   {
     path: "/Pantalla11View",
@@ -124,47 +124,54 @@ const routes = [
     component: () => import("../views/pantallaSubirExcelView.vue"),
     meta: { requiresAuth: true,  role: "admin" },
   },
-    {
-  path: "/PantallaCorresponsalView",
-  name: "PantallaCorresponsal",
-  component: () => import("../views/PantallaCorresponsalView.vue"),
-  meta: { requiresAuth: true,  role: "usuario" },
+  {
+    path: "/PantallaCorresponsalView",
+    name: "PantallaCorresponsal",
+    component: () => import("../views/PantallaCorresponsalView.vue"),
+    meta: { requiresAuth: true,  role: "usuario" },
   },
   {
-  path: "/Pantalla14View",
-  name: "PantallaBajarExcel",
-  component: () => import("../views/Pantalla14View.vue"),
-  meta: { requiresAuth: true,  role: "admin" },
+    path: "/Pantalla14View",
+    name: "PantallaBajarExcel",
+    component: () => import("../views/Pantalla14View.vue"),
+    meta: { requiresAuth: true,  role: "admin" },
   },
   {
-  path: "/PantallaBajarExcelView",
-  name: "PantallaBajarExcelV",
-  component: () => import("../views/PantallaBajarExcelView.vue"),
-  meta: { requiresAuth: true,  role: "admin" },
+    path: "/PantallaBajarExcelView",
+    name: "PantallaBajarExcelV",
+    component: () => import("../views/PantallaBajarExcelView.vue"),
+    meta: { requiresAuth: true,  role: "admin" },
   },
   {
-  path: "/PantallaDistribuidoresView",
-  name: "PantallaDistribuidores",
-  component: () => import("../views/PantallaDistribuidoresview.vue"),
-  meta: { requiresAuth: true,  role: "admin" },
+    path: "/PantallaDistribuidoresView",
+    name: "PantallaDistribuidores",
+    component: () => import("../views/PantallaDistribuidoresview.vue"),
+    meta: { requiresAuth: true,  role: "admin" },
   },
-   { path: "/PantallaTesoreriaView",
-  name: "PantallaTesoreria",
-  component: () => import("../views/PantallaTesoreriaView.vue"),
-  meta: { requiresAuth: true,  role: "admin" },
-},
+  { 
+    path: "/PantallaTesoreriaView",
+    name: "PantallaTesoreria",
+    component: () => import("../views/PantallaTesoreriaView.vue"),
+    meta: { requiresAuth: true,  role: "admin" },
+  },
   {
-  path: "/PantallaDisView",
-  name: "PantallaDis",
-  component: () => import("../views/PantallaDisView.vue"),
-  meta: { requiresAuth: true,  role: "admin" },
-},
+    path: "/PantallaDisView",
+    name: "PantallaDis",
+    component: () => import("../views/PantallaDisView.vue"),
+    meta: { requiresAuth: true,  role: "admin" },
+  },
   {
-  path: "/PantallaBajarDispercionView",
-  name: "PantallaBajarDispercion",
-  component: () => import("../views/PantallaBajarDispercion.vue"),
-  meta: { requiresAuth: true,  role: "admin", empresa: "bancow" },
-  }
+    path: "/PantallaBajarDispercionView",
+    name: "PantallaBajarDispercion",
+    component: () => import("../views/PantallaBajarDispercion.vue"),
+    meta: { requiresAuth: true,  role: "admin", empresa: "bancow" },
+  },
+  {
+  path: "/editar-tasa-intereses",
+  name: "editar-tasa-intereses",  
+  component: () => import("../views/editarTasaIntereseView.vue"),
+    meta: { requiresAuth: true, role: "admin", empresa: "enlace"}
+  },
   
 ];
 
