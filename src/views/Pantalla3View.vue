@@ -85,16 +85,16 @@ const handlePagoClick = async () => {
 
       const message = `${datosCuenta.Nombres} envío un pago de la factura ${nroFacturaAlpina} por el valor de ${pagoFormateado} el día ${fechaActual.toLocaleDateString()} a la hora ${hora}`;
       
-      // await axios.post(
-      //   whatsappURL,
-      //   { number, message },
-      //   {
-      //     headers: {
-      //       Authorization: `Bearer ${token}`,
-      //       "Content-Type": "application/json",
-      //     },
-      //   }
-      // );
+      await axios.post(
+        whatsappURL,
+        { number, message },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       // registrar el pago
       await axios.post("/api/movimientos", dataPagoFactura, {
