@@ -81,11 +81,11 @@ const handleFileUpload = (event) => {
   reader.readAsArrayBuffer(file);
 };
 
-  const camposObligatorios =  [
-    "Operacion", "CuentaCliente", "NumeroID", "Persona",
-    "IdEstadoProducto", "FecTransaccion", "CAPITAL", "TOTAL_PAGADO",
-    "INTERESES",	"INTERES_MORA",	"SEGUROS",	"TOTAL_PAGADO",	"DIAS_MORA"
-  ];
+const camposObligatorios = [
+  "Operacion", "CuentaCliente", "NumeroID", "Persona",
+  "IdEstadoProducto", "FecTransaccion", "CAPITAL", "TOTAL_PAGADO",
+  "INTERESES", "INTERES_MORA", "SEGUROS", "TOTAL_PAGADO", "DIAS_MORA"
+];
 
 const validarDatos = (data) => {
   const errores = [];
@@ -111,50 +111,79 @@ const validarDatos = (data) => {
 
   return errores;
 };
+
 async function downloadExcelPlantilla() {
   try {
-    const data = [
-      {								
-        Operacion: "",
-        CuentaCliente: "",
-        NumeroID: "",
-        Persona: "",
-        IdEstadoProducto: "",
-        FecTransaccion: "",
-        CAPITAL: "",
-        INTERESES: "",
-        INTERES_MORA: "",
-        SEGUROS: "",
-        TOTAL_PAGADO: "",
-        DIAS_MORA: "",
-      },
-    ];
+    const resp = await axios.get('/api/abonos/plantilla', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const clientes = resp.data.data;
+
+    if (!clientes || clientes.length === 0) {
+      alert("No hay clientes pendientes por abonar.");
+      return;
+    }
+
+    // Mapea datos de la BD + deja vacíos los campos que el usuario llena
+    const data = clientes.map((c, index) => {
+      const fila = index + 2; // fila Excel (fila 1 = encabezado)
+      return {
+        Operacion:        c.Operacion,
+        CuentaCliente:    c.CuentaCliente,
+        NumeroID:         c.NumeroID,
+        Persona:          c.Persona,
+        IdEstadoProducto: c.IdEstadoProducto,
+        FecTransaccion:   c.FecTransaccion,
+        CAPITAL:          "",
+        INTERESES:        "",
+        INTERES_MORA:     "",
+        SEGUROS:          "",
+        TOTAL_PAGADO:     "",  // se sobreescribe con fórmula abajo
+        DIAS_MORA:        "",
+      };
+    });
 
     const worksheet = XLSX.utils.json_to_sheet(data);
+
+    // Fórmula =G+H+I+J en columna K (TOTAL_PAGADO) por cada fila
+    // y formato de 2 decimales en columnas numéricas
+    clientes.forEach((_, index) => {
+      const fila = index + 2;
+      worksheet[`K${fila}`] = { t: "n", f: `G${fila}+H${fila}+I${fila}+J${fila}`, z: "#,##0.00" };
+
+      ["G", "H", "I", "J", "K"].forEach((col) => {
+        if (worksheet[`${col}${fila}`]) {
+          worksheet[`${col}${fila}`].z = "#,##0.00";
+        }
+      });
+    });
+
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Plantilla");
 
-    const excelBuffer = XLSX.write(workbook, {
-      bookType: "xlsx",
-      type: "array",
-    });
+    const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
 
     const blob = new Blob([excelBuffer], {
       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
 
-    const url = window.URL.createObjectURL(blob);
+    const url  = window.URL.createObjectURL(blob);
     const link = document.createElement("a");
-    link.href = url;
+    link.href  = url;
     link.setAttribute("download", "plantillaAbonos.xlsx");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     window.URL.revokeObjectURL(url);
+
   } catch (error) {
-    console.error("Error al generar Excel:", error);
+    console.error("Error al generar plantilla:", error);
+    alert("Error al descargar la plantilla");
+    if (error.response?.status === 401) {
+      activarSesionExpirada();
+    }
   }
-};
+}
 
 const enviarCSV = async () => {
   const errores = validarDatos(excelData.value);
@@ -211,66 +240,59 @@ const enviarCSV = async () => {
     }
   }
 };
-
 </script>
 
 <template>
   <BotonAtras />
   <motion.div v-bind="fadeInUp" class="page-container">
 
-<div class="card-subir-excel">
-  <div class="boton-container">
-    <input
-      ref="fileInputRef"
-      type="file"
-      @change="handleFileUpload"
-      accept=".xlsx, .xls, .csv"
-      hidden
-    />
-    <button class="boton" @click="triggerFileInput">
-      <img src="/public/archivo.png" class="icono-btn" />
-      Subir Archivo
-    </button>
-  </div>
+    <div class="card-subir-excel">
+      <div class="boton-container">
+        <input
+          ref="fileInputRef"
+          type="file"
+          @change="handleFileUpload"
+          accept=".xlsx, .xls, .csv"
+          hidden
+        />
+        <button class="boton" @click="triggerFileInput">
+          <img src="/public/archivo.png" class="icono-btn" />
+          Subir Archivo
+        </button>
+      </div>
 
-    <p v-if="fileLoaded" class="mensaje ok">
-      Archivo cargado y listo para enviar
-    </p>
-    <p v-else class="mensaje">
-      Ningún archivo cargado
-    </p>
+      <p v-if="fileLoaded" class="mensaje ok">
+        Archivo cargado y listo para enviar
+      </p>
+      <p v-else class="mensaje">
+        Ningún archivo cargado
+      </p>
 
-    <div v-if="fileLoaded">
-      <button class="button" @click="enviarCSV">
-        <img src="/public/enviar.png" class="icono-btn" />
-        Enviar
-      </button>
+      <div v-if="fileLoaded">
+        <button class="button" @click="enviarCSV">
+          <img src="/public/enviar.png" class="icono-btn" />
+          Enviar
+        </button>
+      </div>
     </div>
-</div>
-<div class="card-subir-excel">
-  <div class="boton-container">
-    <input
-      ref="fileInputRef"
-      type="file"
-      @change="handleFileUpload"
-      accept=".xlsx, .xls, .csv"
-      hidden
-    />
-    <button class="boton" @click="downloadExcelPlantilla">
-      <img src="/public/bajarArchivo.png" class="icono-btn" />
-      Bajar Plantilla
-    </button>
-  </div>
-    <p class="mensaje">
-      Descargar plantilla de ejemplo
-    </p>
-</div>
-  <SesionExpiradaLogin />
+
+    <div class="card-subir-excel">
+      <div class="boton-container">
+        <button class="boton" @click="downloadExcelPlantilla">
+          <img src="/public/bajarArchivo.png" class="icono-btn" />
+          Bajar Plantilla
+        </button>
+      </div>
+      <p class="mensaje">
+        Descargar plantilla de ejemplo
+      </p>
+    </div>
+
+    <SesionExpiradaLogin />
   </motion.div>
 </template>
 
 <style scoped>
-
 .page-container {
   display: flex;
   justify-content: center;
@@ -285,7 +307,6 @@ const enviarCSV = async () => {
   box-sizing: border-box;
 }
 
-
 .mensaje {
   font-size: 1.2rem;
   font-weight: 600;
@@ -293,7 +314,6 @@ const enviarCSV = async () => {
   margin: 0 0 40px 0;
   text-align: center;
 }
-
 
 .boton-container {
   display: flex;
@@ -308,16 +328,13 @@ const enviarCSV = async () => {
   color: white;
   font-size: 1rem;
   font-weight: 500;
-
   width: 260px;
   height: 55px;
   padding: 0;
-
   border: none;
   outline: none;
   border-radius: 999px;
   cursor: pointer;
-
   display: flex;
   align-items: center;
   justify-content: center;
@@ -329,16 +346,13 @@ const enviarCSV = async () => {
   color: white;
   font-size: 1rem;
   font-weight: 500;
-
   width: 260px;
   height: 55px;
   padding: 0;
-
   border: none;
   outline: none;
-  border-radius: 999px; 
+  border-radius: 999px;
   cursor: pointer;
-
   display: flex;
   align-items: center;
   justify-content: center;
@@ -374,5 +388,4 @@ const enviarCSV = async () => {
 .boton-logout:hover {
   background-color: #f15bab;
 }
-
 </style>
