@@ -31,6 +31,7 @@ const fechaPagoProgramado = fechaProgramada.toISOString().split("T")[0];
 
 const tasaEfectivaAnual = ref();
 const valorFactorSeguro = ref();
+const diasCuota = ref();
 
 const interes = ref(0);
 const valorPorCuota = ref(0);
@@ -89,7 +90,7 @@ const handlePagoClick = async () => {
     Fees: valorPorCuota.value,
     telefonoTransportista: telefono,
   };
-
+console.log("Data a enviar para pago:", dataPagoFactura);
   try {
     // const hora = new Date().toLocaleTimeString();
     //   const pagoFormateado = formatPesos(pagarValor);
@@ -145,12 +146,12 @@ onMounted(async () => {
 
     tasaEfectivaAnual.value = intreses.data[0].tasaEfectivaAnual;
     valorFactorSeguro.value = intreses.data[0].valorFactorSeguro;
+    diasCuota.value = intreses.data[0].diasDuracionCuota;
 
     const tasaDiaria = (1 + tasaEfectivaAnual.value) ** (1 / 365) - 1;
-    const diasCuota = 15;
     const saldoInicial = Number(pagarValor);
 
-    const interesCalculado = saldoInicial * ((1 + tasaDiaria) ** diasCuota - 1);
+    const interesCalculado = saldoInicial * ((1 + tasaDiaria) ** diasCuota.value - 1);
     interes.value = Math.round(interesCalculado * 100) / 100;
 
     valorPorCuota.value =

@@ -9,7 +9,8 @@ const company = localStorage.getItem("company");
 const tasaData = ref({
   tasaEfectivaAnual: 0,
   valorFactorSeguro: 0,
-  Id: null
+  Id: null,
+  diasDuracionCuota:0,
 })
 
 const showModal = ref(false)
@@ -37,7 +38,8 @@ const confirmUpdate = async () => {
   try {
     await axios.put(`/api/tasaIntereses/${tasaData.value.Id}`, {
       tasaEfectivaAnual: tasaData.value.tasaEfectivaAnual,
-      valorFactorSeguro: tasaData.value.valorFactorSeguro
+      valorFactorSeguro: tasaData.value.valorFactorSeguro,
+      diasDuracionCuota: tasaData.value.diasDuracionCuota
     }, {
       headers: {
         'Authorization': `Bearer ${token}`
@@ -53,6 +55,19 @@ const confirmUpdate = async () => {
 
 const cancelUpdate = () => {
   showModal.value = false
+}
+const bloquearCaracteres = (e) => {
+  if (['.', ',', '-', '+', 'e', 'E'].includes(e.key)) {
+    e.preventDefault()
+  }
+}
+
+const limpiarEntero = (e) => {
+  let valor = e.target.value
+
+  valor = valor.replace(/[^0-9]/g, '')
+
+  tasaData.value.diasDuracionCuota = valor ? parseInt(valor, 10) : null
 }
 </script>
 
@@ -79,6 +94,20 @@ const cancelUpdate = () => {
           v-model.number="tasaData.valorFactorSeguro"
           class="input"
           step="0.00001"
+        />
+      </div>
+
+      <div>
+        <label class="label">Dias duracion cuota:</label>
+        <input 
+          type="number"
+          step="1"
+          min="0"
+          v-model.number="tasaData.diasDuracionCuota"
+          class="input"
+          @keydown="bloquearCaracteres"
+          @input="limpiarEntero"
+          @paste.prevent
         />
       </div>
       
