@@ -14,8 +14,8 @@ const clientes = ref([])
 const creditDataRecords = ref([])
 const router = useRouter()
 const scoringData = ref([]);
-const token = localStorage.getItem("admin_token");
-const company = localStorage.getItem("company");
+  const token = localStorage.getItem("admin_token");
+  const company = localStorage.getItem("company");
 const bancowData = ref([])
   
 console.log("Token:", token);
@@ -179,8 +179,7 @@ async function downloadExcel() {
     <div class="descargar-container">
       <button class="boton" @click="downloadExcel">
         <img src="/descargar.png" alt="Descargar Excel  " class="icon" />
-        <span>Descargar Excel  
-</span>
+        <span>Descargar Excel</span>
       </button>
     </div>
 

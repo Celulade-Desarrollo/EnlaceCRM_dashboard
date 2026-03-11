@@ -17,6 +17,9 @@ const goToActualizar = () => {
 const goToActualizarIntereses = () => {
   router.push("/actualizar-intereses"); 
 };
+const goToEditarIntereses = () => {
+  router.push("/editar-tasa-intereses"); 
+};
 </script>
 
 <template>
@@ -33,16 +36,20 @@ const goToActualizarIntereses = () => {
     <div class="card">
       <button class="btn" @click="goToActualizarIntereses">
         <img src="/intereses.png" alt="Actualizar saldos" class="icon" />
-        <span>Actualizar intereses
-</span>
+        <span>Actualizar intereses</span>
       </button>
     </div>
 
     <div class="card">
       <button class="btn" @click="goToActualizar">
         <img src="/saldo.png" alt="Actualizar intereses" class="icon" />
-        <span>Actualizar saldos
-</span>
+        <span>Actualizar saldos</span>
+      </button>
+    </div>
+    <div class="card">
+      <button class="btn" @click="goToEditarIntereses">
+        <img src="/saldo.png" alt="Actualizar intereses" class="icon" />
+        <span>Actualizar tasa intereses</span>
       </button>
     </div>
   </div>

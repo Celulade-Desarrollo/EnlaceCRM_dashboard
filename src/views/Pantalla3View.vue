@@ -29,6 +29,16 @@ const fechaProgramada = new Date(fechaActual);
 fechaProgramada.setDate(fechaProgramada.getDate() + 15);
 const fechaPagoProgramado = fechaProgramada.toISOString().split("T")[0];
 
+const tasaEfectivaAnual = ref();
+const valorFactorSeguro = ref();
+const diasCuota = ref();
+
+const interes = ref(0);
+const valorPorCuota = ref(0);
+const montoMasIntereses = ref(0);
+
+
+
 // Format pesos
 function formatPesos(valor) {
   return new Intl.NumberFormat("es-CO", {
@@ -75,26 +85,29 @@ const handlePagoClick = async () => {
     fechaPagoProgramado: fechaPagoProgramado,
     idMedioPago: 14,
     nroFacturaAlpina: nroFacturaAlpina,
+    MontoMasIntereses: montoMasIntereses.value,
+    Intereses: interes.value,
+    Fees: valorPorCuota.value,
     telefonoTransportista: telefono,
   };
-
+console.log("Data a enviar para pago:", dataPagoFactura);
   try {
-    const hora = new Date().toLocaleTimeString();
-      const pagoFormateado = formatPesos(pagarValor);
-      const number = "57" + telefono;
+     const hora = new Date().toLocaleTimeString();
+       const pagoFormateado = formatPesos(pagarValor);
+       const number = "57" + telefono;
 
       const message = `${datosCuenta.Nombres} envío un pago de la factura ${nroFacturaAlpina} por el valor de ${pagoFormateado} el día ${fechaActual.toLocaleDateString()} a la hora ${hora}`;
-      
-      await axios.post(
-        whatsappURL,
-        { number, message },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+  
+       await axios.post(
+         whatsappURL,
+         { number, message },
+         {
+           headers: {
+             Authorization: `Bearer ${token}`,
+             "Content-Type": "application/json",
+           },
+         }
+       );
 
       // registrar el pago
       await axios.post("/api/movimientos", dataPagoFactura, {
@@ -121,6 +134,44 @@ const handlePagoClick = async () => {
 const handlePagina2Click = () => {
   window.open("/PantallaFacturasView", "_parent");
 };
+
+onMounted(async () => {
+  try {
+    const intreses = await axios.get("api/tasaIntereses", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    tasaEfectivaAnual.value = intreses.data[0].tasaEfectivaAnual;
+    valorFactorSeguro.value = intreses.data[0].valorFactorSeguro;
+    diasCuota.value = intreses.data[0].diasDuracionCuota;
+
+    const tasaDiaria = (1 + tasaEfectivaAnual.value) ** (1 / 365) - 1;
+    const saldoInicial = Number(pagarValor);
+
+    const interesCalculado = saldoInicial * ((1 + tasaDiaria) ** diasCuota.value - 1);
+    interes.value = Math.round(interesCalculado * 100) / 100;
+
+    valorPorCuota.value =
+      Math.round(saldoInicial * valorFactorSeguro.value * 100) / 100;
+
+    montoMasIntereses.value =
+      saldoInicial + interes.value + valorPorCuota.value;
+
+    console.log("interes:", interes.value);
+    console.log("valor por cuota:", valorPorCuota.value);
+    console.log("monto más intereses:", montoMasIntereses.value);
+
+  } catch (error) {
+    console.error("Error cargando datos:", error);
+    if (error.response?.status === 401) {
+      activarSesionExpirada();
+    }
+  }
+});
+
 
 </script>
 
