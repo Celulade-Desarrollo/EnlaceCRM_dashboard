@@ -87,6 +87,12 @@ const valorProximoAbono = computed(() => {
     .filter(f => f.fecha.toDateString() === fechaMin.toDateString())
     .reduce((acc, f) => acc + f.saldo, 0)
 });
+
+const tieneInteresesSinAbono = computed(() => {
+  return facturas.value.some(f => 
+    (f.MontoMasIntereses || 0) > (f.Monto || 0) && (f.AbonoUsuario || 0) === 0
+  )
+})
 </script>
 <template>
 <motion.div v-bind="fadeInUp">
@@ -102,6 +108,9 @@ const valorProximoAbono = computed(() => {
       
       <h2 class="text-xl flex gap-3 mt-1">Deuda total<p class="font-bold">$ {{ formatoMiles(deudaTotalCalculada) }}</p></h2>
       <h2 class="text-xl flex gap-3 mt-1">Valor siguiente abono:<p class="font-bold">$ {{ formatoMiles(valorProximoAbono) }}</p></h2>
+      <p v-if="tieneInteresesSinAbono" class="text-[12px] text-gray-500 ml-1">
+          Valor aprox. El monto total se genera al momento del pago
+      </p>
       <h3 v-if="deudaTotalCalculada > 0" class=" flex text-[13px]"> Fecha del siguiente abono:  <p class="font-bold">{{ fechaFormateada }}</p></h3>
      <div v-if="bloqueoMora" class="alert alert-danger mt-3">
         <p><strong>⚠ Estas bloqueado por mora </strong></p>
