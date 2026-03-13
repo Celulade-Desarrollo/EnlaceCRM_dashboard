@@ -34,7 +34,7 @@
           </template>
         </p>
         <p>
-          <strong>Saldo Capital:</strong>
+          <strong>Saldo capital:</strong>
           <template v-if="movimiento.editando">
             <input 
               type="number" 
@@ -52,7 +52,7 @@
         </p>
         
         <p class="bg-green-200">
-          <strong>Interes corriente:</strong>
+          <strong>Interés corriente:</strong>
           <template v-if="movimiento.editando">
             <input 
               type="number" 
@@ -80,7 +80,7 @@
         </p>
 
         <p>
-          <strong>Cobro fees:</strong>
+          <strong>Cobro seguros:</strong>
           <template v-if="movimiento.editando">
             <input 
               type="number" 
@@ -94,7 +94,7 @@
         </p>
 
         <p><strong>Descripción:</strong> {{ movimiento.Descripcion }}</p>
-        <p><strong>Fecha de Pago Programado:</strong> {{ formatearFecha(movimiento.FechaPagoProgramado) }}</p>
+        <p><strong>Fecha de pago programado:</strong> {{ formatearFecha(movimiento.FechaPagoProgramado) }}</p>
         
         <div class="botones">
           <template v-if="movimiento.editando">

@@ -78,7 +78,7 @@ const limpiarEntero = (e) => {
     
     <div class="form-box">
       <div>
-        <label class="label">Tasa Efectiva Anual:</label>
+        <label class="label">Tasa efectiva anual:</label>
         <input 
           type="number" 
           v-model.number="tasaData.tasaEfectivaAnual"
@@ -88,7 +88,7 @@ const limpiarEntero = (e) => {
       </div>
       
       <div>
-        <label class="label">Valor Factor Seguro:</label>
+        <label class="label">Valor factor seguro:</label>
         <input 
           type="number" 
           v-model.number="tasaData.valorFactorSeguro"
@@ -98,7 +98,7 @@ const limpiarEntero = (e) => {
       </div>
 
       <div>
-        <label class="label">Dias duracion cuota:</label>
+        <label class="label">Días duración cuota:</label>
         <input 
           type="number"
           step="1"
@@ -122,7 +122,7 @@ const limpiarEntero = (e) => {
     <div v-if="showModal" class="modal-overlay">
       <div class="modal-box">
         <p class="modal-text">
-          ¿Seguro que deseas actualizar las tasas de interes?
+          ¿Seguro que deseas actualizar las tasas de interés?
         </p>
         <div class="modal-buttons">
           <button @click="confirmUpdate" class="btn-confirm">

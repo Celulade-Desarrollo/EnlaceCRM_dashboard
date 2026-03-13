@@ -216,9 +216,9 @@ const valorProximoAbono = computed(() => {
         <div class="provider-content">
           <div class="bg-white w-full rounded-xl flex flex-col items-center relative justify-start pt-3">
             <div class="flex gap-3 flex-column mb-3">
-              <h2 class="text-xl flex gap-3 mt-4">Deuda total $<p class="font-bold">{{ formatoMiles(deudaTotalCalculada) }}</p></h2>
-              <h3 class="flex text-[13px]">Proximo pago:<p  class="font-bold">$ {{ formatoMiles(valorProximoAbono) }}</p></h3>
-              <h3 class="flex text-[13px]">Fecha del siguiente abono: <p class="font-bold">{{ fechaProximoAbono   }}</p></h3>
+              <h2 class="text-xl flex gap-3 mt-4">Deuda total <p class="font-bold"> ${{ formatoMiles(deudaTotalCalculada) }}</p></h2>
+              <h3 class="flex items-center gap-10 text-[13px]">Próximo pago<span class="font-bold">${{ formatoMiles(valorProximoAbono) }}</span></h3>
+              <h3 class="flex items-center gap-2 text-[13px]">Fecha del siguiente abono <span class="font-bold">{{ fechaProximoAbono }}</span></h3>
 
             </div>
             <h2 class="w-full text-center font-bold mb-2">¿Cómo quieres pagar?</h2>
@@ -228,7 +228,7 @@ const valorProximoAbono = computed(() => {
               class="no-underline flex items-center justify-between bg-gray-100 rounded-lg shadow w-72 h-20 px-4 mt-4"
             >
               <span class="no-underline flex flex-col text-left font-bold text-gray-700 text-lg leading-tight">
-                Pago<br />Digital via PSE
+                Pago<br />digital vía PSE
               </span>
               <img src="../../public/PSELOGO.png" class="w-16 h-16" />
             </a>
@@ -237,7 +237,7 @@ const valorProximoAbono = computed(() => {
               class="no-underline flex items-center justify-between bg-gray-100 rounded-lg shadow w-72 h-20 px-4 mt-4"
             >
               <span class="no-underline flex flex-col text-left font-bold text-gray-700 text-lg leading-tight">
-                Pago en Corresponsales y oficinas
+                Pago en corresponsales y oficinas
               </span>
               <button class="button" @click="goToPantallaCorresponsal">
   <img src="../../public/mapa.png" alt="" class="button-icon" />
