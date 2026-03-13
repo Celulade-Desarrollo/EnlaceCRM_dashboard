@@ -75,6 +75,12 @@ const handleContinuarClick = () => {
   const numerosFacturas = facturasSeleccionadas.value.map(f => f.factura);
   localStorage.setItem("numeroFactura", JSON.stringify(numerosFacturas));
 
+  const placa = facturasSeleccionadas.value[0]?.placa;
+  const planilla = facturasSeleccionadas.value[0]?.planilla;
+
+  localStorage.setItem("placa", placa);
+  localStorage.setItem("planilla", planilla);
+  
   window.open("/Pantalla3View", "_parent");
 };
 
