@@ -199,7 +199,7 @@ onMounted(async () => {
     <section class="content">
       <div class="card">
          <div class="header-container align-left">
-        <h3 class="header-text">Pago a proovedor</h3>
+        <h3 class="header-text">Pago a proveedor</h3>
         <img src="/Alpina.png" alt="Alpina" class="alpina-logo-outside" />
       </div>
         <div class="header-container facturas-header">
