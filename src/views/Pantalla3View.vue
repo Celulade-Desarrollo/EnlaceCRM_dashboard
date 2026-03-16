@@ -99,11 +99,11 @@ const handlePagoClick = async () => {
   };
 console.log("Data a enviar para pago:", dataPagoFactura);
   try {
-    //  const hora = new Date().toLocaleTimeString();
-    //    const pagoFormateado = formatPesos(pagarValor);
-    //    const number = "57" + telefono;
+      const hora = new Date().toLocaleTimeString();
+        const pagoFormateado = formatPesos(pagarValor);
+        const number = "57" + telefono;
 
-    //   const message = `${datosCuenta.Nombres} envío un pago de la factura ${nroFacturaAlpina} por el valor de ${pagoFormateado} el día ${fechaActual.toLocaleDateString()} a la hora ${hora}`;
+       const message = `${datosCuenta.Nombres} envío un pago de la factura ${nroFacturaAlpina} por el valor de ${pagoFormateado} el día ${fechaActual.toLocaleDateString()} a la hora ${hora}`;
   
         await axios.post(
         whatsappURL,
