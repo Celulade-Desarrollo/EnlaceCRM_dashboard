@@ -30,7 +30,7 @@ router.push('/LoginView');
       />
     </div>
 
-    <h1 class="title">Hola , administrador enlaceCRM
+    <h1 class="title">Hola, administrador enlaceCRM
 </h1>
 
     <div class="right-section">
