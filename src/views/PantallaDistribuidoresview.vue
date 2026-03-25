@@ -11,6 +11,8 @@ const ruta = ref("asv545")
 const fechaSeleccionada = ref(new Date().toISOString().substr(0, 10))
 const filtroFactura = ref("");
 const filtroTelefono = ref("");
+const filtroPlaca = ref("");
+const filtroPlanilla = ref("");
 
 const router = useRouter();
 
@@ -42,7 +44,15 @@ const movimientosFiltrados = computed(() => {
       !filtroTelefono.value ||
       mov.TelefonoTransportista?.toString().includes(filtroTelefono.value);
 
-    return coincideFecha && coincideFactura && coincideTelefono;
+    const coincidePlaca =
+      !filtroPlaca.value ||
+      mov.Placa?.toString().includes(filtroPlaca.value);
+
+    const coincidePlanilla =
+      !filtroPlanilla.value ||
+      mov.Planilla?.toString().includes(filtroPlanilla.value);
+
+    return coincideFecha && coincideFactura && coincideTelefono && coincidePlaca && coincidePlanilla;
   });
 });
 
@@ -101,6 +111,16 @@ const logout = () => {
           <input class="form-control" type="text" v-model="filtroTelefono" placeholder="" />
           <span class="floating-label">Buscar teléfono</span>
         </label>
+
+        <label class="input-label">
+          <input class="form-control" type="text" v-model="filtroPlaca" placeholder="" />
+          <span class="floating-label">Buscar placa</span>
+        </label>
+
+        <label class="input-label">
+          <input class="form-control" type="text" v-model="filtroPlanilla" placeholder="" />
+          <span class="floating-label">Buscar planilla</span>
+        </label>
       </div>
 
       <!-- TABLA -->
@@ -109,6 +129,8 @@ const logout = () => {
           <div>Factura</div>
           <div>Teléfono Transportista</div>
           <div>Monto</div>
+          <div>Placa</div>
+          <div>Planilla</div>
         </div>
 
         <div
@@ -119,6 +141,8 @@ const logout = () => {
           <input type="text" :value="mov.NroFacturaAlpina" disabled />
           <input type="text" :value="mov.TelefonoTransportista" disabled />
           <input type="text" :value="`$ ${formatoMiles(mov.Monto)}`" disabled />
+          <input type="text" :value="mov.Placa" disabled />
+          <input type="text" :value="mov.Planilla" disabled />
         </div>
       </section>
     </div>
@@ -175,7 +199,8 @@ const logout = () => {
   transform: translateX(-100px);
 }
 .card {
-  width: 700px;
+  width: 100%;
+  max-width: 1100px;
   background: #f4f7fb;
   padding: 30px;
   border-radius: 12px;
@@ -298,7 +323,7 @@ input[type="date"] {
 
 .thead {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1.2fr 1fr 1fr 1fr;
   background: #251886;
   color: white;
   padding: 12px;
@@ -308,7 +333,7 @@ input[type="date"] {
 
 .row {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1.2fr 1fr 1fr 1fr;
   gap: 15px;
   padding: 18px;
   border-bottom: 1px solid #ffffff;
@@ -319,7 +344,7 @@ input[type="date"] {
 }
 
 .row input {
-  border: 1.5px solid #ffffff;
+  width: 100%;
   border-radius: 6px;
   padding: 8px;
   text-align: center;
