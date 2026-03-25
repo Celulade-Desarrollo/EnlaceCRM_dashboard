@@ -181,31 +181,39 @@ const logout = () => {
   width: 280px;
 }
 
-/* BOTON */
 .btn {
   background-color: #dd3590;
   color: white;
-  font-size: 1rem;
-  padding: 16px 26px;
   border: none;
-  border-radius: 29px;
+  border-radius: 50px;
   cursor: pointer;
   width: 100%;
+  transition: 0.3s ease;
+  box-shadow: 2px 3px 5px rgba(0, 0, 0, 0.25);
   display: flex;
+  flex-direction: column; 
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  padding-top: 0px;
+  padding-bottom: 5px;
   margin-bottom: 20px;
-  transition: 0.3s ease;
+  gap: 0px;
+  min-height: 0;
+  height: auto;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.1;
 }
 
 .btn:hover {
   background-color: #f15bab;
+  transform: translateY(-3px);
 }
-
 .btn img {
   width: 30px;
-  height: 30px;
+  height: 34px;
+  object-fit: contain;
+  margin-bottom: 1px;
 }
 
 /* DESCRIPCION */

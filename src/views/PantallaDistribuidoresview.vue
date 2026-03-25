@@ -229,6 +229,7 @@ input[type="date"] {
   color: white;
   font-size: 1.6rem;
   font-weight: bold;
+  margin-left: 10px;
 }
 
 .monto-header {

@@ -48,7 +48,7 @@ const goToEditarIntereses = () => {
     </div>
     <div class="card">
       <button class="btn" @click="goToEditarIntereses">
-        <img src="/saldo.png" alt="Actualizar intereses" class="icon" />
+        <img src="/tasa.png" alt="Actualizar intereses" class="icon" />
         <span>Actualizar tasa intereses</span>
       </button>
     </div>
@@ -93,22 +93,33 @@ const goToEditarIntereses = () => {
 
 
 .btn {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   background-color: #5A44D1;
   color: white;
-  font-size: 20px;
-  font-weight: 600;
-  padding: 16px 35px;
   border: 2px solid #6C63FF;
   border-radius: 25px;
   cursor: pointer;
-  width: 305px;
-  height: 120px;
   transition: all 0.3s ease;
   box-shadow: 2px 3px 5px rgba(0, 0, 0, 0.25);
+  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  
+  width: 300px;
+  
+  /* --- CONTROL DE ALTURA UNIFORME --- */
+  /* Sube este número para hacerlos más largos hacia abajo */
+  min-height: 150px;    
+  height: auto;
+  
+  /* Ajusta el padding para que el contenido respire */
+  padding: 20px;
+  font-size: 1.4rem;    
+  font-weight: 800;
+  line-height: 1.1;
+  gap: 12px;
+  text-align: center; /* Por si el texto ocupa dos líneas */
 }
 
 .btn:hover {
@@ -118,13 +129,12 @@ const goToEditarIntereses = () => {
 
 
 .icon {
-  position: absolute;
-  top: 8px;    
-  left: 20px;
+  /* Quitamos el absolute para que el flex lo ponga arriba */
   width: 40px;
   height: 40px;
   object-fit: contain;
   transition: transform 0.3s ease;
+  position: static;     /* Importante para anular el anterior */
 }
 
 

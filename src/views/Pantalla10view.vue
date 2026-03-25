@@ -232,24 +232,29 @@ async function downloadExcel() {
 .boton {
   background-color: #dd3590;
   color: white;
-  padding: 12px 50px;
   border: none;
-  border-radius: 20px;
-  font-size: 1rem;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
   outline: none;
-  box-shadow: none;
-}
-.boton {
   display: flex;
+  flex-direction: column; 
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  padding-top: 0px;
+  padding-bottom: 4px;
+  gap: 2px;
+  min-height: 0;
+  height: auto;
+  width: 250px;
 }
+
 .icono-btn {
-  width: 20px;
-  height: 20px;
+  width: 30px; 
+  height: 30px;
+  object-fit: contain;
 }
 
 

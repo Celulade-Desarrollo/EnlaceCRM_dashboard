@@ -97,19 +97,27 @@ const tieneInteresesSinAbono = computed(() => {
 <template>
 <motion.div v-bind="fadeInUp">
 <section>
-  <div class="card">
+<div class="card">
     <h3 class="font-bold text-lg">Estado de mi crédito</h3>
     <div class="flex gap-3 flex-column mb-3">
 
-    <h3 class="flex items-center gap-12">Cupo total<span class="font-bold">${{ cupoTotal }}</span></h3>
+   <h3 class="flex items-center gap-20">Cupo total
+  <span class="font-bold">${{ String(cupoTotal).split(',')[0] }},<sup>{{ (String(cupoTotal).split(',')[1] ?? '00').padEnd(2, '0') }}</sup></span>
+</h3>
 
-    <h3 class="flex items-center gap-1">Cupo disponible<span class="font-bold">${{ formatoMiles(props.cupoDisp) }}</span></h3>
+<h3 class="flex items-center gap-9">Cupo disponible
+  <span class="font-bold">${{ formatoMiles(props.cupoDisp).split(',')[0] }},<sup>{{ (formatoMiles(props.cupoDisp).split(',')[1] ?? '00').padEnd(2, '0') }}</sup></span>
+</h3>
 
-    <h2 class="text-xl flex items-center gap-3 mt-1">Deuda total<span class="font-bold">${{ formatoMiles(deudaTotalCalculada) }}</span></h2>
+<h2 class="text-xl flex items-center gap-11">Deuda total
+  <span class="font-bold">${{ formatoMiles(deudaTotalCalculada).split(',')[0] }},<sup>{{ (formatoMiles(deudaTotalCalculada).split(',')[1] ?? '00').padEnd(2, '0') }}</sup></span>
+</h2>
 
-      <h2 class="text-xl flex gap-3 mt-1">Valor siguiente abono<p class="font-bold">${{ formatoMiles(valorProximoAbono) }}</p></h2>
+<h2 class="text-xl flex gap-3 mt-1">Valor siguiente abono
+  <p class="font-bold">${{ formatoMiles(valorProximoAbono).split(',')[0] }},<sup>{{ (formatoMiles(valorProximoAbono).split(',')[1] ?? '00').padEnd(2, '0') }}</sup></p>
+</h2>
       <p v-if="tieneInteresesSinAbono" class="text-[12px] text-gray-500">
-          Valor aprox. El monto total se genera al momento del pago
+          Valor aprox. El monto total se genera al momento del pago.
       </p>
       <h3 v-if="deudaTotalCalculada > 0" class="flex items-center text-[13px] gap-2 mt-1">
           Fecha del siguiente abono
@@ -165,6 +173,14 @@ button {
 }
 button:hover {
   background-color: #f15bab;
+}
+
+sup {
+  font-size: 0.55em;
+  vertical-align: super;
+  line-height: 0;
+  position: relative;
+  top: -0.1em;
 }
 
 button:focus {
