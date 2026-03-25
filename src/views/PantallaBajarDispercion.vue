@@ -219,25 +219,33 @@ onMounted(async () => {
 .boton {
   background-color: #dd3590;
   color: white;
-  padding: 12px 50px;
   border: none;
-  border-radius: 20px;
-  font-size: 1rem;
+  border-radius: 60px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-  outline: none;
-  box-shadow: none;
+  transition: all 0.3s ease;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-} 
+  outline: none;
+  width: 250px;
+  margin-bottom: 25px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  height: auto;
+  min-height: 0;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1;
+}
 .boton:hover {
   background-color: #f15bab;
 }
 .icono-btn {
-  width: 20px;
-  height: 20px;
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  display: block;
 }
 /* CONTENEDOR */
 .contenedor {

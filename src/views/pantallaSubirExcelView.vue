@@ -128,19 +128,19 @@ async function downloadExcelPlantilla() {
     const data = clientes.map((c, index) => {
       const fila = index + 2; // fila Excel (fila 1 = encabezado)
       return {
-        Operacion:        c.Operacion,
-        CuentaCliente:    c.CuentaCliente,
-        NumeroID:         c.NumeroID,
-        Persona:          c.Persona,
-        IdEstadoProducto: c.IdEstadoProducto,
-        FecTransaccion:   c.FecTransaccion,
-        CAPITAL:          "",
-        INTERESES:        "",
-        INTERES_MORA:     "",
-        SEGUROS:          "",
-        TOTAL_PAGADO:     "",  // se sobreescribe con fórmula abajo
-        DIAS_MORA:        "",
-      };
+  Operacion:        "",          // usuario llena
+  CuentaCliente:    "",          // usuario llena
+  NumeroID:         c.NumeroID,  // viene de BD
+  Persona:          c.Persona,   // viene de BD
+  IdEstadoProducto: "",          // usuario llena
+  FecTransaccion:   "",          // usuario llena
+  CAPITAL:          0,
+  INTERESES:        0,
+  INTERES_MORA:     0,
+  SEGUROS:          0,
+  TOTAL_PAGADO:     "",
+  DIAS_MORA:        "",
+};
     });
 
     const worksheet = XLSX.utils.json_to_sheet(data);
@@ -293,6 +293,59 @@ const enviarCSV = async () => {
 </template>
 
 <style scoped>
+.boton, .button {
+  background-color: #dd3590;
+  color: white;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column; 
+  align-items: center;
+  justify-content: center;
+  outline: none;
+  width: 300px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  height: auto;
+  min-height: 0;
+  margin-bottom: 40px;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1;
+  gap: 5px;
+}
+
+.icono-btn {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  display: block;
+}
+
+.boton:hover, .button:hover {
+  background-color: #f15bab;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+}
+
+.mensaje {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: white;
+  text-align: center;
+  margin: 0;
+}
+
+.boton-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: auto; 
+  margin: 0 auto;
+}
+
 .page-container {
   display: flex;
   justify-content: center;
@@ -305,87 +358,5 @@ const enviarCSV = async () => {
   margin-top: 60px;
   flex-wrap: wrap;
   box-sizing: border-box;
-}
-
-.mensaje {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: white;
-  margin: 0 0 40px 0;
-  text-align: center;
-}
-
-.boton-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 260px;
-  margin: 0 auto 30px auto;
-}
-
-.button {
-  background-color: #dd3590;
-  color: white;
-  font-size: 1rem;
-  font-weight: 500;
-  width: 260px;
-  height: 55px;
-  padding: 0;
-  border: none;
-  outline: none;
-  border-radius: 999px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-}
-
-.boton {
-  background-color: #dd3590;
-  color: white;
-  font-size: 1rem;
-  font-weight: 500;
-  width: 260px;
-  height: 55px;
-  padding: 0;
-  border: none;
-  outline: none;
-  border-radius: 999px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-}
-
-.icono-btn {
-  width: 22px;
-  height: 22px;
-  object-fit: contain;
-  display: block;
-}
-
-.boton:hover,
-.button:hover {
-  background-color: #f15bab;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 14px rgba(0,0,0,0.25);
-}
-
-.boton-logout {
-  background-color: #dd3590;
-  color: white;
-  padding: 12px 40px;
-  border: none;
-  border-radius: 20px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  margin-top: 20px;
-}
-
-.boton-logout:hover {
-  background-color: #f15bab;
 }
 </style>

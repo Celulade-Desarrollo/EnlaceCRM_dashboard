@@ -142,8 +142,10 @@ async function downloadExcel() {
 .btn {
   position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  gap: 10px;
   background-color: #e53e8d;
   color: white;
   font-size: 25px;
@@ -162,20 +164,17 @@ async function downloadExcel() {
 }
 
 .icon {
-  position: absolute;
-  top: 10px;
-  left: 15px;
-  width: 50px;
-  height: 50px;
+  position: static;              /* ← ya no absoluto */
+  width: 70px;
+  height: 60px;
   object-fit: contain;
   transition: transform 0.3s ease;
 }
+
 .icon-cupo {
-  position: absolute;
-  top: 8px;
-  left: 12px;
-  width: 46px;
-  height: 46px;
+  position: static;              /* ← ya no absoluto */
+  width: 50px;
+  height: 50px;
   object-fit: contain;
   transition: transform 0.3s ease;
 }
