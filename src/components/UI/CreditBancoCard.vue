@@ -280,14 +280,17 @@ const handleCupoInput = (event) => {
           </div>
           <div class="info-field">
             <span class="info-field-label">Cupo:</span>
-            <input
-              class="info-field-value"
-              v-model="data.Cupo"
-              @input="handleCupoInput"
-              inputmode="numeric"
-              pattern="[0-9]*"
-              :disabled="data.CupoConfirmado"
-            />
+            <div class="input-with-icon">
+              <img v-if="!data.CupoConfirmado" src="/editar.png" alt="icono" class="icono-input" />
+                <input
+                  class="info-field-value"
+                  v-model="data.Cupo"
+                  @input="handleCupoInput"
+                  inputmode="numeric"
+                  pattern="[0-9]*"
+                  :disabled="data.CupoConfirmado"
+                />
+            </div>
           </div>
         </div>
       </div>
@@ -399,6 +402,23 @@ const handleCupoInput = (event) => {
 </template>
 
 <style scoped>
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.icono-input {
+  position: absolute;
+  left: 10px;
+  width: 16px;
+  height: 16px;
+}
+
+.input-with-icon input {
+  padding-left: 30px;
+}
+
 select:disabled {
   color: #b4b2b2;
   opacity: 1;
