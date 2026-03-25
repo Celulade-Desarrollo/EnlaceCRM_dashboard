@@ -77,10 +77,13 @@ const handleContinuarClick = () => {
 
   const placa = facturasSeleccionadas.value[0]?.placa;
   const planilla = facturasSeleccionadas.value[0]?.planilla;
+  const NombreRuta = facturasSeleccionadas.value[0]?.nombre_ruta;
+
 
   localStorage.setItem("placa", placa);
   localStorage.setItem("planilla", planilla);
-  
+  localStorage.setItem("NombreRuta", NombreRuta);
+
   window.open("/Pantalla3View", "_parent");
 };
 

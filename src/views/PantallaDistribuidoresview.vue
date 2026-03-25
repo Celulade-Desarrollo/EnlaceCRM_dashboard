@@ -13,6 +13,7 @@ const filtroFactura = ref("");
 const filtroTelefono = ref("");
 const filtroPlaca = ref("");
 const filtroPlanilla = ref("");
+const filtroRuta = ref("");
 
 const router = useRouter();
 
@@ -52,7 +53,10 @@ const movimientosFiltrados = computed(() => {
       !filtroPlanilla.value ||
       mov.Planilla?.toString().includes(filtroPlanilla.value);
 
-    return coincideFecha && coincideFactura && coincideTelefono && coincidePlaca && coincidePlanilla;
+    const coincideRuta =
+      !filtroRuta.value ||
+      mov.NombreRuta?.toString().toLowerCase().includes(filtroRuta.value.toLowerCase());
+    return coincideFecha && coincideFactura && coincideTelefono && coincidePlaca && coincidePlanilla && coincideRuta;
   });
 });
 
@@ -121,6 +125,11 @@ const logout = () => {
           <input class="form-control" type="text" v-model="filtroPlanilla" placeholder="" />
           <span class="floating-label">Buscar planilla</span>
         </label>
+
+        <label class="input-label">
+          <input class="form-control" type="text" v-model="filtroRuta" placeholder="" />
+          <span class="floating-label">Buscar ruta</span>
+        </label>
       </div>
 
       <!-- TABLA -->
@@ -131,6 +140,7 @@ const logout = () => {
           <div>Monto</div>
           <div>Placa</div>
           <div>Planilla</div>
+          <div>Nombre Ruta</div>
         </div>
 
         <div
@@ -143,6 +153,7 @@ const logout = () => {
           <input type="text" :value="`$ ${formatoMiles(mov.Monto)}`" disabled />
           <input type="text" :value="mov.Placa" disabled />
           <input type="text" :value="mov.Planilla" disabled />
+          <input type="text" :value="mov.NombreRuta" disabled />
         </div>
       </section>
     </div>
@@ -321,8 +332,8 @@ input[type="date"] {
 }
 
 .thead {
-  display: grid;
-  grid-template-columns: 1fr 1.2fr 1fr 1fr 1fr;
+   display: grid;
+  grid-template-columns: 1fr 1.2fr 1fr 1fr 1fr 1.2fr;
   background: #251886;
   color: white;
   padding: 12px;
@@ -332,7 +343,7 @@ input[type="date"] {
 
 .row {
   display: grid;
-  grid-template-columns: 1fr 1.2fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1.2fr 1fr 1fr 1fr 1.2fr;
   gap: 15px;
   padding: 18px;
   border-bottom: 1px solid #ffffff;
