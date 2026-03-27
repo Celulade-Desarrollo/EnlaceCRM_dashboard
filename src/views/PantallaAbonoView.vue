@@ -216,8 +216,14 @@ const valorProximoAbono = computed(() => {
         <div class="provider-content">
           <div class="bg-white w-full rounded-xl flex flex-col items-center relative justify-start pt-3">
             <div class="flex gap-3 flex-column mb-3">
-              <h2 class="text-xl flex gap-3 mt-4">Deuda total <p class="font-bold"> ${{ formatoMiles(deudaTotalCalculada) }}</p></h2>
-              <h3 class="flex items-center gap-10 text-[13px]">Próximo pago<span class="font-bold">${{ formatoMiles(valorProximoAbono) }}</span></h3>
+              <h2 class="text-xl flex gap-3 mt-4">Deuda total
+  <p class="font-bold">${{ formatoMiles(deudaTotalCalculada).split(',')[0] }},<sup>{{ (formatoMiles(deudaTotalCalculada).split(',')[1] ?? '00').padEnd(2, '0') }}</sup></p>
+</h2>
+
+<h3 class="flex items-center gap-10 text-[13px]">Próximo pago
+  <span class="font-bold">${{ formatoMiles(valorProximoAbono).split(',')[0] }},<sup>{{ (formatoMiles(valorProximoAbono).split(',')[1] ?? '00').padEnd(2, '0') }}</sup></span>
+</h3>
+
               <h3 class="flex items-center gap-2 text-[13px]">Fecha del siguiente abono <span class="font-bold">{{ fechaProximoAbono }}</span></h3>
 
             </div>

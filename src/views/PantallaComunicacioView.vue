@@ -80,7 +80,7 @@ const gotoDispercion = () => router.push("/PantallaBajarDispercionView");
   gap: 20px;
 }
 
-.card {  
+.card {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -101,44 +101,42 @@ const gotoDispercion = () => router.push("/PantallaBajarDispercionView");
 
 
 .btn {
-  position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 1px;
   background-color: #e53e8d;
   color: white;
-  font-size: 15px;
-  font-weight: 600;
-  padding: 16px 35px;
-  border: none;
-  border-radius: 30px;
-  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
   width: 280px;
-  height: 60px;
+  height: 70px;
+  border-radius: 60px;
+  border: none;
+  cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 2px 3px 5px rgba(0, 0, 0, 0.25);
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+  position: relative;
 }
-
-.btn:hover {
-  background-color: #ff64b5;
-  transform: scale(1.05);
-}
-
 
 .icon {
-  position: absolute;
-  left: 20px;
-  width: 40px;
+  width: 45px;
   height: 40px;
   object-fit: contain;
   transition: transform 0.3s ease;
 }
 
 
-.btn:hover .icon {
-  transform: scale(1.2);
+.btn:hover {
+  background-color: #ff64b5;
+  transform: translateY(-3px);
+  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.4);
 }
 
+.btn:hover .icon {
+  transform: scale(1.1);
+}
 
 
 .desc {

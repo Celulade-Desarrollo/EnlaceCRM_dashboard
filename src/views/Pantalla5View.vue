@@ -171,12 +171,11 @@ onMounted(async () => {
           <div class="info-banner">
             <div class="d-flex justify-content-between w-100">
               <div class="text-start">
-                <h2 class="deuda-total">Deuda total</h2>
-                <p class="cantidad-total mb-2" id="deuda-total">{{ formatPesos(deudaTotalCalculada)}}</p>
+                <h2 class="deuda-total">Deuda total</h2><p class="cantidad-total mb-2" id="deuda-total">{{ formatPesos(deudaTotalCalculada).split(',')[0] }},<sup>{{ (formatPesos(deudaTotalCalculada).split(',')[1] ?? '00').padEnd(2, '0') }}</sup></p>
               </div>
               <div class="text-end">
                 <h2 class="cupo-total">Cupo disponible</h2>
-                <p class="cantidad-total mb-2" id="cupo-total">{{ formatPesos(cupoTotal) }}</p>
+                <p class="cantidad-total mb-2" id="cupo-total">{{ formatPesos(cupoTotal).split(',')[0] }},<sup>{{ (formatPesos(cupoTotal).split(',')[1] ?? '00').padEnd(2, '0') }}</sup></p>
               </div>
             </div>
           </div>

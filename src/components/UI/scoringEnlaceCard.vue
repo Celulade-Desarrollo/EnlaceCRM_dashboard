@@ -252,16 +252,16 @@ function formatCurrency(event) {
 
     <div class="etapas-container">
       <div class="etapa">Género: {{ data.Genero }}</div>
-      <div class="etapa">Estado Civil: {{ data.Estado_Civil }}</div>
-      <div class="etapa">Nivel Educativo: {{ data.Nivel_Educativo }}</div>
+      <div class="etapa">Estado civil: {{ data.Estado_Civil }}</div>
+      <div class="etapa">Nivel educativo: {{ data.Nivel_Educativo }}</div>
       <div class="etapa">Estrato: {{ data.Estrato }}</div>
-      <div class="etapa">Declara Renta: {{ data.Declara_Renta ? 'Sí' : 'No' }}</div>
+      <div class="etapa">Declara renta: {{ data.Declara_Renta ? 'Sí' : 'No' }}</div>
       <div class="etapa">RUT por actividad económica: {{ data.Esta_obligado_a_tener_RUT_por_tu_actividad_economica ? 'Sí' : 'No' }}</div>
-      <div class="etapa">Depto Negocio: {{ data.Ubicacion_del_Negocio_Departamento }}</div>
-      <div class="etapa">Ciudad Negocio: {{ data.Ubicacion_del_Negocio_Ciudad }}</div>
+      <div class="etapa">Depto negocio: {{ data.Ubicacion_del_Negocio_Departamento }}</div>
+      <div class="etapa">Ciudad negocio: {{ data.Ubicacion_del_Negocio_Ciudad }}</div>
       <div class="etapa">Neveras: {{ data.Numero_de_neveras }}</div>
-      <div class="etapa">Cámara de Comercio: {{ data.Registrado_Camara_Comercio ? 'Sí' : 'No' }}</div>
-      <div class="etapa">Rango Ingreso: {{ data.Rango_de_Ingresos }}</div>
+      <div class="etapa">Cámara de comercio: {{ data.Registrado_Camara_Comercio ? 'Sí' : 'No' }}</div>
+      <div class="etapa">Rango ingreso: {{ data.Rango_de_Ingresos }}</div>
     </div>
 
     <div class="tabla-contenedor">

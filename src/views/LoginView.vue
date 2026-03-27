@@ -35,7 +35,7 @@ const handleSubmit = async (event) => {
       setTimeout(() => (errorMessage.value = ""), 3000);
       return;
     }
-
+    console.log("✅ Login exitoso:", response.data);
     // 🔹 Log mínimo útil (opcional)
     console.log("🆔 Admin ID:", response.data.id ?? response.data.Id);
 
@@ -48,13 +48,13 @@ const handleSubmit = async (event) => {
     localStorage.setItem("tipo", response.data.tipo);
     localStorage.setItem("admin_userData", JSON.stringify(response.data));
     localStorage.setItem("admin_isAuthenticated", "true");
-
+    
     // Redirigir según la compañía
     if (response.data.company === "enlace") {
       router.push("/Pantalla14View");
     } else if (response.data.company === "bancow") {
       router.push("/Pantalla13View");
-    }  else if (response.data.company === "distribuidor") {
+    }  else if (response.data.company === "surtialimentos" && response.data.Rol === "distribuidor") {
       router.push("/PantallaDisView");
     } else {
       
