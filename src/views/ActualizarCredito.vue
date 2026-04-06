@@ -3,7 +3,7 @@
  <div class="movimientos-container">
     <!-- Componente de error global -->
     <Errormsj v-if="errorMessage" :message="errorMessage" @close="errorMessage = ''" />
-        <!-- BOTÓN UNO SOLO ARRIBA DE TODO -->
+
     <div class="descarga-container">
       <button class="btn-descargar-abonos" @click="downloadAbonosExcel">
         <img src="/descargar.png" alt="Descargar" class="icon-btn" />
@@ -11,7 +11,6 @@
       </button>
     </div>
 
-    <!-- comen-->
     <div v-if="movimientos.length" v-for="movimiento in movimientos" :key="movimiento.IdMovimiento" class="movimiento-card">
       <div class="card-header">
         <h3>Movimiento #{{ movimiento.IdMovimiento }}</h3>
@@ -144,15 +143,11 @@ import axios from 'axios'
 import HeadingEnlace from '../components/UI/headingEnlace.vue'
 import * as XLSX from "xlsx";
 
-// ============================================
 // ESTADO
-// ============================================
 const movimientos = ref([])
 const errorMessage = ref('')
 
-// ============================================
 // CONSTANTES
-// ============================================
 const MOVIMIENTO_INFO = {
   identificadorTendero: 0,
   monto: 0,
@@ -163,9 +158,7 @@ const MOVIMIENTO_INFO = {
   telefonoTransportista: ""
 }
 
-// ============================================
 // FUNCIONES DE FORMATO
-// ============================================
 const formatearFecha = (fecha) => {
   if (!fecha) return 'N/A'
   return new Date(fecha).toLocaleDateString('es-ES', {
@@ -180,17 +173,14 @@ const formatearMonto = (monto) => {
   return Number(monto).toLocaleString('es-CO')
 }
 
-// ============================================
 // FUNCIONES DE CÁLCULO
-// ============================================
 const getPago = (movimiento) => {
   return movimiento?.Monto || 0
 }
 
 const getSaldoCapitalIntereses = (movimiento) => {
   if (!movimiento) return 0
-  const totalAbono = getTotalAbonoValue(movimiento)
-  return movimiento.MontoMasIntereses - Number(movimiento.AbonoUsuario || 0) - totalAbono
+  return movimiento.MontoMasIntereses || 0
 }
 
 const getTotalAbonoValue = (movimiento) => {
@@ -245,11 +235,15 @@ const isValidDecimalNumber = (valor) => {
   return /^\d+(\.\d{1,2})?$/.test(normalizado)
 };
 
-const validarAbonoCapital = (movimiento) => {
+const calcularSaldoDisponible = (movimiento) => {
   const pago = Number(getPago(movimiento) || 0)
+  const AbonoUsuario = Number(movimiento.AbonoUsuario || 0)
+  return pago - AbonoUsuario
+}
+
+const validarAbonoCapital = (movimiento) => {
   const abonoCapitalRaw = movimiento.abonoCapital || ''
 
-  // validar formato primero
   if (!isValidDecimalNumber(abonoCapitalRaw)) {
     return {
       error: true,
@@ -257,13 +251,13 @@ const validarAbonoCapital = (movimiento) => {
     }
   }
 
-  // 👇 USAR LIMPIEZA CORRECTA
   const abonoCapital = limpiarNumero(abonoCapitalRaw)
+  const saldoDisponible = calcularSaldoDisponible(movimiento)
 
-  if (abonoCapital > pago) {
+  if (abonoCapital > saldoDisponible) {
     return {
       error: true,
-      mensaje: 'El abono capital no puede ser mayor al pago'
+      mensaje: 'El abono capital no puede ser mayor al saldo capital restante'
     }
   }
 
@@ -275,7 +269,7 @@ const validarAbonoCapital = (movimiento) => {
   }
 
   return { error: false, mensaje: '' }
-};
+}
 
 const onAbonoCapitalInput = (event, movimiento) => {
   let valor = event.target.value
