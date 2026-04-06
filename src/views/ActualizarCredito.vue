@@ -66,10 +66,16 @@
           <strong>Valor intereses:</strong>
           <template v-if="movimiento.editando">
             <input 
-              type="number" 
-              v-model.number="movimiento.Intereses" 
+             type="text"
+              :value="movimiento.Intereses"
+              @input="onInteresesInput($event, movimiento)"
+              inputmode="decimal"
+              placeholder="Ej: 1.000,50"
               class="monto-input"
             >
+            <div v-if="movimiento.editando && validarIntereses(movimiento).error" class="error-mensaje">
+              {{ validarIntereses(movimiento).mensaje }}
+            </div>
           </template>
           <template v-else>
             ${{ formatearMonto(movimiento.Intereses) }}
@@ -87,10 +93,16 @@
           <strong>Valor seguros:</strong>
           <template v-if="movimiento.editando">
             <input 
-              type="number" 
-              v-model.number="movimiento.Fees" 
+              type="text"
+              :value="movimiento.Fees"
+              @input="onFeesInput($event, movimiento)"
+              inputmode="decimal"
+              placeholder="Ej: 1.000,50"
               class="monto-input"
             >
+            <div v-if="movimiento.editando && validarFees(movimiento).error" class="error-mensaje">
+              {{ validarFees(movimiento).mensaje }}
+            </div>
           </template>
           <template v-else>
             ${{ formatearMonto(movimiento.Fees) }}
@@ -269,15 +281,41 @@ const validarAbonoCapital = (movimiento) => {
   }
 
   return { error: false, mensaje: '' }
-}
+};
+
+const validarIntereses = (movimiento) => {
+  const raw = movimiento.Intereses?.toString() || ''
+  if (!isValidDecimalNumber(raw)) {
+    return { error: true, mensaje: 'Valor intereses debe ser número válido, opcional 2 decimales' }
+  }
+  return { error: false, mensaje: '' }
+};
+
+const validarFees = (movimiento) => {
+  const raw = movimiento.Fees?.toString() || ''
+  if (!isValidDecimalNumber(raw)) {
+    return { error: true, mensaje: 'Valor seguros debe ser número válido, opcional 2 decimales' }
+  }
+  return { error: false, mensaje: '' }
+};
 
 const onAbonoCapitalInput = (event, movimiento) => {
-  let valor = event.target.value
+  const sanitized = sanearNumeroDecimal(event.target.value)
+  movimiento.abonoCapital = sanitized
+  event.target.value = sanitized
+}
 
-  valor = sanearNumeroDecimal(valor)
+const onInteresesInput = (event, movimiento) => {
+  const sanitized = sanearNumeroDecimal(event.target.value)
+  movimiento.Intereses = sanitized
+  event.target.value = sanitized
+}
 
-  movimiento.abonoCapital = valor
-};
+const onFeesInput = (event, movimiento) => {
+  const sanitized = sanearNumeroDecimal(event.target.value)
+  movimiento.Fees = sanitized
+  event.target.value = sanitized
+}
 
 const validarAbonoIntereses = (movimiento) => {
   const pago = Number(getPago(movimiento) || 0)
@@ -298,12 +336,11 @@ const puedeEditar = (movimiento) => {
 
 const puedeActualizar = (movimiento) => {
   if (movimiento.cargando) return false
-  
-  const validacionCapital = validarAbonoCapital(movimiento)
-  const validacionIntereses = validarAbonoIntereses(movimiento)
-  
-  return !validacionCapital.error && !validacionIntereses.error
-}
+  return !validarAbonoCapital(movimiento).error
+    && !validarAbonoIntereses(movimiento).error
+    && !validarIntereses(movimiento).error
+    && !validarFees(movimiento).error
+};
 
 const token = localStorage.getItem("admin_token")
 
