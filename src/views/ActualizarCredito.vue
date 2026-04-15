@@ -3,7 +3,7 @@
  <div class="movimientos-container">
     <!-- Componente de error global -->
     <Errormsj v-if="errorMessage" :message="errorMessage" @close="errorMessage = ''" />
-        <!-- BOTÓN UNO SOLO ARRIBA DE TODO -->
+
     <div class="descarga-container">
       <button class="btn-descargar-abonos" @click="downloadAbonosExcel">
         <img src="/descargar.png" alt="Descargar" class="icon-btn" />
@@ -11,7 +11,6 @@
       </button>
     </div>
 
-    <!-- comen-->
     <div v-if="movimientos.length" v-for="movimiento in movimientos" :key="movimiento.IdMovimiento" class="movimiento-card">
       <div class="card-header">
         <h3>Movimiento #{{ movimiento.IdMovimiento }}</h3>
@@ -32,39 +31,23 @@
         
         <p>
           <strong>Saldo capital + intereses:</strong>
-          <template v-if="movimiento.editando">
-            <input 
-              type="number" 
-              v-model.number="movimiento.MontoMasIntereses" 
-              class="monto-input"
-            >
-          </template>
-          <template v-else>
-            ${{ formatearMonto(getSaldoCapitalIntereses(movimiento)) }}
-          </template>
+          ${{ formatearMonto(getSaldoCapitalIntereses(movimiento)) }}
         </p>
-        
-
+  
          <p>
           <strong>Saldo capital:</strong>
-          <template v-if="movimiento.editando">
-            <input 
-              type="number" 
-              v-model.number="movimiento.SaldoCapital" 
-              class="monto-input"
-            >
-          </template>
-          <template v-else>
           ${{ formatearMonto(calcularSaldoCapital(movimiento)) }}
-          </template>
         </p>
         
         <p class="bg-green-200">
           <strong>Abono capital:</strong>
           <template v-if="movimiento.editando">
             <input 
-              type="number" 
-              v-model.number="movimiento.abonoCapital" 
+              type="text"
+              :value="movimiento.abonoCapital"
+              @input="onAbonoCapitalInput($event, movimiento)"
+              inputmode="decimal"
+              placeholder="Ej: 1.000,50"
               class="monto-input"
             >
           </template>
@@ -83,10 +66,16 @@
           <strong>Valor intereses:</strong>
           <template v-if="movimiento.editando">
             <input 
-              type="number" 
-              v-model.number="movimiento.Intereses" 
+             type="text"
+              :value="movimiento.Intereses"
+              @input="onInteresesInput($event, movimiento)"
+              inputmode="decimal"
+              placeholder="Ej: 1.000,50"
               class="monto-input"
             >
+            <div v-if="movimiento.editando && validarIntereses(movimiento).error" class="error-mensaje">
+              {{ validarIntereses(movimiento).mensaje }}
+            </div>
           </template>
           <template v-else>
             ${{ formatearMonto(movimiento.Intereses) }}
@@ -104,10 +93,16 @@
           <strong>Valor seguros:</strong>
           <template v-if="movimiento.editando">
             <input 
-              type="number" 
-              v-model.number="movimiento.Fees" 
+              type="text"
+              :value="movimiento.Fees"
+              @input="onFeesInput($event, movimiento)"
+              inputmode="decimal"
+              placeholder="Ej: 1.000,50"
               class="monto-input"
             >
+            <div v-if="movimiento.editando && validarFees(movimiento).error" class="error-mensaje">
+              {{ validarFees(movimiento).mensaje }}
+            </div>
           </template>
           <template v-else>
             ${{ formatearMonto(movimiento.Fees) }}
@@ -121,7 +116,7 @@
           <template v-if="movimiento.editando">
             <button 
               @click="actualizarMonto(movimiento)" 
-              :disabled="!puedeActualizar(movimiento)"
+              :disabled="!puedeActualizar(movimiento) || !isValidDecimalNumber(movimiento.abonoCapital)"
               class="p-2 bg-green-400 rounded-xl pl-3 pr-3 text-green-800"
             >
               Realizar Abono
@@ -160,15 +155,11 @@ import axios from 'axios'
 import HeadingEnlace from '../components/UI/headingEnlace.vue'
 import * as XLSX from "xlsx";
 
-// ============================================
 // ESTADO
-// ============================================
 const movimientos = ref([])
 const errorMessage = ref('')
 
-// ============================================
 // CONSTANTES
-// ============================================
 const MOVIMIENTO_INFO = {
   identificadorTendero: 0,
   monto: 0,
@@ -179,9 +170,7 @@ const MOVIMIENTO_INFO = {
   telefonoTransportista: ""
 }
 
-// ============================================
 // FUNCIONES DE FORMATO
-// ============================================
 const formatearFecha = (fecha) => {
   if (!fecha) return 'N/A'
   return new Date(fecha).toLocaleDateString('es-ES', {
@@ -196,17 +185,14 @@ const formatearMonto = (monto) => {
   return Number(monto).toLocaleString('es-CO')
 }
 
-// ============================================
 // FUNCIONES DE CÁLCULO
-// ============================================
 const getPago = (movimiento) => {
   return movimiento?.Monto || 0
 }
 
 const getSaldoCapitalIntereses = (movimiento) => {
   if (!movimiento) return 0
-  const totalAbono = getTotalAbonoValue(movimiento)
-  return movimiento.MontoMasIntereses - Number(movimiento.AbonoUsuario || 0) - totalAbono
+  return movimiento.MontoMasIntereses || 0
 }
 
 const getTotalAbonoValue = (movimiento) => {
@@ -219,7 +205,7 @@ const getTotalAbonoValue = (movimiento) => {
 
 
 const calcularSaldoCapital = (movimiento) => {
-  const abonoCapital = Number(movimiento.abonoCapital || 0)
+  const abonoCapital = limpiarNumero(movimiento.abonoCapital)
   const pago = Number(getPago(movimiento) || 0)
 
   if (movimiento.AbonoUsuario != null) {
@@ -227,20 +213,108 @@ const calcularSaldoCapital = (movimiento) => {
     return pago - AbonoUsuario - abonoCapital
   }
   return pago - abonoCapital
+};
+
+const sanearNumeroDecimal = (valor) => {
+  if (!valor) return ''
+
+  let limpio = valor.toString()
+
+  // Permitir solo números y separadores
+  limpio = limpio.replace(/[^0-9.,]/g, '')
+
+  // Si hay comas, usamos la última como decimal
+  const partes = limpio.split(',')
+
+  if (partes.length > 2) {
+    limpio = partes[0] + ',' + partes.slice(1).join('')
+  }
+
+  // Evitar múltiples puntos seguidos
+  limpio = limpio.replace(/\.+/g, '.')
+
+  return limpio
 }
 
+const isValidDecimalNumber = (valor) => {
+  if (!valor) return true
+
+  const normalizado = valor
+    .toString()
+    .replace(/\./g, '') // quita miles
+    .replace(',', '.')  // decimal real
+
+  return /^\d+(\.\d{1,2})?$/.test(normalizado)
+};
+
+const calcularSaldoDisponible = (movimiento) => {
+  const pago = Number(getPago(movimiento) || 0)
+  const AbonoUsuario = Number(movimiento.AbonoUsuario || 0)
+  return pago - AbonoUsuario
+}
 
 const validarAbonoCapital = (movimiento) => {
-  const pago = Number(getPago(movimiento) || 0)
-  const abonoCapital = Number(movimiento.abonoCapital || 0)
+  const abonoCapitalRaw = movimiento.abonoCapital || ''
 
-  if (abonoCapital > pago) {
+  if (!isValidDecimalNumber(abonoCapitalRaw)) {
     return {
       error: true,
-      mensaje: 'El abono capital no puede ser mayor al pago'
+      mensaje: 'Abono capital debe ser número válido, opcional 2 decimales'
     }
   }
+
+  const abonoCapital = limpiarNumero(abonoCapitalRaw)
+  const saldoDisponible = calcularSaldoDisponible(movimiento)
+
+  if (abonoCapital > saldoDisponible) {
+    return {
+      error: true,
+      mensaje: 'El abono capital no puede ser mayor al saldo capital restante'
+    }
+  }
+
+  if (abonoCapital < 0) {
+    return {
+      error: true,
+      mensaje: 'El abono capital no puede ser negativo'
+    }
+  }
+
   return { error: false, mensaje: '' }
+};
+
+const validarIntereses = (movimiento) => {
+  const raw = movimiento.Intereses?.toString() || ''
+  if (!isValidDecimalNumber(raw)) {
+    return { error: true, mensaje: 'Valor intereses debe ser número válido, opcional 2 decimales' }
+  }
+  return { error: false, mensaje: '' }
+};
+
+const validarFees = (movimiento) => {
+  const raw = movimiento.Fees?.toString() || ''
+  if (!isValidDecimalNumber(raw)) {
+    return { error: true, mensaje: 'Valor seguros debe ser número válido, opcional 2 decimales' }
+  }
+  return { error: false, mensaje: '' }
+};
+
+const onAbonoCapitalInput = (event, movimiento) => {
+  const sanitized = sanearNumeroDecimal(event.target.value)
+  movimiento.abonoCapital = sanitized
+  event.target.value = sanitized
+}
+
+const onInteresesInput = (event, movimiento) => {
+  const sanitized = sanearNumeroDecimal(event.target.value)
+  movimiento.Intereses = sanitized
+  event.target.value = sanitized
+}
+
+const onFeesInput = (event, movimiento) => {
+  const sanitized = sanearNumeroDecimal(event.target.value)
+  movimiento.Fees = sanitized
+  event.target.value = sanitized
 }
 
 const validarAbonoIntereses = (movimiento) => {
@@ -262,12 +336,11 @@ const puedeEditar = (movimiento) => {
 
 const puedeActualizar = (movimiento) => {
   if (movimiento.cargando) return false
-  
-  const validacionCapital = validarAbonoCapital(movimiento)
-  const validacionIntereses = validarAbonoIntereses(movimiento)
-  
-  return !validacionCapital.error && !validacionIntereses.error
-}
+  return !validarAbonoCapital(movimiento).error
+    && !validarAbonoIntereses(movimiento).error
+    && !validarIntereses(movimiento).error
+    && !validarFees(movimiento).error
+};
 
 const token = localStorage.getItem("admin_token")
 
@@ -375,22 +448,26 @@ const actualizarMonto = async (movimiento) => {
     movimiento.cargando = true
     errorMessage.value = ''
 
+    const abonoCapitalLimpio = limpiarNumero(movimiento.abonoCapital)
+    const interesesLimpios = limpiarNumero(movimiento.Intereses)
+    const feesLimpios = limpiarNumero(movimiento.Fees)
+
     const payload = {
       ...MOVIMIENTO_INFO,
       identificadorTendero: movimiento.Cedula_Usuario,
-      monto: movimiento.abonoCapital,
+      monto: abonoCapitalLimpio,
       nroFacturaAlpina: movimiento.NroFacturaAlpina,
       IdMovimiento: movimiento.IdMovimiento,
-      Intereses: movimiento.Intereses,
-      InteresesMora: movimiento.interesMora,
-      Fees: movimiento.Fees
+      Intereses: interesesLimpios,
+      InteresesMora: limpiarNumero(movimiento.interesMora),
+      Fees: feesLimpios
     }
 
     await axios.post('/api/movimientos', payload)
     await axios.put(`/api/actualizarAbono/${movimiento.IdMovimiento}`, { 
-      nuevoMonto: movimiento.abonoCapital,
-      Intereses: movimiento.Intereses,
-      Fees: movimiento.Fees 
+      nuevoMonto: abonoCapitalLimpio,
+      Intereses: interesesLimpios,
+      Fees: feesLimpios 
     })
 
 
@@ -401,6 +478,17 @@ const actualizarMonto = async (movimiento) => {
     movimiento.cargando = false
   }
 }
+
+const limpiarNumero = (valor) => {
+  if (!valor) return 0
+
+  return Number(
+    valor
+      .toString()
+      .replace(/\./g, '')
+      .replace(',', '.')
+  )
+};
 
 onMounted(obtenerMovimientos)
 </script>

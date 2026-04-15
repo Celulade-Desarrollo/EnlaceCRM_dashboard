@@ -17,19 +17,17 @@ const listarDatos = async () => {
 
   try {
     const res = await axios.get('/tesoreria/consultar-datos-recaudo')
-
-    const registros = Array.isArray(res.data?.data) ? res.data.data :
-                      Array.isArray(res.data) ? res.data : []
+    const registros = res.data?.data || res.data || []
 
     todosLosDatos.value = registros.map(d => {
       let fecha = d.fecha || ''
       if (fecha.includes('T')) fecha = fecha.split('T')[0]
-      if (fecha.length > 10) fecha = fecha.substring(0, 10)
+      
       return {
         id: d.id,
         fecha,
-        recaudo: d.recaudo,
-        dispersion: (d.dispersion || '').trim()
+        recaudo: d.recaudo || 0, // 🎯 Aseguramos que tome el alias del SQL
+        dispersion: (d.dispersion || '').trim() 
       }
     })
 
@@ -37,7 +35,6 @@ const listarDatos = async () => {
     filtrarPorMesAno()
   } catch (e) {
     console.error('❌ Error al cargar datos:', e)
-    alert('Error al cargar datos: ' + (e.message || 'Error desconocido'))
   }
 }
 
@@ -75,13 +72,14 @@ const guardar = async () => {
       return
     }
 
-    const payload = nuevos.map(fila => ({
-      fecha: fila.fecha,
-      recaudo: fila.recaudo,
-      dispersion: fila.dispersion,
-      tesoreria_status: false,
-      banco_status: false
-    }))
+    // Localiza esta parte en tu función guardar()
+const payload = nuevos.map(fila => ({
+  fecha: fila.fecha,
+  recaudo: fila.recaudo, // Este valor ahora será el real (Tipo 1)
+  dispersion: fila.dispersion,
+  tesoreria_status: false,
+  banco_status: false
+}))
 
     await axios.post('/tesoreria/crear-registro-con-dispersion', payload)
 
