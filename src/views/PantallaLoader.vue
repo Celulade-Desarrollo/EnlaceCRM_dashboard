@@ -21,8 +21,6 @@ onMounted(async () => {
   const nbAgenteComercial = queryParams.get('nbAgenteComercial');
   const tokenAlpina = queryParams.get('token')
 
-  console.log("tokenAlpina:", tokenAlpina);
-
    const datos = {
    nbCliente: nbCliente,
    nbAgenteComercial: nbAgenteComercial,
@@ -65,7 +63,6 @@ try {
 } catch (error) { 
  if (error.response && error.response.status === 400) {
     const token = error.response.data.token;
-    console.log("Token del 400:", token); // verifica que llegue
     localStorage.setItem('token', token);
     
     const params = new URLSearchParams({
@@ -73,7 +70,8 @@ try {
         nbAgenteComercial: datos.nbAgenteComercial
     }).toString();
     
-    window.location.href = `http://localhost:5174/?${params}`;
+    window.location.href = `https://enlace-crm.com/?${params}`;
+
   } else if (error.response && error.response.status === 403) {
     window.location.href = `https://enlace-crm.com/Tendero`;
 
