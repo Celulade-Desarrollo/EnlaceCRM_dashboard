@@ -41,10 +41,12 @@ try {
     router.push("/Pantalla1View");
 
   } else if (response.status === 207 && data.estado === 'Asesor') {
-    localStorage.setItem('nbCliente', nbCliente);
-    localStorage.setItem('nbAgenteComercial', nbAgenteComercial);
-
-    window.location.href = `http://localhost:5174/correoElectronico`;
+   const params = new URLSearchParams({
+        nbCliente: data.nbCliente,
+        nbAgenteComercial: data.nbAgenteComercial,
+        Id: data.Id
+    }).toString();
+    window.location.href = `http://localhost:5174/correoElectronico?${params}`;
 
   } else if (
     response.status === 207 &&
@@ -61,8 +63,8 @@ try {
     window.location.href = "https://enlace-crm.com/Terminado";
   }
 } catch (error) { 
- if (error.response && error.response.status === 400) {
-    const token = error.response.data.token;
+if (error.response && error.response.status === 400) {
+ const token = error.response.data.token;
     localStorage.setItem('token', token);
     
     const params = new URLSearchParams({
@@ -70,9 +72,8 @@ try {
         nbAgenteComercial: datos.nbAgenteComercial
     }).toString();
     
-    window.location.href = `https://enlace-crm.com/?${params}`;
-
-  } else if (error.response && error.response.status === 403) {
+    window.location.href = `http://localhost:5174/?${params}`;
+} else if (error.response && error.response.status === 403) {
     window.location.href = `https://enlace-crm.com/Tendero`;
 
   } else {
