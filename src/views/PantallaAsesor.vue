@@ -21,7 +21,7 @@ const obtenerDatos = async () => {
   errorConexion.value = false;
   
   try {
-    const resLocal = await axios.get('http://localhost:3000/api/asesoria/pendientes', {
+    const resLocal = await axios.get('/api/asesoria/pendientes', {
       headers: { Authorization: `Bearer ${token}` }
     });
     
@@ -30,7 +30,7 @@ const obtenerDatos = async () => {
     const promesas = pendientesRaw.map(async (reg) => {
       try {
         const resAlpina = await axios.post(
-          'http://localhost:3000/api/alpina-cliente/consultar-nombre',
+        '/api/alpina-cliente/consultar-nombre',
           { nbCliente: reg.nbCliente, nbAgenteComercial: reg.nbAgenteComercial }
         );
 
