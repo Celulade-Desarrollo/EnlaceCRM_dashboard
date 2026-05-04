@@ -21,58 +21,67 @@ onMounted(async () => {
   const nbAgenteComercial = queryParams.get('nbAgenteComercial');
   const tokenAlpina = queryParams.get('token')
 
-
    const datos = {
    nbCliente: nbCliente,
    nbAgenteComercial: nbAgenteComercial,
    token: tokenAlpina,
  };
 
-  try {
-    const response = await axios.post("api/user/login", datos);
-    const data = response.data;
-    if (response.status === 200 && response.data && Object.keys(response.data).length > 0) {
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("tipo", data.tipo);
-      localStorage.setItem("idUsuario", data.idUsuario);
-      localStorage.setItem("datosCuenta", JSON.stringify(data.cuenta));
-      router.push("/Pantalla1View");
+try {
+  const response = await axios.post("api/user/login", datos);
+  const data = response.data;
+  console.log("Status:", response.status);
+  console.log("Data completa:", data);
 
-    } else if (
-        response.status === 207 &&
-        ["pendiente", "confirmado", "aprobado"].includes(data.estado) &&
-        data.confirmacionIdentidad === null || data.confirmacionIdentidad === "failure"
-      ) {
-       window.location.href = "https://enlace-crm.com/Pantalla17View";
+  if (response.status === 200 && response.data && Object.keys(response.data).length > 0) {
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("tipo", data.tipo);
+    localStorage.setItem("idUsuario", data.idUsuario);
+    localStorage.setItem("datosCuenta", JSON.stringify(data.cuenta));
+    router.push("/Pantalla1View");
 
-     } else if (
-        response.status === 207 &&
-        ["pendiente", "confirmado", "aprobado"].includes(data.estado) &&
-        data.confirmacionIdentidad === "success"
-      ) {
-      window.location.href = "https://enlace-crm.com/Terminado";
-    }
-  } catch (error) { 
-    if (error.response && error.response.status === 400) {
-     redirigirAFormulario(datos);
-    } else if (error.response && error.response.status === 403) {
-      window.location.href = `https://enlace-crm.com/Tendero`;
-    }
-    else {
-      console.error("Error inesperado en la petición:", error);
-    }
+  } else if (response.status === 207 && data.estado === 'Asesor') {
+   const params = new URLSearchParams({
+        nbCliente: data.nbCliente,
+        nbAgenteComercial: data.nbAgenteComercial,
+        Id: data.Id
+    }).toString();
+    window.location.href = `https://enlace-crm.com/correoElectronico?${params}`;
+
+  } else if (
+    response.status === 207 &&
+    ["pendiente", "confirmado", "aprobado"].includes(data.estado) &&
+    (data.confirmacionIdentidad === null || data.confirmacionIdentidad === "failure" || data.confirmacionIdentidad === "pending")
+  ) {
+    window.location.href = "https://enlace-crm.com/Pantalla17View";
+
+  } else if (
+    response.status === 207 &&
+    ["pendiente", "confirmado", "aprobado"].includes(data.estado) &&
+    data.confirmacionIdentidad === "success"
+  ) {
+    window.location.href = "https://enlace-crm.com/Terminado";
+  }
+} catch (error) { 
+if (error.response && error.response.status === 400) {
+ const token = error.response.data.token;
+    localStorage.setItem('token', token);
+    
+    const params = new URLSearchParams({
+        nbCliente: datos.nbCliente,
+        nbAgenteComercial: datos.nbAgenteComercial
+    }).toString();
+    
+    window.location.href = `https://enlace-crm.com/?${params}`;
+} else if (error.response && error.response.status === 403) {
+    window.location.href = `https://enlace-crm.com/Tendero`;
+
+  } else {
+    console.error("Error inesperado:", error);
+  }
   }
 });
 
-// Función para redirigir con los datos por query string
-function redirigirAFormulario(datos) {
-  const params = new URLSearchParams({
-    nbCliente: datos.nbCliente,
-    nbAgenteComercial: datos.nbAgenteComercial
-  }).toString();
-
-  window.location.href = `https://enlace-crm.com/?${params}`;
-}
 </script>
 
 <style scoped>
