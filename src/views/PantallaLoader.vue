@@ -46,7 +46,7 @@ try {
         nbAgenteComercial: data.nbAgenteComercial,
         Id: data.Id
     }).toString();
-    window.location.href = `http://localhost:5174/correoElectronico?${params}`;
+    window.location.href = `https://enlace-crm.com/correoElectronico?${params}`;
 
   } else if (
     response.status === 207 &&
@@ -72,7 +72,7 @@ if (error.response && error.response.status === 400) {
         nbAgenteComercial: datos.nbAgenteComercial
     }).toString();
     
-    window.location.href = `http://localhost:5174/?${params}`;
+    window.location.href = `https://enlace-crm.com/?${params}`;
 } else if (error.response && error.response.status === 403) {
     window.location.href = `https://enlace-crm.com/Tendero`;
 
