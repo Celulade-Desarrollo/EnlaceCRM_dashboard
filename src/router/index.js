@@ -168,9 +168,15 @@ const routes = [
   },
   {
   path: "/editar-tasa-intereses",
-  name: "editar-tasa-intereses",  
+  name: "editar-tasa-intereses", 
   component: () => import("../views/editarTasaIntereseView.vue"),
     meta: { requiresAuth: true, role: "admin", empresa: "enlace"}
+  },
+  {
+    path: "/PantallaAsesor",
+    name: "PantallaAsesor",
+    component: () => import("../views/PantallaAsesor.vue"),
+    meta: { requiresAuth: true,  role: "admin" },
   },
   
 ];

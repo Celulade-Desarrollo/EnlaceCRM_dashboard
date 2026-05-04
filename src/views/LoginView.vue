@@ -56,8 +56,9 @@ const handleSubmit = async (event) => {
       router.push("/Pantalla13View");
     }  else if (response.data.company === "surtialimentos" && response.data.Rol === "distribuidor") {
       router.push("/PantallaDisView");
+    }  else if (response.data.company === "asesoria" && response.data.Rol === "asesor") {
+      router.push("/PantallaAsesor");
     } else {
-      
       errorMessage.value = "Empresa no reconocida";
       setTimeout(() => (errorMessage.value = ""), 3000);
     }
