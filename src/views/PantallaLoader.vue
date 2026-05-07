@@ -40,7 +40,7 @@ try {
     localStorage.setItem("datosCuenta", JSON.stringify(data.cuenta));
     router.push("/Pantalla1View");
 
-  } else if (response.status === 207 && data.estado === 'Asesor') {
+  } else if (response.status === 207 && ['Asesor', 'Incompleto'].includes(data.estado?.trim())) {
    const params = new URLSearchParams({
         nbCliente: data.nbCliente,
         nbAgenteComercial: data.nbAgenteComercial,
