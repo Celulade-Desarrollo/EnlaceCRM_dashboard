@@ -67,6 +67,7 @@ if (error.response && error.response.status === 400) {
  const token = error.response.data.token;
     localStorage.setItem('token', token);
     
+    
     const params = new URLSearchParams({
         nbCliente: datos.nbCliente,
         nbAgenteComercial: datos.nbAgenteComercial
