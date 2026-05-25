@@ -96,7 +96,7 @@ async function downloadExcel() {
         ...rest,
   
         Nombre_Tienda: nombreTienda,
-        AntiguedadNegocioAños: rest.AntiguedadNegocioAños || "",
+        AntiguedadNegocioAños: rest.AntiguedadNegocioAnios || "",
         ComprasPromedioAlpinaUltTrim: rest.ComprasPromedioAlpinaUltTrim || "",
         Autorizacion_Habeas_Data: rest.Autorizacion_Habeas_Data ? "Sí" : "No",
         Autorizacion_Medios_de_Contacto:
