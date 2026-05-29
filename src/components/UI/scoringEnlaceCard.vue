@@ -27,8 +27,11 @@ const localScoring = ref("");
 const localCupo = ref("");
 const localLatitud = ref("");
 const localLongitud = ref("");
+const errorLatitud = ref("");
+const errorLongitud = ref("");
 const mensajeError = ref("");
 const confirmado = ref("no");
+const cargandoScoring = ref(false);
 
 
 
@@ -170,6 +173,37 @@ const handleconfirmado = async () => {
   }
 };
 
+const startEngieScoring = async (cedula, parseFloatlatitud, longitud) => {
+  if (!parseFloatlatitud || !longitud) {
+    mensajeError.value = "Debes ingresar Latitud y Longitud antes de evaluar";
+    return;
+  }
+
+  mensajeError.value = "";
+  const lat = parseFloat(String(parseFloatlatitud).replace(',', '.'));
+  const lon = parseFloat(String(longitud).replace(',', '.'));
+
+  cargandoScoring.value = true;
+
+  try {
+    const response = await axios.get(`/api/scoring/data/${cedula}/${lat}/${lon}`, {
+      cedula, lat, lon
+    }, {
+      headers: {
+        Authorization: `Bearer ${props.token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    const { score, cupo_recomendado } = response.data;
+    localScoring.value = score;
+    localCupo.value = cupo_recomendado;
+  } catch (error) {
+    console.error('Error al iniciar evaluación de Engie Scoring:', error);
+  } finally {
+    cargandoScoring.value = false;
+  }
+};
+
 const handleScoringCupo = async () => {
   if (!localScoring.value || !localCupo.value || !localLatitud.value || !localLongitud.value) {
     mensajeError.value = "Por favor, completa Scoring, Cupo, Latitud y Longitud para guardar";
@@ -220,19 +254,70 @@ precargado.localLongitud.value = true;
   }
 };
 
+// Formatea coordenadas de manera contextual y valida rangos para Colombia
 function autoFormatCoordenada(event, tipo) {
-  let valor = event.target.value.replace(/[^0-9-]/g, '');
-  const esNegativo = valor.startsWith("-");
-  valor = valor.replace(/-/g, "");
-  if (valor.length > 2) {
-    valor = valor.slice(0, 2) + "." + valor.slice(2);
+  let raw = event.target.value || '';
+  // conservar sólo dígitos y signo negativo
+  let valor = raw.replace(/[^0-9-]/g, '');
+  const esNegativo = valor.startsWith('-');
+  valor = valor.replace(/-/g, '');
+
+  // determinar longitud de la parte entera
+  let intLen = 1;
+  if (tipo === 'lat') {
+    // latitudes posibles 1..12 => si comienza con 10|11|12 usar 2 dígitos enteros
+    if (valor.length >= 2 && (/^10|^11|^12/.test(valor))) {
+      intLen = 2;
+    } else {
+      intLen = 1;
+    }
+  } else {
+    // longitudes para Colombia: 66..79 -> siempre 2 dígitos enteros
+    intLen = 2;
   }
-  if (esNegativo) {
-    valor = "-" + valor;
+
+  if (valor.length > intLen) {
+    valor = valor.slice(0, intLen) + '.' + valor.slice(intLen);
   }
+
+  if (esNegativo) valor = '-' + valor;
   event.target.value = valor;
-  if (tipo === "lat") localLatitud.value = valor;
-  else if (tipo === "lon") localLongitud.value = valor;
+
+  if (tipo === 'lat') {
+    localLatitud.value = valor;
+    validateCoordenada('lat');
+  } else if (tipo === 'lon') {
+    localLongitud.value = valor;
+    validateCoordenada('lon');
+  }
+}
+
+// Validar que la coordenada esté dentro del rango de Colombia
+function validateCoordenada(tipo) {
+  const COL_LAT_MIN = -4.23;
+  const COL_LAT_MAX = 12.45;
+  const COL_LON_MIN = -79.0;
+  const COL_LON_MAX = -66.85;
+
+  if (tipo === 'lat') {
+    const num = parseFloat(String(localLatitud.value).replace(',', '.'));
+    if (isNaN(num)) {
+      errorLatitud.value = 'Ingresa un número válido';
+    } else if (num < COL_LAT_MIN || num > COL_LAT_MAX) {
+      errorLatitud.value = `Fuera de Colombia (rango ${COL_LAT_MIN} a ${COL_LAT_MAX})`;
+    } else {
+      errorLatitud.value = '';
+    }
+  } else {
+    const num = parseFloat(String(localLongitud.value).replace(',', '.'));
+    if (isNaN(num)) {
+      errorLongitud.value = 'Ingresa un número válido';
+    } else if (num < COL_LON_MIN || num > COL_LON_MAX) {
+      errorLongitud.value = `Fuera de Colombia (rango ${COL_LON_MIN} a ${COL_LON_MAX})`;
+    } else {
+      errorLongitud.value = '';
+    }
+  }
 }
 
 function formatCurrency(event) {
@@ -242,6 +327,8 @@ function formatCurrency(event) {
   input.value = formatted;
   localCupo.value = formatted;
 }
+
+
 </script>
 
 <template>
@@ -251,6 +338,7 @@ function formatCurrency(event) {
     </div>
 
     <div class="etapas-container">
+      <div class="etapa">Dirección: {{ data.Direccion }}</div>
       <div class="etapa">Género: {{ data.Genero }}</div>
       <div class="etapa">Estado civil: {{ data.Estado_Civil }}</div>
       <div class="etapa">Nivel educativo: {{ data.Nivel_Educativo }}</div>
@@ -303,8 +391,10 @@ function formatCurrency(event) {
                 type="text"
                 placeholder="Ej: 4.6486"
                 @input="autoFormatCoordenada($event, 'lat')"
+                @blur="validateCoordenada('lat')"
                 :disabled="precargado.localLatitud.value || !truoraConfirmada"
               />
+              <div v-if="errorLatitud" class="campo-error">⚠ {{ errorLatitud }}</div>
             </td>
             <td>
               <input
@@ -313,8 +403,10 @@ function formatCurrency(event) {
                 type="text"
                 placeholder="Ej: -74.2479"
                 @input="autoFormatCoordenada($event, 'lon')"
+                @blur="validateCoordenada('lon')"
                 :disabled="precargado.localLongitud.value || !truoraConfirmada"
               />
+              <div v-if="errorLongitud" class="campo-error">⚠ {{ errorLongitud }}</div>
             </td>
             <td>
 
@@ -362,6 +454,15 @@ function formatCurrency(event) {
       >
         Guardar
       </button>
+      <button
+  v-if="props.data.Estado === 'pendiente'"
+  class="boton-evaluar-scoring"
+  @click="startEngieScoring(props.data.Cedula_Cliente, localLatitud, localLongitud)"
+  :disabled="cargandoScoring"
+>
+  <span v-if="cargandoScoring" class="spinner"></span>
+  <span v-else>Evaluar Scoring y Cupo</span>
+</button>
     </div>
   </div>
 </template>
@@ -492,6 +593,12 @@ input:disabled {
   font-size: 0.85rem;
 }
 
+.campo-error {
+  color: #d93025;
+  font-size: 0.8rem;
+  margin-top: 6px;
+}
+
 .mensaje-error {
   color: red;
   margin-bottom: 1rem;
@@ -518,5 +625,38 @@ input:disabled {
 
 .boton-enviar:hover {
   background-color: #3A2CA8;
+}
+
+.boton-evaluar-scoring{
+  margin-left: 15px;
+  padding: 10px 30px;
+  font-size: 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  background: #1eff83;
+  color: #fff;
+  outline: none;
+  border: none;
+}
+
+
+.boton-evaluar-scoring:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 </style>
