@@ -95,6 +95,21 @@ if (registro?.Cliente_Acepto === 'si' || registro?.Cliente_Acepto === 'SI') {
 
 });
 
+const estadoTruora = computed(() => {
+  const Valor = props.data.Confirmacion_Identidad;
+
+  if (
+    Valor === null ||
+    Valor === undefined ||
+    Valor === '' ||
+    Valor === 'NULL'
+  ) {
+    return 'null';
+  }
+
+  return String(Valor).toLowerCase();
+});
+
 const puedeConfirmar = computed(() => {
   const camposLlenos =
     precargado.localScoring.value &&
@@ -115,11 +130,6 @@ const datosCompletos = computed(() => {
     precargado.localLatitud.value &&
     precargado.localLongitud.value
   );
-});
-
-const truoraConfirmada = computed(() => {
-  const val = props.data.Confirmacion_Identidad;
-  return val !== null && val !== undefined && val !== 'NULL' && val !== '';
 });
 
 const handleconfirmado = async () => {
@@ -410,20 +420,30 @@ function formatCurrency(event) {
             </td>
             <td>
 
-<template v-if="!truoraConfirmada">
-  <span class="estado-confirmacion estado-truora">TRUORA PENDIENTE</span>
-  <p class="nota">Esperando confirmación de identidad del cliente.</p>
-</template>
+  <template v-if="estadoTruora === 'null'">
+    <span class="estado-confirmacion estado-truora">TRUORA PENDIENTE</span>
+    <p class="nota">Esperando confirmación de identidad del cliente.</p>
+  </template>
 
-<template v-else-if="!datosCompletos">
-  <span class="estado-confirmacion estado-truora-ok">TRUORA ✓</span>
-  <p class="nota">Asegúrate de guardar Scoring, Cupo, Latitud y Longitud, y que el banco haya aprobado.</p>
-</template>
+  <template v-else-if="estadoTruora === 'success'">
+    <span class="estado-confirmacion estado-truora-ok">TRUORA EXITOSO ✓</span>
+    <p class="nota">Asegúrate de guardar Scoring, Cupo, Latitud y Longitud, y que el banco haya aprobado.</p>
+  </template>
 
-<template v-else-if="confirmado === 'no'">
-  <span class="estado-confirmacion estado-no">NO</span>
-  <p class="nota">Pendiente por respuesta del cliente.</p>
-</template>
+  <template v-else-if="estadoTruora === 'failure' ">
+    <span class="estado-confirmacion estado-truora-error">TRUORA FALLIDO ✗</span>
+    <p class="nota">Asegúrate de guardar Scoring, Cupo, Latitud y Longitud, y que el banco haya aprobado.</p>
+  </template>
+
+  <template v-else-if="estadoTruora === 'pending' ">
+    <span class="estado-confirmacion estado-truora-error">TRUORA REPETIR ✗</span>
+    <p class="nota">Asegúrate de guardar Scoring, Cupo, Latitud y Longitud, y que el banco haya aprobado.</p>
+  </template>
+
+  <template v-else-if="confirmado === 'no'">
+    <span class="estado-confirmacion estado-no">NO</span>
+    <p class="nota">Pendiente por respuesta del cliente.</p>
+  </template>
 
 <template v-else>
   <span class="estado-confirmacion estado-si">SÍ</span>
@@ -486,6 +506,11 @@ input:disabled {
   background-color: #e8f4fd;
   color: #0c63a4;
   border: 2px solid #0c63a4;
+}
+.estado-truora-error {
+  background-color: #fdecea;
+  color: #d93025;
+  border: 2px solid #d93025;
 }
 
 .tarjeta {
