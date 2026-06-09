@@ -402,7 +402,7 @@ function formatCurrency(event) {
                 placeholder="Ej: 4.6486"
                 @input="autoFormatCoordenada($event, 'lat')"
                 @blur="validateCoordenada('lat')"
-                :disabled="precargado.localLatitud.value || !truoraConfirmada"
+                :disabled="precargado.localLatitud.value || estadoTruora !== 'success'"
               />
               <div v-if="errorLatitud" class="campo-error">⚠ {{ errorLatitud }}</div>
             </td>
@@ -414,7 +414,7 @@ function formatCurrency(event) {
                 placeholder="Ej: -74.2479"
                 @input="autoFormatCoordenada($event, 'lon')"
                 @blur="validateCoordenada('lon')"
-                :disabled="precargado.localLongitud.value || !truoraConfirmada"
+                :disabled="precargado.localLongitud.value || estadoTruora !== 'success'"
               />
               <div v-if="errorLongitud" class="campo-error">⚠ {{ errorLongitud }}</div>
             </td>
