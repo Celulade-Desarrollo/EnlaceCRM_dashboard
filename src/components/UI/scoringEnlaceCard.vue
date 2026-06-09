@@ -381,7 +381,7 @@ function formatCurrency(event) {
                 class="tabla-input"
                 type="number"
                 placeholder="Ej: 40"
-                :disabled="precargado.localScoring.value || !truoraConfirmada"
+                :disabled="precargado.localScoring.value || estadoTruora !== 'success'"
               />
             </td>
             <td>
@@ -391,7 +391,7 @@ function formatCurrency(event) {
                 type="text"
                 @input="formatCurrency"
                 placeholder="Ej: 1.000.000"
-                :disabled="precargado.localCupo.value || !truoraConfirmada"
+                :disabled="precargado.localCupo.value || estadoTruora !== 'success'"
               />
             </td>
             <td>
