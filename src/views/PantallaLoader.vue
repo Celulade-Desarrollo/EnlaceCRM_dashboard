@@ -38,6 +38,7 @@ try {
     localStorage.setItem("tipo", data.tipo);
     localStorage.setItem("idUsuario", data.idUsuario);
     localStorage.setItem("datosCuenta", JSON.stringify(data.cuenta));
+    localStorage.setItem("cliente", JSON.stringify(data.cliente || {}));
     router.push("/Pantalla1View");
 
   } else if (response.status === 207 && ['Asesor', 'Incompleto'].includes(data.estado?.trim())) {
@@ -63,17 +64,30 @@ try {
     window.location.href = "https://enlace-crm.com/Terminado";
   }
 } catch (error) { 
+  console.log(error.response.data);
+  console.log("400:", error.response?.data);
 if (error.response && error.response.status === 400) {
- const token = error.response.data.token;
-    localStorage.setItem('token', token);
-    
-    
+
+    const { token, cliente } = error.response.data;
+
+    // TOKEN
+    localStorage.setItem("token", token);
+
+    localStorage.setItem("clienteId", cliente.clienteId);
+    localStorage.setItem("documento", cliente.documento);
+    localStorage.setItem("nombre", cliente.nombre);
+    localStorage.setItem("apellido", cliente.apellido);
+    localStorage.setItem("departamento", cliente.departamento);
+    localStorage.setItem("ciudad", cliente.ciudad);
+
+    console.log("Guardado en localStorage:", cliente);
+
     const params = new URLSearchParams({
         nbCliente: datos.nbCliente,
         nbAgenteComercial: datos.nbAgenteComercial
     }).toString();
-    
-    window.location.href = `https://enlace-crm.com/?${params}`;
+
+    window.location.href = `http://localhost:5173/?${params}`;
 } else if (error.response && error.response.status === 403) {
     window.location.href = `https://enlace-crm.com/Tendero`;
 
