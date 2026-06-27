@@ -64,37 +64,22 @@ try {
     window.location.href = "https://enlace-crm.com/Terminado";
   }
 } catch (error) { 
-  console.log(error.response.data);
-  console.log("400:", error.response?.data);
-if (error.response && error.response.status === 400) {
+  console.log(error.response?.data);
 
-    const { token, cliente } = error.response.data;
-
-    // TOKEN
-    localStorage.setItem("token", token);
-
-    localStorage.setItem("clienteId", cliente.clienteId);
-    localStorage.setItem("documento", cliente.documento);
-    localStorage.setItem("nombre", cliente.nombre);
-    localStorage.setItem("apellido", cliente.apellido);
-    localStorage.setItem("departamento", cliente.departamento);
-    localStorage.setItem("ciudad", cliente.ciudad);
-
-    console.log("Guardado en localStorage:", cliente);
-
+  if (error.response && error.response.status === 400) {
     const params = new URLSearchParams({
-        nbCliente: datos.nbCliente,
-        nbAgenteComercial: datos.nbAgenteComercial
+        nbCliente: datos.nbCliente || '',
+        nbAgenteComercial: datos.nbAgenteComercial || ''
     }).toString();
 
     window.location.href = `http://localhost:5173/?${params}`;
-} else if (error.response && error.response.status === 403) {
-    window.location.href = `https://enlace-crm.com/Tendero`;
 
+  } else if (error.response && error.response.status === 403) {
+    window.location.href = `https://enlace-crm.com/Tendero`;
   } else {
     console.error("Error inesperado:", error);
   }
-  }
+}
 });
 
 </script>
