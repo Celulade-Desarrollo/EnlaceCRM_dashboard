@@ -63,16 +63,17 @@ try {
   ) {
     window.location.href = "https://enlace-crm.com/Terminado";
   }
-} catch (error) { 
-  console.log(error.response?.data);
-
+} catch (error) {
   if (error.response && error.response.status === 400) {
+    const token = error.response.data.token;
+    localStorage.setItem('token', token);
+    
     const params = new URLSearchParams({
         nbCliente: datos.nbCliente || '',
         nbAgenteComercial: datos.nbAgenteComercial || ''
     }).toString();
 
-    window.location.href = `http://localhost:5173/?${params}`;
+    window.location.href = `https://enlace-crm.com/?${params}`;
 
   } else if (error.response && error.response.status === 403) {
     window.location.href = `https://enlace-crm.com/Tendero`;
