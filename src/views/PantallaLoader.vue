@@ -49,19 +49,29 @@ try {
     }).toString();
     window.location.href = `https://enlace-crm.com/correoElectronico?${params}`;
 
-  } else if (
-    response.status === 207 &&
-    ["pendiente", "confirmado", "aprobado"].includes(data.estado) &&
-    (data.confirmacionIdentidad === null || data.confirmacionIdentidad === "failure" || data.confirmacionIdentidad === "pending")
+  }else if (
+  response.status === 207 &&
+  ["pendiente", "confirmado", "aprobado"].includes(data.estado)
   ) {
-    window.location.href = "https://enlace-crm.com/Pantalla17View";
 
-  } else if (
-    response.status === 207 &&
-    ["pendiente", "confirmado", "aprobado"].includes(data.estado) &&
-    data.confirmacionIdentidad === "success"
-  ) {
-    window.location.href = "https://enlace-crm.com/Terminado";
+    switch (data.confirmacionIdentidad) {
+      case "failure":
+        window.location.href = "https://enlace-crm.com/PantallaFailedTruora";
+        break;
+
+      case "pending":
+        window.location.href = "https://enlace-crm.com/PantallaPendingTruora";
+        break;
+      case "success":
+        window.location.href = "https://enlace-crm.com/Terminado";
+        break;
+
+      case null:
+      default:
+        window.location.href = "https://enlace-crm.com/Pantalla17View";
+        break;
+    }
+
   }
 } catch (error) {
   if (error.response && error.response.status === 400) {
