@@ -178,6 +178,11 @@ const routes = [
     component: () => import("../views/PantallaAsesor.vue"),
     meta: { requiresAuth: true,  role: "admin" },
   },
+  {
+    path: "/PantallaNoInfo",
+    name: "PantallaNoInfo",
+    component: () => import("../views/PantallaNoInfo.vue"),
+  },
   
 ];
 

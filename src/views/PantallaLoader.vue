@@ -74,6 +74,10 @@ try {
 
   }
 } catch (error) {
+    if (error.response?.status === 404) {
+       router.push("/PantallaNoInfo");
+      return;
+    }
   if (error.response && error.response.status === 400) {
     const token = error.response.data.token;
     localStorage.setItem('token', token);
