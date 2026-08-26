@@ -10,6 +10,7 @@ import 'leaflet/dist/leaflet.css';
 
 
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
+axios.defaults.withCredentials = true;
 
 const app = createApp(App)
 app.use(router)
