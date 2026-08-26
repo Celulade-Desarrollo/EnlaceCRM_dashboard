@@ -17,12 +17,12 @@ import axios from 'axios';
 const router = useRouter();
 
 const REDIRECCIONES_SIMPLES = {
-  IncompletoBloqCorreo: "http://localhost:5173/nombres",
-  IncompletoBloqCedula: "http://localhost:5173/negocio",
-  IncompletoBloqUbiNegocio: "http://localhost:5173/informacionNegocio",
-  IncompletoBloqInfoNegocio: "http://localhost:5173/ventas",
-  IncompletoBloqVentas: "http://localhost:5173/informacionFinanciera",
-  IncompletoBloqInfoFinanciera: "http://localhost:5173/antesDeTerminar",
+  IncompletoBloqCorreo: "https://enlace-crm.com/nombres",
+  IncompletoBloqCedula: "https://enlace-crm.com/negocio",
+  IncompletoBloqUbiNegocio: "https://enlace-crm.com/informacionNegocio",
+  IncompletoBloqInfoNegocio: "https://enlace-crm.com/ventas",
+  IncompletoBloqVentas: "https://enlace-crm.com/informacionFinanciera",
+  IncompletoBloqInfoFinanciera: "https://enlace-crm.com/antesDeTerminar",
   
 };
 
@@ -63,7 +63,7 @@ onMounted(async () => {
           nbAgenteComercial: data.nbAgenteComercial,
           Id: data.Id
         }).toString();
-        window.location.href = `http://localhost:5173/correoElectronico?${params}`;
+        window.location.href = `https://enlace-crm.com/correoElectronico?${params}`;
 
       } else if (REDIRECCIONES_SIMPLES[estado]) {
         window.location.href = REDIRECCIONES_SIMPLES[estado]; // sin token en la URL
@@ -92,12 +92,11 @@ onMounted(async () => {
       return;
     }
     if (error.response && error.response.status === 400) {
-      // Este caso especial: el backend manda el token en el BODY (no cookie) cuando no existe cuenta
       const params = new URLSearchParams({
         nbCliente: datos.nbCliente || '',
         nbAgenteComercial: datos.nbAgenteComercial || ''
       }).toString();
-      window.location.href = `http://localhost:5173/?${params}`;
+      window.location.href = `https://enlace-crm.com/?${params}`;
 
     } else if (error.response && error.response.status === 403) {
       window.location.href = `https://enlace-crm.com/Tendero`;
