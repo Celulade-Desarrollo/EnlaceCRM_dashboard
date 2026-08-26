@@ -15,87 +15,96 @@ import { motion } from "motion-v";
 import axios from 'axios';
 
 const router = useRouter();
+
+const REDIRECCIONES_SIMPLES = {
+  IncompletoBloqCorreo: "https://enlace-crm.com/nombres",
+  IncompletoBloqCedula: "https://enlace-crm.com/negocio",
+  IncompletoBloqUbiNegocio: "https://enlace-crm.com/informacionNegocio",
+  IncompletoBloqInfoNegocio: "https://enlace-crm.com/ventas",
+  IncompletoBloqVentas: "https://enlace-crm.com/informacionFinanciera",
+  IncompletoBloqInfoFinanciera: "https://enlace-crm.com/antesDeTerminar",
+  
+};
+
 onMounted(async () => {
   const queryParams = new URLSearchParams(window.location.search);
   const nbCliente = queryParams.get('nbCliente');
   const nbAgenteComercial = queryParams.get('nbAgenteComercial');
   const tokenAlpina = queryParams.get('token')
 
-   const datos = {
-   nbCliente: nbCliente,
-   nbAgenteComercial: nbAgenteComercial,
-   token: tokenAlpina,
- };
+  const datos = {
+    nbCliente: nbCliente,
+    nbAgenteComercial: nbAgenteComercial,
+    token: tokenAlpina,
+  };
 
-try {
-  const response = await axios.post("api/user/login", datos);
-  const data = response.data;
-  console.log("Status:", response.status);
-  console.log("Data completa:", data);
+  try {
+    const response = await axios.post("api/user/login", datos);
+    const data = response.data;
+    const estado = data.estado?.trim();
 
-  if (response.status === 200 && response.data && Object.keys(response.data).length > 0) {
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("tipo", data.tipo);
-    localStorage.setItem("idUsuario", data.idUsuario);
-    localStorage.setItem("datosCuenta", JSON.stringify(data.cuenta));
-    localStorage.setItem("cliente", JSON.stringify(data.cliente || {}));
-    router.push("/Pantalla1View");
+    console.log("Status:", response.status);
+    console.log("Data completa:", data);
 
-  } else if (response.status === 207 && ['Asesor', 'Incompleto'].includes(data.estado?.trim())) {
-   const params = new URLSearchParams({
-        nbCliente: data.nbCliente,
-        nbAgenteComercial: data.nbAgenteComercial,
-        Id: data.Id
-    }).toString();
-    window.location.href = `https://enlace-crm.com/correoElectronico?${params}`;
+    if (response.status === 200 && response.data && Object.keys(response.data).length > 0) {
+      // La cookie ya trae el token; solo guardamos lo que no es sensible
+      localStorage.setItem("tipo", data.tipo);
+      localStorage.setItem("idUsuario", data.idUsuario);
+      localStorage.setItem("datosCuenta", JSON.stringify(data.cuenta));
+      localStorage.setItem("cliente", JSON.stringify(data.cliente || {}));
+      router.push("/Pantalla1View");
 
-  }else if (
-  response.status === 207 &&
-  ["pendiente", "confirmado", "aprobado"].includes(data.estado)
-  ) {
+    } else if (response.status === 207) {
+      // Ya no guardamos token aquí, la cookie lo maneja
 
-    switch (data.confirmacionIdentidad) {
-      case "failure":
-        window.location.href = "https://enlace-crm.com/PantallaFailedTruora";
-        break;
+      if (['Asesor', 'Incompleto'].includes(estado)) {
+        const params = new URLSearchParams({
+          nbCliente: data.nbCliente,
+          nbAgenteComercial: data.nbAgenteComercial,
+          Id: data.Id
+        }).toString();
+        window.location.href = `https://enlace-crm.com/correoElectronico?${params}`;
 
-      case "pending":
-        window.location.href = "https://enlace-crm.com/PantallaPendingTruora";
-        break;
-      case "success":
-        window.location.href = "https://enlace-crm.com/Terminado";
-        break;
+      } else if (REDIRECCIONES_SIMPLES[estado]) {
+        window.location.href = REDIRECCIONES_SIMPLES[estado]; // sin token en la URL
 
-      case null:
-      default:
-        window.location.href = "https://enlace-crm.com/Pantalla17View";
-        break;
+      } else if (["pendiente", "confirmado", "aprobado"].includes(estado)) {
+        switch (data.confirmacionIdentidad) {
+          case "failure":
+            window.location.href = "https://enlace-crm.com/PantallaFailedTruora";
+            break;
+          case "pending":
+            window.location.href = "https://enlace-crm.com/PantallaPendingTruora";
+            break;
+          case "success":
+            window.location.href = "https://enlace-crm.com/Terminado";
+            break;
+          case null:
+          default:
+            window.location.href = "https://enlace-crm.com/Pantalla17View";
+            break;
+        }
+      }
     }
-
-  }
-} catch (error) {
+  } catch (error) {
     if (error.response?.status === 404) {
-       router.push("/PantallaNoInfo");
+      router.push("/PantallaNoInfo");
       return;
     }
-  if (error.response && error.response.status === 400) {
-    const token = error.response.data.token;
-    localStorage.setItem('token', token);
-    
-    const params = new URLSearchParams({
+    if (error.response && error.response.status === 400) {
+      const params = new URLSearchParams({
         nbCliente: datos.nbCliente || '',
         nbAgenteComercial: datos.nbAgenteComercial || ''
-    }).toString();
+      }).toString();
+      window.location.href = `https://enlace-crm.com/?${params}`;
 
-    window.location.href = `https://enlace-crm.com/?${params}`;
-
-  } else if (error.response && error.response.status === 403) {
-    window.location.href = `https://enlace-crm.com/Tendero`;
-  } else {
-    console.error("Error inesperado:", error);
+    } else if (error.response && error.response.status === 403) {
+      window.location.href = `https://enlace-crm.com/Tendero`;
+    } else {
+      console.error("Error inesperado:", error);
+    }
   }
-}
-});
+});;
 
 </script>
 
