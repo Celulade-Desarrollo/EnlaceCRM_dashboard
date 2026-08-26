@@ -25,7 +25,7 @@ const REDIRECCIONES_SIMPLES = {
   IncompletoBloqInfoFinanciera: "https://enlace-crm.com/antesDeTerminar",
   
 };
-
+  
 onMounted(async () => {
   const queryParams = new URLSearchParams(window.location.search);
   const nbCliente = queryParams.get('nbCliente');
