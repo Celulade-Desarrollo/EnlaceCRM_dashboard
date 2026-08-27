@@ -52,6 +52,7 @@ onMounted(async () => {
       localStorage.setItem("idUsuario", data.idUsuario);
       localStorage.setItem("datosCuenta", JSON.stringify(data.cuenta));
       localStorage.setItem("cliente", JSON.stringify(data.cliente || {}));
+       localStorage.setItem("token", data.token);
       router.push("/Pantalla1View");
 
     } else if (response.status === 207) {
