@@ -156,17 +156,15 @@ async function downloadExcel() {
 </script>
 
 <template>
-      <BotonAtras />
-
   <motion.div v-bind="fadeInUp">
+    <BotonAtras />
     <div class="descargar-container">
-<button @click="downloadExcel" class="boton">
-  <img src="/public/descargar.png" alt="Descargar Excel" class="icono-btn" />
-  Descargar Excel
-</button>
-
+      <button @click="downloadExcel" class="boton">
+        <img src="/public/descargar.png" alt="Descargar Excel" class="icono-btn" />
+        Descargar Excel
+      </button>
     </div>
-     <section class="content">
+    <section class="content">
       <CreditBancoCard
         v-for="record in creditDataRecords"
         :key="record.id"
