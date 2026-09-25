@@ -166,35 +166,37 @@ const logout = () => {
         </div>
 
         <div class="table-wrapper">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Factura</th>
-                <th>Ruta</th>
-                <th>Teléfono</th>
-                <th>Placa</th>
-                <th>Planilla</th>
-                <th>Total Recaudado</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(item, index) in listaAgrupada" :key="index">
-                <td class="col-secundaria">{{ item.facturaTexto }}</td>
-                <td class="col-ruta">{{ item.ruta }}</td>
-                <td class="col-telefono">{{ item.telefono }}</td>
-                <td class="col-secundaria">{{ item.placaTexto }}</td>
-                <td class="col-secundaria">{{ item.planillaTexto }}</td>
-                <td class="col-monto">$ {{ formatoMiles(item.totalRecaudado) }}</td>
-                <td></td>
-              </tr>
-              <tr v-if="listaAgrupada.length === 0">
-                <td colspan="7" class="empty-state">
-                  No hay registros de recaudo para los filtros seleccionados.
-                </td>
-              </tr>
-            </tbody>
-          </table>
+         <table class="data-table">
+          <thead>
+            <tr>
+              <th>Factura</th>
+              <th>Ruta</th>
+              <th>Teléfono</th>
+              <th>Placa</th>
+              <th>Planilla</th>
+              <th>Total Recaudado</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr v-for="(item, index) in listaAgrupada" :key="index">
+              <td class="col-secundaria">{{ item.facturaTexto }}</td>
+              <td class="col-ruta">{{ item.ruta }}</td>
+              <td class="col-telefono">{{ item.telefono }}</td>
+              <td class="col-secundaria">{{ item.placaTexto }}</td>
+              <td class="col-secundaria">{{ item.planillaTexto }}</td>
+              <td class="col-monto">
+                $ {{ formatoMiles(item.totalRecaudado) }}
+              </td>
+            </tr>
+
+            <tr v-if="listaAgrupada.length === 0">
+              <td colspan="6" class="empty-state">
+                No hay registros de recaudo para los filtros seleccionados.
+              </td>
+            </tr>
+          </tbody>
+        </table>
         </div>
       </motion.div>
     </main>
@@ -334,6 +336,7 @@ const logout = () => {
 .data-table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
 }
 
 .data-table th {
@@ -352,6 +355,11 @@ const logout = () => {
   border-bottom: 1px solid #f1f5f9;
   font-size: 13.5px;
   color: #374151;
+}
+
+.data-table th,
+.data-table td {
+  width: 16.6667%;
 }
 
 .col-ruta {
@@ -376,5 +384,6 @@ const logout = () => {
   text-align: center;
   color: #9ca3af;
   padding: 30px;
+  font-size: 13.5px;
 }
 </style>

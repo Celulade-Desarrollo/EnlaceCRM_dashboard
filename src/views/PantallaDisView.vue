@@ -6,7 +6,6 @@ import { activarSesionExpirada } from "../stores/session.js";
 import axios from "axios";
 import * as XLSX from "xlsx";
 
-
 const token = localStorage.getItem("admin_token");
 
 const router = useRouter();
@@ -70,170 +69,274 @@ async function downloadExcel() {
 </script>
 
 <template>
-  <HeaderDis />
-  
-  <div class="main-container">
-    <div class="card">
-      <button class="btn" @click="goToDistribuidores">
-        <img src="/ruta.png" alt="ruta" class="icon" />
-        <span>Cierre de Ruta</span>
-      </button>
-    </div>
-    
-     <div class="card">
-      <button class="btn" @click="goToTesoreria">
-        <img src="/dispersion.png" alt="dispersion" class="icon" />
-        <span>Dispersión</span>
-      </button>
-    </div>
+  <div class="pantalla-full">
 
-      <div class="card">
-        <button class="btn" @click="downloadExcel">
-          <img src="/cupo.png" alt="cupo" class="icon-cupo" />
-          <span>Descargar estados cupo</span>
-        </button>
+    <HeaderDis />
+    <main class="main-content">
+      <div class="full-width-container">
+
+        <h1 class="main-title">
+          Panel principal
+        </h1>
+
+        <p class="main-subtitle">
+          Selecciona una opción para continuar
+        </p>
+
+        <div class="modules-grid">
+
+          <button class="module-card" @click="goToDistribuidores">
+            <div class="module-icon">
+              <img src="/ruta.png" alt="Cierre de Ruta" />
+            </div>
+
+            <div class="module-content">
+              <h2>Cierre de Ruta</h2>
+              <p>
+                Consulta y gestiona los cierres de ruta.
+              </p>
+            </div>
+
+            <div class="module-arrow">
+              →
+            </div>
+          </button>
+
+
+          <button class="module-card" @click="goToTesoreria">
+            <div class="module-icon">
+              <img src="/dispersion.png" alt="Dispersión" />
+            </div>
+
+            <div class="module-content">
+              <h2>Dispersión</h2>
+              <p>
+                Consulta y gestiona las dispersiones.
+              </p>
+            </div>
+
+            <div class="module-arrow">
+              →
+            </div>
+          </button>
+
+
+          <button class="module-card" @click="downloadExcel">
+            <div class="module-icon">
+              <img src="/cupo.png" alt="Estados de cupo" />
+            </div>
+
+            <div class="module-content">
+              <h2>Estados de cupo</h2>
+              <p>
+                Descarga el reporte de estados de cupo.
+              </p>
+            </div>
+
+            <div class="module-arrow">
+              ↓
+            </div>
+          </button>
+
+        </div>
+
       </div>
+    </main>
 
-   
+    <SesionExpiradaLogin />
 
-    
   </div>
-  <SesionExpiradaLogin />
 </template>
 
 <style scoped>
-.main-container {
+.pantalla-full {
+  background-color: #3338a0;
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', Roboto, sans-serif;
+}
+
+.main-content {
+  flex: 1;
+  padding: 40px;
   display: flex;
   justify-content: center;
-  align-items: flex-start;
-  gap: 80px;
-  padding: 60px;
-  height: auto;
-  min-height: 70vh;
-  background-color: #251786;
-  border: 9px solid #251786;
-  margin-top: 70px;
-  flex-wrap: wrap;
+  background-color: #3338a0;
   box-sizing: border-box;
 }
 
-.card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 35px;   /* antes 20px */
-  width: 280px;
-  min-height: 260px;
-  background-color: #251786;
-  border: none;
-  outline: none;
-  box-shadow: none;
-  transition: transform 0.3s ease;
+.full-width-container {
+  width: 100%;
+  max-width: 1400px;
 }
 
-
-.card:hover {
-  transform: translateY(-5px);
-    gap: 35px;
+.main-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 6px 0;
 }
 
+.main-subtitle {
+  margin: 0 0 30px 0;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.75);
+}
 
-.btn {
+.modules-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  width: 100%;
+}
+
+.module-card {
   position: relative;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  gap: 10px;
-  background-color: #e53e8d;
-  color: white;
-  font-size: 25px;
-  font-weight: 600;
-  border-radius: 30px;
+  width: 100%;
+  min-height: 165px;
+  padding: 26px;
+  background-color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 10px;
   cursor: pointer;
-  width: 350px;
-  height: 150px;
-  transition: all 0.3s ease;
-  box-shadow: 2px 3px 5px rgba(0, 0, 0, 0.25);
+  text-align: left;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+  box-sizing: border-box;
+  outline: none;
 }
 
-.btn:hover {
-  background-color: #ff64b5;
-  transform: scale(1.05);
+.module-card:hover {
+  transform: translateY(-4px);
+  border-color: #ffffff;
+  box-shadow:
+    0 10px 25px rgba(0, 0, 0, 0.18);
 }
 
-.icon {
-  position: static;              /* ← ya no absoluto */
-  width: 70px;
-  height: 60px;
+
+.module-icon {
+  width: 58px;
+  height: 58px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #3338a0;
+  border: none;
+  border-radius: 8px;
+  margin-right: 18px;
+  overflow: hidden;
+}
+
+.module-icon img {
+  width: 38px;
+  height: 38px;
   object-fit: contain;
-  transition: transform 0.3s ease;
+  filter: none;
+  transition: transform 0.2s ease;
 }
 
-.icon-cupo {
-  position: static;              /* ← ya no absoluto */
-  width: 50px;
-  height: 50px;
-  object-fit: contain;
-  transition: transform 0.3s ease;
+.module-card:hover .module-icon img {
+  transform: scale(1.12);
 }
-.btn:hover .icon-cupo {
-  transform: scale(1.2);
+
+.module-content {
+  padding-right: 28px;
+}
+
+.module-content h2 {
+  margin: 0 0 7px 0;
+
+  font-size: 17px;
+  font-weight: 700;
+
+  color: #111827;
+}
+
+.module-content p {
+  margin: 0;
+
+  font-size: 13px;
+  line-height: 1.5;
+
+  color: #6b7280;
+}
+
+.module-arrow {
+  position: absolute;
+
+  right: 20px;
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  font-size: 22px;
+  font-weight: 400;
+
+  color: #9ca3af;
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.module-card:hover .module-arrow {
+  color: #3338a0;
+  transform: translateY(-50%) translateX(4px);
 }
 
 
-.btn:hover .icon {
-  transform: scale(1.2);
+.module-arrow.download {
+  font-size: 23px;
 }
-@media (max-width: 1024px) {
-  .main-container {
-    gap: 50px;
-    padding: 40px;
+
+.module-card:hover .module-arrow.download {
+  transform: translateY(-50%) translateY(2px);
+}
+
+@media (max-width: 1000px) {
+  .modules-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+
+@media (max-width: 650px) {
+  .main-content {
+    padding: 28px 20px;
   }
 
-  .card {
-    width: 240px;
+  .main-title {
+    font-size: 23px;
   }
 
-}
-
-@media (max-width: 768px) {
-  .main-container {
-    flex-direction: column;
-    align-items: center;
-    gap: 40px;
-    padding: 30px;
-    border-width: 7px;
+  .modules-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
 
-  .card {
-    width: 80%;
-    max-width: 300px;
-  }
-
-  .btn {
-    font-size: 16px;
-    padding: 10px 28px;
-  }
-
-}
-
-@media (max-width: 480px) {
-  .main-container {
-    border-width: 6px;
+  .module-card {
+    min-height: 135px;
     padding: 20px;
   }
 
-  .card {
-    width: 100%;
-    max-width: 280px;
+  .module-icon {
+    width: 58px;
+    height: 58px;
+    background-color: #3338a0 ;
   }
 
-  .btn {
-    font-size: 15px;
-    padding: 10px 20px;
+  .module-icon img {
+    width: 42px;
+    height: 42px;
   }
 }
 </style>
-

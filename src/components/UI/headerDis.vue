@@ -8,17 +8,32 @@ const logout = () => {
   localStorage.clear();
   router.push('/LoginView');
 };
+
+const goToLogin = () => {
+  router.push('/PantallaDisView');
+};
 </script>
 
 <template>
   <header class="header-bar">
     <div class="brand">
-      <img src="/enlaceFiado.png" alt="Enlace CRM" class="logo enlace" />
+      <img
+        src="/enlaceFiado.png"
+        alt="Enlace CRM"
+        class="logo enlace"
+        @click="goToLogin"
+      />
+
       <span class="divider">|</span>
-      <img src="/bancoW.png" alt="Banco W" class="logo banco" />
+
+      <img
+        src="/bancoW.png"
+        alt="Banco W"
+        class="logo banco"
+      />
     </div>
 
-    <div class="user-profile" @click="logout" title="Cerrar sesión">
+    <div class="user-profile" title="Cerrar sesión">
       <span class="user-name">Surtialimentos</span>
     </div>
   </header>
@@ -39,18 +54,31 @@ const logout = () => {
 .brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 }
 
+/* Estilo general de los logos */
 .logo {
-  height: 24px;
   object-fit: contain;
+}
+
+.logo.enlace {
+  height: 36px;
+  width: auto;
   filter: brightness(0) invert(1);
+  cursor: pointer;
+}
+
+.logo.banco {
+  height: 80px;
+  width: auto;
+  filter: none;
 }
 
 .divider {
-  color: rgba(255, 255, 255, 0.4);
-  font-size: 18px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 24px;
+  font-weight: 300;
 }
 
 .user-profile {
