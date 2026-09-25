@@ -110,211 +110,473 @@ watch(mesAnoSeleccionado, listarDatos)
 </script>
 
 <template>
-  <div>
+  <div class="pantalla-full">
     <headerDis />
 
-    <div class="contenedor">
-      <div class="top">
-        <div class="box">
-          <span class="label-mes">Mes y Año</span>
-          <input
-            type="month"
-            v-model="mesAnoSeleccionado"
-            class="select-mes"
-          />
-        </div>
-      </div>
+    <main class="main-content">
+      <div class="full-width-container">
 
-      <div v-if="!mesAnoSeleccionado" class="mensaje-seleccionar">
-        📅 Seleccione un mes y un año
-      </div>
+        <h1 class="main-title">Dispersión Mensual</h1>
 
-      <div v-if="mesAnoSeleccionado && filas.length === 0 && todosLosDatos.length > 0" class="mensaje-sin-datos">
-        ⚠️ No hay datos para el mes seleccionado
-      </div>
+        <div class="top-row">
+          <div class="month-picker-box">
+            <span class="label-month">Mes y Año</span>
 
-      <div class="tabla" v-if="filas.length">
-        <div class="thead">
-          <div>Fecha</div>
-          <div>Recaudo</div>
-          <div>Dispersión</div>
+            <div class="input-month-wrapper">
+              <input
+                type="month"
+                v-model="mesAnoSeleccionado"
+                class="select-mes"
+              />
+            </div>
+          </div>
         </div>
 
-        <div class="row" v-for="fila in filas" :key="fila.fecha">
-          <input type="date" :value="fila.fecha" disabled />
-          <input type="text" :value="formatearMiles(fila.recaudo)" disabled />
-          <select v-model="fila.dispersion" :disabled="!esEditable(fila.fecha)">
-            <option value="">{{ esEditable(fila.fecha) ? 'Seleccione' : '(No editable)' }}</option>
-            <option value="Alpina">Alpina</option>
-            <option value="Surtialimentos">Surtialimentos</option>
-          </select>
+        <!-- SIN MES SELECCIONADO -->
+        <div
+          v-if="!mesAnoSeleccionado"
+          class="mensaje-seleccionar"
+        >
+          <span class="mensaje-icon">📅</span>
+          <span>Seleccione un mes y un año</span>
         </div>
-      </div>
 
-      <div class="acciones" v-if="tieneCambios()">
-        <button class="btn primary" @click="guardar">💾 Guardar</button>
+        <!-- SIN DATOS -->
+        <div
+          v-if="
+            mesAnoSeleccionado &&
+            filas.length === 0 &&
+            todosLosDatos.length > 0
+          "
+          class="mensaje-sin-datos"
+        >
+          No hay datos para el mes seleccionado
+        </div>
+
+        <!-- TABLA -->
+        <div
+          class="table-wrapper"
+          v-if="filas.length"
+        >
+          <table class="data-table">
+
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Recaudo</th>
+                <th>Dispersión</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr
+                v-for="fila in filas"
+                :key="fila.fecha"
+              >
+                <td>
+                  <input
+                    type="date"
+                    :value="fila.fecha"
+                    disabled
+                  />
+                </td>
+
+                <td>
+                  <input
+                    type="text"
+                    :value="formatearMiles(fila.recaudo)"
+                    disabled
+                  />
+                </td>
+
+                <td>
+                  <select
+                    v-model="fila.dispersion"
+                    :disabled="!esEditable(fila.fecha)"
+                  >
+                    <option value="">
+                      {{
+                        esEditable(fila.fecha)
+                          ? 'Seleccione'
+                          : '(No editable)'
+                      }}
+                    </option>
+
+                    <option value="Alpina">
+                      Alpina
+                    </option>
+
+                    <option value="Surtialimentos">
+                      Surtialimentos
+                    </option>
+                  </select>
+                </td>
+              </tr>
+            </tbody>
+
+          </table>
+        </div>
+
+        <!-- GUARDAR -->
+        <div
+          class="acciones"
+          v-if="tieneCambios()"
+        >
+          <button
+            class="btn primary"
+            @click="guardar"
+          >
+            Guardar
+          </button>
+        </div>
+
       </div>
-    </div>
+    </main>
   </div>
 </template>
 
 <style scoped>
-.contenedor {
-  width: 700px;
-  margin: 40px auto;
-  padding: 30px;
-  background: #f4f7fb;
-  border-radius: 12px;
-  font-family: 'Segoe UI', Arial, sans-serif;
-}
 
-.top {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 25px;
-}
-
-.box {
-  background: #251886;
-  padding: 10px 20px;
-  border-radius: 10px;
+.pantalla-full {
+  background-color: #ffffff;
+  min-height: 100vh;
+  width: 100vw;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 4px;
+  overflow-x: hidden;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
 }
 
-.label-mes {
-  font-size: 13px;
-  color: #cfe8f1;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+.main-content {
+  flex: 1;
+  padding: 32px 40px;
+  display: flex;
+  justify-content: center;
+  background-color: #ffffff;
+}
+
+.full-width-container {
+  width: 100%;
+  max-width: 1400px;
+}
+
+.main-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: #000000;
+  margin: 0 0 24px 0;
+}
+
+
+/* FILA SUPERIOR */
+
+.top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+
+/* SELECTOR DE MES */
+
+.month-picker-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.label-month {
+  font-size: 12px;
+  color: #6b7280;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.input-month-wrapper {
+  position: relative;
+  cursor: pointer;
+  display: inline-block;
 }
 
 .select-mes {
-  background: #251886c4;
-  color: white;
-  border: none;
-  outline: none;
-  padding: 8px;
+  height: 38px;
+  min-width: 180px;
+  padding: 8px 12px;
+
+  border: 1px solid #e5e7eb;
   border-radius: 6px;
+
+  background-color: #ffffff;
+  color: #374151;
+
+  font-size: 14px;
+  font-family: inherit;
+
+  outline: none;
   cursor: pointer;
+
+  box-sizing: border-box;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
+
+.select-mes:hover {
+  border-color: #cbd5e1;
+}
+
+.select-mes:focus {
+  border-color: #cbd5e1;
+
+  box-shadow:
+    0 0 0 2px rgba(51, 56, 160, 0.08);
+}
+
+
+/* MENSAJES */
 
 .mensaje-seleccionar,
 .mensaje-sin-datos {
-  text-align: center;
-  padding: 40px 30px;
-  background: white;
-  border-radius: 12px;
-  color: #666;
-  font-size: 16px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  width: 100%;
+  min-height: 110px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  box-sizing: border-box;
+
+  background-color: #ffffff;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+
+  color: #6b7280;
+
+  font-size: 14px;
+
+  margin-bottom: 24px;
+}
+
+.mensaje-icon {
+  font-size: 17px;
 }
 
 .mensaje-sin-datos {
-  background: #fff3cd;
-  color: #856404;
-  border: 2px solid #ffc107;
+  color: #6b7280;
 }
 
-.tabla {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
+
+/* TABLA */
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+
+  background-color: #ffffff;
 }
 
-.thead {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  background: #251886;
-  color: white;
-  padding: 12px;
-  font-weight: 600;
-  text-align: center;
-  font-size: 14px;
+.data-table {
+  width: 100%;
+
+  border-collapse: collapse;
+
+  table-layout: fixed;
 }
 
-.row {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 15px;
-  padding: 22px;
-  align-items: center;
-  border-bottom: 1px solid #e6e6e6;
-  transition: background 0.2s;
+.data-table th {
+  background-color: #f8fafc;
+
+  color: #374151;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  text-align: left;
+
+  padding: 12px 16px;
+
+  border-bottom: 2px solid #e2e8f0;
+
+  white-space: nowrap;
 }
 
-.row:last-child {
+.data-table th,
+.data-table td {
+  width: 33.3333%;
+}
+
+.data-table td {
+  padding: 14px 16px;
+
+  border-bottom: 1px solid #f1f5f9;
+
+  font-size: 13.5px;
+
+  color: #374151;
+}
+
+.data-table tbody tr:last-child td {
   border-bottom: none;
 }
 
-.row:hover {
-  background: #f8f9ff;
-}
 
-input,
-select {
+/* CAMPOS */
+
+.data-table input,
+.data-table select {
+  width: 100%;
+  height: 36px;
+
   padding: 8px 12px;
+
+  box-sizing: border-box;
+
+  border: 1px solid #e5e7eb;
   border-radius: 6px;
-  border: 1.5px solid #cfd8dc;
-  text-align: center;
-  font-size: 14px;
-  transition: border-color 0.2s;
-}
 
-input:focus,
-select:focus {
+  background-color: #ffffff;
+  color: #374151;
+
+  font-family: inherit;
+  font-size: 13px;
+
   outline: none;
-  border-color: #251886;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-input:disabled,
-select:disabled {
-  background: #f5f5f5;
-  color: #666;
-  cursor: not-allowed;
+.data-table input:focus,
+.data-table select:focus {
+  border-color: #cbd5e1;
+
+  box-shadow:
+    0 0 0 2px rgba(51, 56, 160, 0.06);
 }
 
-select:not(:disabled) {
+
+/* CAMPOS DESHABILITADOS */
+
+.data-table input:disabled,
+.data-table select:disabled {
+  background-color: #f8fafc;
+
+  color: #6b7280;
+
+  cursor: default;
+
+  opacity: 1;
+}
+
+
+/* SELECT EDITABLE */
+
+.data-table select:not(:disabled) {
   cursor: pointer;
 }
 
-select:not(:disabled):hover {
-  border-color: #E83E8C;
+.data-table select:not(:disabled):hover {
+  border-color: #cbd5e1;
 }
+
+
+/* ACCIONES */
 
 .acciones {
   display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin-top: 25px;
+
+  justify-content: flex-end;
+
+  margin-top: 20px;
 }
 
 .btn {
-  padding: 12px 32px;
-  border-radius: 30px;
-  font-size: 15px;
+  padding: 10px 22px;
+
+  border-radius: 6px;
+
+  font-size: 13px;
   font-weight: 600;
+
   border: none;
+
   cursor: pointer;
-  transition: all 0.3s;
-  box-shadow: 0 4px 15px rgba(232, 62, 140, 0.3);
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+
+  outline: none;
 }
 
 .primary {
-  background: #E83E8C;
-  color: white;
+  background-color: #3338a0;
+
+  color: #ffffff;
 }
 
 .primary:hover {
-  background: #d63384;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(232, 62, 140, 0.4);
+  background-color: #292d82;
+
+  transform: translateY(-1px);
 }
 
 .primary:active {
   transform: translateY(0);
 }
+
+.primary:focus,
+.primary:focus-visible {
+  outline: none;
+}
+
+
+/* RESPONSIVE */
+
+@media (max-width: 768px) {
+
+  .main-content {
+    padding: 28px 20px;
+  }
+
+  .main-title {
+    font-size: 22px;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 10px 12px;
+  }
+
+  .data-table {
+    min-width: 650px;
+  }
+
+  .table-wrapper {
+    overflow-x: auto;
+  }
+
+  .acciones {
+    justify-content: stretch;
+  }
+
+  .btn {
+    width: 100%;
+  }
+}
+
 </style>
