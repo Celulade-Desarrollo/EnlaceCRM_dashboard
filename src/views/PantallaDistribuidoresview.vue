@@ -1,56 +1,59 @@
+```vue
 <script setup>
 import { onMounted, ref, computed } from 'vue'
 import { motion } from 'motion-v'
 import axios from 'axios'
-import { activarSesionExpirada } from "../stores/session.js";
-import { useRouter } from "vue-router";
-import headerDis from "../components/UI/headerDis.vue";
+import { activarSesionExpirada } from "../stores/session.js"
+import { useRouter } from "vue-router"
+import headerDis from "../components/UI/headerDis.vue"
 
 const movimientosEnlace = ref([])
 const fechaSeleccionada = ref(new Date().toISOString().substr(0, 10))
 const busquedaFiltro = ref("")
 const dateInputRef = ref(null)
 
-const router = useRouter();
+const router = useRouter()
 
 const formatoMiles = (numero) => {
-  return new Intl.NumberFormat('es-ES').format(Number(numero || 0));
-};
+  return new Intl.NumberFormat('es-ES').format(Number(numero || 0))
+}
 
 const fechaFormateada = computed(() => {
-  if (!fechaSeleccionada.value) return '';
-  const [year, month, day] = fechaSeleccionada.value.split('-');
-  const date = new Date(year, month - 1, day);
+  if (!fechaSeleccionada.value) return ''
+
+  const [year, month, day] = fechaSeleccionada.value.split('-')
+  const date = new Date(year, month - 1, day)
+
   return date.toLocaleDateString('es-ES', {
     day: 'numeric',
     month: 'long',
     year: 'numeric'
-  });
-});
+  })
+})
 
 const abrirCalendario = () => {
-  if (dateInputRef.value) {
-    if ('showPicker' in HTMLInputElement.prototype) {
-      dateInputRef.value.showPicker();
-    } else {
-      dateInputRef.value.focus();
-    }
+  if (!dateInputRef.value) return
+
+  if ('showPicker' in HTMLInputElement.prototype) {
+    dateInputRef.value.showPicker()
+  } else {
+    dateInputRef.value.focus()
   }
-};
+}
 
 const movimientosDelDia = computed(() => {
   return movimientosEnlace.value.filter(mov => {
-    const fechaMov = mov.FechaHoraMovimiento?.substring(0, 10);
-    return fechaMov === fechaSeleccionada.value;
-  });
-});
+    const fechaMov = mov.FechaHoraMovimiento?.substring(0, 10)
+    return fechaMov === fechaSeleccionada.value
+  })
+})
 
 const listaAgrupada = computed(() => {
-  const mapa = new Map();
+  const mapa = new Map()
 
   movimientosDelDia.value.forEach(mov => {
-    const key = `${mov.NombreRuta}_${mov.TelefonoTransportista}`;
-    
+    const key = `${mov.NombreRuta}_${mov.TelefonoTransportista}`
+
     if (!mapa.has(key)) {
       mapa.set(key, {
         ruta: mov.NombreRuta || 'N/A',
@@ -59,39 +62,54 @@ const listaAgrupada = computed(() => {
         placas: new Set(),
         planillas: new Set(),
         totalRecaudado: 0
-      });
+      })
     }
 
-    const item = mapa.get(key);
-    if (mov.NroFacturaAlpina) item.facturas.add(mov.NroFacturaAlpina);
-    if (mov.Placa) item.placas.add(mov.Placa);
-    if (mov.Planilla) item.planillas.add(mov.Planilla);
-    
-    item.totalRecaudado += Number(mov.Monto || 0);
-  });
+    const item = mapa.get(key)
+
+    if (mov.NroFacturaAlpina) {
+      item.facturas.add(mov.NroFacturaAlpina)
+    }
+
+    if (mov.Placa) {
+      item.placas.add(mov.Placa)
+    }
+
+    if (mov.Planilla) {
+      item.planillas.add(mov.Planilla)
+    }
+
+    item.totalRecaudado += Number(mov.Monto || 0)
+  })
 
   const arrayAgrupado = Array.from(mapa.values()).map(item => ({
     ...item,
     facturaTexto: Array.from(item.facturas).join(', ') || 'N/A',
     placaTexto: Array.from(item.placas).join(', ') || 'N/A',
     planillaTexto: Array.from(item.planillas).join(', ') || 'N/A'
-  }));
+  }))
 
-  if (!busquedaFiltro.value.trim()) return arrayAgrupado;
+  if (!busquedaFiltro.value.trim()) {
+    return arrayAgrupado
+  }
 
-  const q = busquedaFiltro.value.toLowerCase();
-  return arrayAgrupado.filter(item => 
+  const q = busquedaFiltro.value.toLowerCase()
+
+  return arrayAgrupado.filter(item =>
     item.ruta.toLowerCase().includes(q) ||
     item.telefono.toString().includes(q) ||
     item.facturaTexto.toLowerCase().includes(q) ||
     item.placaTexto.toLowerCase().includes(q) ||
     item.planillaTexto.toLowerCase().includes(q)
-  );
-});
+  )
+})
 
 const totalRecaudo = computed(() => {
-  return movimientosDelDia.value.reduce((acc, mov) => acc + (mov.Monto || 0), 0);
-});
+  return movimientosDelDia.value.reduce(
+    (acc, mov) => acc + Number(mov.Monto || 0),
+    0
+  )
+})
 
 onMounted(async () => {
   try {
@@ -100,106 +118,196 @@ onMounted(async () => {
     console.log("Movimientos cargados:", movimientosEnlace.value)
   } catch (error) {
     console.error("Error al cargar movimientos:", error)
+
     if (error.response?.status === 401) {
-      activarSesionExpirada();
+      activarSesionExpirada()
     }
   }
 })
 
 const logout = () => {
-  localStorage.removeItem("admin_token");
-  localStorage.removeItem("company");
-  localStorage.removeItem("admin_tipo");
-  localStorage.removeItem("admin_userData");
-  localStorage.removeItem("admin_isAuthenticated");
-  router.push("/LoginView");
-};
+  localStorage.removeItem("admin_token")
+  localStorage.removeItem("company")
+  localStorage.removeItem("admin_tipo")
+  localStorage.removeItem("admin_userData")
+  localStorage.removeItem("admin_isAuthenticated")
+
+  router.push("/LoginView")
+}
+
+const verDetalle = (item) => {
+  router.push({
+    name: 'DetalleRecaudo',
+    query: {
+      fecha: fechaSeleccionada.value,
+      ruta: item.ruta,
+      telefono: item.telefono,
+      factura: item.facturaTexto,
+      placa: item.placaTexto,
+      planilla: item.planillaTexto,
+      total: item.totalRecaudado
+    }
+  })
+}
 </script>
 
 <template>
   <div class="pantalla-full">
+
     <headerDis />
 
     <main class="main-content">
+
       <motion.div class="full-width-container">
-        <h1 class="main-title">Recaudo Diario</h1>
+
+        <h1 class="main-title">
+          Recaudo Diario
+        </h1>
 
         <div class="top-row">
+
           <div class="date-picker-box">
-            <span class="label-date">Fecha</span>
-            <div class="input-date-wrapper" @click="abrirCalendario">
-              <input 
+
+            <span class="label-date">
+              Fecha
+            </span>
+
+            <div
+              class="input-date-wrapper"
+              @click="abrirCalendario"
+            >
+
+              <input
                 ref="dateInputRef"
-                type="date" 
-                v-model="fechaSeleccionada" 
-                class="hidden-date-input" 
+                type="date"
+                v-model="fechaSeleccionada"
+                class="hidden-date-input"
               />
+
               <div class="custom-date-display">
-                <span>{{ fechaFormateada }}</span>
-                <svg class="calendar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                  <line x1="16" y1="2" x2="16" y2="6"></line>
-                  <line x1="8" y1="2" x2="8" y2="6"></line>
-                  <line x1="3" y1="10" x2="21" y2="10"></line>
-                </svg>
+
+                <span class="fecha-texto">
+                  {{ fechaFormateada }}
+                </span>
+
+                <span class="calendar-icon"></span>
+
               </div>
+
             </div>
+
           </div>
 
           <div class="kpi-box">
-            <div class="kpi-amount">$ {{ formatoMiles(totalRecaudo) }}</div>
-            <div class="kpi-label">Total Recaudado Día</div>
+
+            <div class="kpi-amount">
+              $ {{ formatoMiles(totalRecaudo) }}
+            </div>
+
+            <div class="kpi-label">
+              Total Recaudado Día
+            </div>
+
           </div>
+
         </div>
 
         <div class="search-wrapper">
+
           <input
             type="text"
             v-model="busquedaFiltro"
             placeholder="Buscar por ruta, transportista, teléfono, factura, placa o planilla"
             class="search-input"
           />
-          <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
+
+          <span class="search-icon"></span>
+
         </div>
 
         <div class="table-wrapper">
-         <table class="data-table">
-          <thead>
-            <tr>
-              <th>Factura</th>
-              <th>Ruta</th>
-              <th>Teléfono</th>
-              <th>Placa</th>
-              <th>Planilla</th>
-              <th>Total Recaudado</th>
-            </tr>
-          </thead>
 
-          <tbody>
-            <tr v-for="(item, index) in listaAgrupada" :key="index">
-              <td class="col-secundaria">{{ item.facturaTexto }}</td>
-              <td class="col-ruta">{{ item.ruta }}</td>
-              <td class="col-telefono">{{ item.telefono }}</td>
-              <td class="col-secundaria">{{ item.placaTexto }}</td>
-              <td class="col-secundaria">{{ item.planillaTexto }}</td>
-              <td class="col-monto">
-                $ {{ formatoMiles(item.totalRecaudado) }}
-              </td>
-            </tr>
+          <table class="data-table">
 
-            <tr v-if="listaAgrupada.length === 0">
-              <td colspan="6" class="empty-state">
-                No hay registros de recaudo para los filtros seleccionados.
-              </td>
-            </tr>
-          </tbody>
-        </table>
+            <thead>
+
+              <tr>
+                <th>Factura</th>
+                <th>Ruta</th>
+                <th>Teléfono</th>
+                <th>Placa</th>
+                <th>Planilla</th>
+                <th>Total Recaudado</th>
+                <th>Acciones</th>
+              </tr>
+
+            </thead>
+
+            <tbody>
+
+              <tr
+                v-for="(item, index) in listaAgrupada"
+                :key="index"
+              >
+
+                <td class="col-secundaria">
+                  {{ item.facturaTexto }}
+                </td>
+
+                <td class="col-ruta">
+                  {{ item.ruta }}
+                </td>
+
+                <td class="col-telefono">
+                  {{ item.telefono }}
+                </td>
+
+                <td class="col-secundaria">
+                  {{ item.placaTexto }}
+                </td>
+
+                <td class="col-secundaria">
+                  {{ item.planillaTexto }}
+                </td>
+
+                <td class="col-monto">
+                  $ {{ formatoMiles(item.totalRecaudado) }}
+                </td>
+
+                <td class="col-acciones">
+
+                  <button
+                    class="btn-detalle"
+                    @click="verDetalle(item)"
+                  >
+                    Ver Detalle
+                  </button>
+
+                </td>
+
+              </tr>
+
+              <tr v-if="listaAgrupada.length === 0">
+
+                <td
+                  colspan="7"
+                  class="empty-state"
+                >
+                  No hay registros de recaudo para los filtros seleccionados.
+                </td>
+
+              </tr>
+
+            </tbody>
+
+          </table>
+
         </div>
+
       </motion.div>
+
     </main>
+
   </div>
 </template>
 
@@ -267,7 +375,9 @@ const logout = () => {
 .custom-date-display {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 16px;
+  min-width: 180px;
   border: 1px solid #e5e7eb;
   padding: 8px 16px;
   border-radius: 6px;
@@ -275,14 +385,47 @@ const logout = () => {
   color: #374151;
   background: #ffffff;
   user-select: none;
+  transition: border-color 0.2s ease;
 }
 
 .custom-date-display:hover {
   border-color: #cbd5e1;
 }
 
+.fecha-texto {
+  color: #374151;
+  white-space: nowrap;
+}
+
 .calendar-icon {
-  color: #6b7280;
+  width: 16px;
+  height: 15px;
+  border: 1.5px solid #6b7280;
+  border-radius: 3px;
+  position: relative;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.calendar-icon::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  top: 4px;
+  border-top: 1.5px solid #6b7280;
+}
+
+.calendar-icon::after {
+  content: "";
+  position: absolute;
+  width: 3px;
+  height: 4px;
+  background-color: #6b7280;
+  top: -3px;
+  left: 3px;
+  border-radius: 1px;
+  box-shadow: 6px 0 #6b7280;
 }
 
 .kpi-box {
@@ -314,19 +457,41 @@ const logout = () => {
   font-size: 14px;
   outline: none;
   box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .search-input::placeholder {
   color: #9ca3af;
 }
 
+.search-input:focus {
+  border-color: #cbd5e1;
+  box-shadow: 0 0 0 2px rgba(203, 213, 225, 0.25);
+}
+
 .search-icon {
   position: absolute;
-  right: 14px;
+  right: 16px;
   top: 50%;
-  transform: translateY(-50%);
-  color: #6b7280;
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid #6b7280;
+  border-radius: 50%;
+  transform: translateY(-60%);
   pointer-events: none;
+  box-sizing: border-box;
+}
+
+.search-icon::after {
+  content: "";
+  position: absolute;
+  width: 6px;
+  height: 1.5px;
+  background-color: #6b7280;
+  right: -5px;
+  bottom: -2px;
+  transform: rotate(45deg);
+  transform-origin: left center;
 }
 
 .table-wrapper {
@@ -359,7 +524,7 @@ const logout = () => {
 
 .data-table th,
 .data-table td {
-  width: 16.6667%;
+  width: 14.2857%;
 }
 
 .col-ruta {
@@ -378,6 +543,38 @@ const logout = () => {
 .col-monto {
   font-weight: 700;
   color: #111827;
+}
+
+.col-acciones {
+  text-align: center;
+}
+
+.btn-detalle {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  color: deepskyblue;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 400;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.btn-detalle:hover {
+  color: #0099cc;
+  border-bottom-color: #0099cc;
+}
+
+.btn-detalle:focus {
+  outline: none;
+  font-weight: 400;
+}
+
+.btn-detalle:active {
+  font-weight: 400;
 }
 
 .empty-state {

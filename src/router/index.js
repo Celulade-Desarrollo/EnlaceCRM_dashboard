@@ -183,6 +183,11 @@ const routes = [
     name: "PantallaNoInfo",
     component: () => import("../views/PantallaNoInfo.vue"),
   },
+  {
+    path: "/detalle-recaudo",
+    name: "DetalleRecaudo",
+    component: () => import("../views/DetalleRecaudo.vue"),
+  }
   
 ];
 

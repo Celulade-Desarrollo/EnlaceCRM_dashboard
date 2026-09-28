@@ -121,7 +121,7 @@ async function downloadExcel() {
           </button>
 
 
-          <button class="module-card" @click="downloadExcel">
+          <!-- <button class="module-card" @click="downloadExcel">
             <div class="module-icon">
               <img src="/cupo.png" alt="Estados de cupo" />
             </div>
@@ -136,7 +136,7 @@ async function downloadExcel() {
             <div class="module-arrow">
               ↓
             </div>
-          </button>
+          </button> -->
 
         </div>
 
