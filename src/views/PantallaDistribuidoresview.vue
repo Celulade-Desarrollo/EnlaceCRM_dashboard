@@ -1,4 +1,3 @@
-```vue
 <script setup>
 import { onMounted, ref, computed } from 'vue'
 import { motion } from 'motion-v'
@@ -51,57 +50,60 @@ const movimientosDelDia = computed(() => {
 const listaAgrupada = computed(() => {
   const mapa = new Map()
 
-  movimientosDelDia.value.forEach(mov => {
-    const key = `${mov.NombreRuta}_${mov.TelefonoTransportista}`
+movimientosDelDia.value.forEach(mov => {
+  const key = `${mov.NombreRuta}_${mov.TelefonoTransportista}`
 
-    if (!mapa.has(key)) {
-      mapa.set(key, {
-        ruta: mov.NombreRuta || 'N/A',
-        telefono: mov.TelefonoTransportista || 'N/A',
-        facturas: new Set(),
-        placas: new Set(),
-        planillas: new Set(),
-        totalRecaudado: 0
-      })
-    }
-
-    const item = mapa.get(key)
-
-    if (mov.NroFacturaAlpina) {
-      item.facturas.add(mov.NroFacturaAlpina)
-    }
-
-    if (mov.Placa) {
-      item.placas.add(mov.Placa)
-    }
-
-    if (mov.Planilla) {
-      item.planillas.add(mov.Planilla)
-    }
-
-    item.totalRecaudado += Number(mov.Monto || 0)
+if (!mapa.has(key)) {
+  mapa.set(key, {
+    ruta: mov.NombreRuta || 'N/A',
+    telefono: mov.TelefonoTransportista || 'N/A',
+    facturas: new Set(),
+    placas: new Set(),
+    planillas: new Set(),
+    movimientos: [],
+    totalRecaudado: 0
   })
+}
 
-  const arrayAgrupado = Array.from(mapa.values()).map(item => ({
-    ...item,
-    facturaTexto: Array.from(item.facturas).join(', ') || 'N/A',
-    placaTexto: Array.from(item.placas).join(', ') || 'N/A',
-    planillaTexto: Array.from(item.planillas).join(', ') || 'N/A'
-  }))
+const item = mapa.get(key)
 
-  if (!busquedaFiltro.value.trim()) {
-    return arrayAgrupado
-  }
+item.movimientos.push(mov)
 
-  const q = busquedaFiltro.value.toLowerCase()
+if (mov.NroFacturaAlpina) {
+  item.facturas.add(mov.NroFacturaAlpina)
+}
 
-  return arrayAgrupado.filter(item =>
-    item.ruta.toLowerCase().includes(q) ||
-    item.telefono.toString().includes(q) ||
-    item.facturaTexto.toLowerCase().includes(q) ||
-    item.placaTexto.toLowerCase().includes(q) ||
-    item.planillaTexto.toLowerCase().includes(q)
-  )
+if (mov.Placa) {
+  item.placas.add(mov.Placa)
+}
+
+if (mov.Planilla) {
+  item.planillas.add(mov.Planilla)
+}
+
+item.totalRecaudado += Number(mov.Monto || 0)
+})
+
+const arrayAgrupado = Array.from(mapa.values()).map(item => ({
+  ...item,
+  facturaTexto: Array.from(item.facturas).join(', ') || 'N/A',
+  placaTexto: Array.from(item.placas).join(', ') || 'N/A',
+  planillaTexto: Array.from(item.planillas).join(', ') || 'N/A'
+}))
+
+if (!busquedaFiltro.value.trim()) {
+  return arrayAgrupado
+}
+
+const q = busquedaFiltro.value.toLowerCase()
+
+return arrayAgrupado.filter(item =>
+  item.ruta.toLowerCase().includes(q) ||
+  item.telefono.toString().includes(q) ||
+  item.facturaTexto.toLowerCase().includes(q) ||
+  item.placaTexto.toLowerCase().includes(q) ||
+  item.planillaTexto.toLowerCase().includes(q)
+)
 })
 
 const totalRecaudo = computed(() => {
@@ -136,19 +138,25 @@ const logout = () => {
 }
 
 const verDetalle = (item) => {
-  router.push({
-    name: 'DetalleRecaudo',
-    query: {
+
+  localStorage.setItem("detalle_recaudo",
+    JSON.stringify({
       fecha: fechaSeleccionada.value,
       ruta: item.ruta,
       telefono: item.telefono,
       factura: item.facturaTexto,
       placa: item.placaTexto,
       planilla: item.planillaTexto,
-      total: item.totalRecaudado
-    }
+      total: item.totalRecaudado,
+      movimientos: item.movimientos
+    })
+  )
+
+  router.push({
+    name: "DetalleRecaudo"
   })
 }
+
 </script>
 
 <template>
