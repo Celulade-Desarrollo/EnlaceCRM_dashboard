@@ -187,6 +187,11 @@ const routes = [
     path: "/detalle-recaudo",
     name: "DetalleRecaudo",
     component: () => import("../views/DetalleRecaudo.vue"),
+  },
+  {
+   path: "/detalle-recaudo-tesoreria",
+    name: "DetalleRecaudoTesoreria",
+    component: () => import("../views/DetalleRecaudoTesoreria.vue"),
   }
   
 ];

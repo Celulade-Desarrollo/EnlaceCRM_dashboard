@@ -1,7 +1,10 @@
 <script setup>
 import { ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import axios from 'axios'
 import headerDis from "../components/UI/headerDis.vue"
+
+const router = useRouter()
 
 const mesAnoSeleccionado = ref('');
 
@@ -18,7 +21,7 @@ const listarDatos = async () => {
   try {
     const res = await axios.get('/tesoreria/consultar-datos-recaudo')
     const registros = res.data?.data || res.data || []
-
+console.log(`registros->`,registros)
     todosLosDatos.value = registros.map(d => {
       let fecha = d.fecha || ''
       if (fecha.includes('T')) fecha = fecha.split('T')[0]
@@ -26,7 +29,7 @@ const listarDatos = async () => {
       return {
         id: d.id,
         fecha,
-        recaudo: d.recaudo || 0, // 🎯 Aseguramos que tome el alias del SQL
+        recaudo: d.recaudo || 0,
         dispersion: (d.dispersion || '').trim() 
       }
     })
@@ -105,14 +108,41 @@ const payload = nuevos.map(fila => ({
     alert('Error al guardar: ' + (e.response?.data?.message || 'Error desconocido'))
   }
 }
+const verDetalle = async (fila) => {
+  try {
+    const res = await axios.get(
+      `/tesoreria/recaudo-detalle/${fila.fecha}`
+    )
 
+    const movimientos = res.data?.data || res.data || []
+
+    const recaudo = Number(fila.recaudo || 0)
+
+    localStorage.setItem(
+      'detalle_recaudo',
+      JSON.stringify({
+        fecha: fila.fecha,
+        recaudo: recaudo,
+        total: recaudo,
+        dispersion: fila.dispersion || '',
+        movimientos
+      })
+    )
+
+    router.push({
+      name: "DetalleRecaudoTesoreria"
+    })
+  } catch (error) {
+    console.error('Error al cargar detalle:', error)
+  }
+}
 watch(mesAnoSeleccionado, listarDatos)
+
 </script>
 
 <template>
   <div class="pantalla-full">
     <headerDis />
-
     <main class="main-content">
       <div class="full-width-container">
 
@@ -132,7 +162,6 @@ watch(mesAnoSeleccionado, listarDatos)
           </div>
         </div>
 
-        <!-- SIN MES SELECCIONADO -->
         <div
           v-if="!mesAnoSeleccionado"
           class="mensaje-seleccionar"
@@ -141,7 +170,6 @@ watch(mesAnoSeleccionado, listarDatos)
           <span>Seleccione un mes y un año</span>
         </div>
 
-        <!-- SIN DATOS -->
         <div
           v-if="
             mesAnoSeleccionado &&
@@ -165,6 +193,7 @@ watch(mesAnoSeleccionado, listarDatos)
                 <th>Fecha</th>
                 <th>Recaudo</th>
                 <th>Dispersión</th>
+                <th>Acciones</th>
               </tr>
             </thead>
 
@@ -211,6 +240,14 @@ watch(mesAnoSeleccionado, listarDatos)
                     </option>
                   </select>
                 </td>
+                <td>
+                <button
+                  class="btn-detalle"
+                  @click="verDetalle(fila)"
+                >
+                  Ver detalle
+                </button>
+              </td>
               </tr>
             </tbody>
 
@@ -415,7 +452,7 @@ watch(mesAnoSeleccionado, listarDatos)
 
 .data-table th,
 .data-table td {
-  width: 33.3333%;
+  width: 25%;
 }
 
 .data-table td {
@@ -577,6 +614,34 @@ watch(mesAnoSeleccionado, listarDatos)
   .btn {
     width: 100%;
   }
+}
+
+.btn-detalle {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  color: deepskyblue;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 400;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.btn-detalle:hover {
+  color: #0099cc;
+  border-bottom-color: #0099cc;
+}
+
+.btn-detalle:focus {
+  outline: none;
+  font-weight: 400;
+}
+
+.btn-detalle:active {
+  font-weight: 400;
 }
 
 </style>
