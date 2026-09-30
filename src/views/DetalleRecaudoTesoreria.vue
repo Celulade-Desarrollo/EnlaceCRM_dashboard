@@ -51,30 +51,89 @@ const movimientosFiltrados = computed(() => {
   })
 })
 
-const cargarDetalle = async () => {
+const cargarDetalle = () => {
   if (!fechaRecaudo.value) return
 
   cargando.value = true
   movimientos.value = []
 
-  try {
-    const res = await axios.get(
-      `/tesoreria/recaudo-detalle/${fechaRecaudo.value}`
-    )
+  setTimeout(() => {
 
-    const data = res.data?.data || res.data || []
+    const datosQuemados = [
+      {
+        id: 1,
+        factura: 'FAC-1001',
+        cliente: 'Carlos Gómez Pérez',
+        codigo: 'CLI-001',
+        tienda: 'Tienda La Esperanza',
+        ubicacion: 'Cali - Valle del Cauca - Cra 10 # 20-30',
+        telefono: '3001111111',
+        Monto: 850000
+      },
 
-    movimientos.value = Array.isArray(data)
-      ? data
-      : data.movimientos || data.detalle || []
+      {
+        id: 2,
+        factura: 'FAC-1002',
+        cliente: 'María Rodríguez López',
+        codigo: 'CLI-002',
+        tienda: 'Supermercado El Sol',
+        ubicacion: 'Cali - Valle del Cauca - Calle 15 # 30-40',
+        telefono: '3012222222',
+        Monto: 620000
+      },
 
-  } catch (error) {
-    console.error('Error al cargar detalle:', error)
-    movimientos.value = []
-  } finally {
+      {
+        id: 3,
+        factura: 'FAC-1003',
+        cliente: 'Juan Martínez',
+        codigo: 'CLI-003',
+        tienda: 'Tienda San José',
+        ubicacion: 'Palmira - Valle del Cauca - Carrera 5 # 10-20',
+        telefono: '3023333333',
+        Monto: 475000
+      },
+
+      {
+        id: 4,
+        factura: 'FAC-1004',
+        cliente: 'Ana Torres Ramírez',
+        codigo: 'CLI-004',
+        tienda: 'Mini Mercado Centro',
+        ubicacion: 'Cali - Valle del Cauca - Calle 8 # 12-15',
+        telefono: '3034444444',
+        Monto: 920000
+      },
+
+      {
+        id: 5,
+        factura: 'FAC-1005',
+        cliente: 'Pedro Sánchez',
+        codigo: 'CLI-005',
+        tienda: 'Tienda El Progreso',
+        ubicacion: 'Cali - Valle del Cauca - Cra 25 # 18-45',
+        telefono: '3045555555',
+        Monto: 735000
+      },
+
+      {
+        id: 6,
+        factura: 'FAC-1006',
+        cliente: 'Laura Ramírez',
+        codigo: 'CLI-006',
+        tienda: 'Supermercado La 14',
+        ubicacion: 'Cali - Valle del Cauca - Calle 25 # 5-60',
+        telefono: '3056666666',
+        Monto: 1100000
+      }
+    ]
+
+    movimientos.value = datosQuemados
+
     cargando.value = false
-  }
+
+  }, 500)
 }
+
 
 const regresar = () => {
   router.back()

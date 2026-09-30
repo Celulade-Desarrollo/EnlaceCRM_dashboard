@@ -22,7 +22,8 @@ const datosRecaudo = ref({
   total: 0
 })
 
-const token = localStorage.getItem("admin_token")
+const token = 'TOKEN_DEMO'
+
 
 const formatoMiles = (numero) => {
   return new Intl.NumberFormat('es-ES').format(
@@ -121,8 +122,7 @@ const regresar = () => {
   router.back()
 }
 
-onMounted(async () => {
-
+onMounted(() => {
   cargandoDetalle.value = true
 
   try {
@@ -130,6 +130,7 @@ onMounted(async () => {
 
     if (!datosGuardados) {
       console.warn("No hay datos de recaudo en localStorage")
+      movimientosDetalle.value = []
       return
     }
 
@@ -150,62 +151,119 @@ onMounted(async () => {
     console.log("Datos de recaudo:", datos)
     console.log("Movimientos recibidos:", movimientos)
 
-    const resultados = []
+    // Datos de clientes quemados en frontend
+    const clientesDemo = {
+      "1001001001": {
+        Nombre_Tienda: "Tienda La Esperanza",
+        Nombres: "Carlos",
+        Primer_Apellido: "Gómez",
+        "2do_Apellido_opcional": "Pérez",
+        Ubicacion_del_Negocio_Ciudad: "Cali",
+        Ubicacion_del_Negocio_Departamento: "Valle del Cauca",
+        Direccion: "Cra 10 # 20-30",
+        Numero_Celular: "3001111111",
+        nbCliente: "CLI-001"
+      },
 
-    for (const mov of movimientos) {
-      const cedula = mov.Cedula_Usuario
+      "1001001002": {
+        Nombre_Tienda: "Supermercado El Sol",
+        Nombres: "María",
+        Primer_Apellido: "Rodríguez",
+        "2do_Apellido_opcional": "López",
+        Ubicacion_del_Negocio_Ciudad: "Cali",
+        Ubicacion_del_Negocio_Departamento: "Valle del Cauca",
+        Direccion: "Calle 15 # 30-40",
+        Numero_Celular: "3012222222",
+        nbCliente: "CLI-002"
+      },
 
-      console.log("Cédula:", cedula)
+      "1001001003": {
+        Nombre_Tienda: "Tienda San José",
+        Nombres: "Juan",
+        Primer_Apellido: "Martínez",
+        "2do_Apellido_opcional": "",
+        Ubicacion_del_Negocio_Ciudad: "Palmira",
+        Ubicacion_del_Negocio_Departamento: "Valle del Cauca",
+        Direccion: "Carrera 5 # 10-20",
+        Numero_Celular: "3023333333",
+        nbCliente: "CLI-003"
+      },
 
-      if (!cedula) {
-        console.warn( "El movimiento no tiene Cedula_Usuario:",
-          mov
-        )
-        continue
+      "1001001004": {
+        Nombre_Tienda: "Mini Mercado Centro",
+        Nombres: "Ana",
+        Primer_Apellido: "Torres",
+        "2do_Apellido_opcional": "Ramírez",
+        Ubicacion_del_Negocio_Ciudad: "Cali",
+        Ubicacion_del_Negocio_Departamento: "Valle del Cauca",
+        Direccion: "Calle 8 # 12-15",
+        Numero_Celular: "3034444444",
+        nbCliente: "CLI-004"
       }
-
-      const response = await axios.get(`/api/user/account/${cedula}`,{
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
-          }
-        }
-      )
-
-      console.log(`Respuesta completa del cliente ${cedula}:`,
-        response.data
-      )
-
-      const cliente = response.data.usuario
-
-      console.log(`Información del cliente ${cedula}:`,cliente)
-
-      resultados.push({
-        NroFacturaAlpina: mov.NroFacturaAlpina,
-        Monto: Number(mov.Monto || 0),
-        Comercio: cliente?.Nombre_Tienda || "N/A",
-        nombreCliente: nombreCompleto(cliente),
-        ubicacion: ubicacionCompleta(cliente),
-        telefono: cliente?.Numero_Celular || "N/A",
-        nbCliente: cliente?.nbCliente || "N/A",
-      })
     }
+
+    const resultados = movimientos.map((mov, index) => {
+
+      const cedula = String(
+        mov.Cedula_Usuario || ""
+      )
+
+      const cliente = clientesDemo[cedula]
+
+      return {
+        id: mov.id || index,
+
+        NroFacturaAlpina:
+          mov.NroFacturaAlpina ||
+          mov.factura ||
+          `FAC-${1001 + index}`,
+
+        Monto: Number(
+          mov.Monto ||
+          mov.monto ||
+          0
+        ),
+
+        Comercio:
+          cliente?.Nombre_Tienda ||
+          "N/A",
+
+        nombreCliente:
+          nombreCompleto(cliente),
+
+        ubicacion:
+          ubicacionCompleta(cliente),
+
+        telefono:
+          cliente?.Numero_Celular ||
+          "N/A",
+
+        nbCliente:
+          cliente?.nbCliente ||
+          "N/A"
+      }
+    })
 
     movimientosDetalle.value = resultados
 
-    console.log( "DETALLE FINAL:",movimientosDetalle.value)
+    console.log(
+      "DETALLE FINAL:",
+      movimientosDetalle.value
+    )
 
   } catch (error) {
+
     console.error(
       "Error al cargar detalle:",
       error
     )
 
-    if (error.response?.status === 401) {
-      activarSesionExpirada()
-    }
+    movimientosDetalle.value = []
+
   } finally {
+
     cargandoDetalle.value = false
+
   }
 })
 </script>

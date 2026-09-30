@@ -15,31 +15,66 @@ const filas = ref([])
 const todosLosDatos = ref([])
 const datosOriginales = ref([])
 
-const listarDatos = async () => {
-  if (!mesAnoSeleccionado.value) return
-
-  try {
-    const res = await axios.get('/tesoreria/consultar-datos-recaudo')
-    const registros = res.data?.data || res.data || []
-console.log(`registros->`,registros)
-    todosLosDatos.value = registros.map(d => {
-      let fecha = d.fecha || ''
-      if (fecha.includes('T')) fecha = fecha.split('T')[0]
-      
-      return {
-        id: d.id,
-        fecha,
-        recaudo: d.recaudo || 0,
-        dispersion: (d.dispersion || '').trim() 
-      }
-    })
-
-    datosOriginales.value = JSON.parse(JSON.stringify(todosLosDatos.value))
-    filtrarPorMesAno()
-  } catch (e) {
-    console.error('❌ Error al cargar datos:', e)
+const listarDatos = () => {
+  if (!mesAnoSeleccionado.value) {
+    filas.value = []
+    return
   }
+
+  const registros = [
+    {
+      id: 1,
+      fecha: '2026-09-01',
+      recaudo: 3500000,
+      dispersion: ''
+    },
+    {
+      id: 2,
+      fecha: '2026-09-02',
+      recaudo: 4200000,
+      dispersion: ''
+    },
+    {
+      id: 3,
+      fecha: '2026-09-03',
+      recaudo: 2800000,
+      dispersion: 'Alpina'
+    },
+    {
+      id: 4,
+      fecha: '2026-09-04',
+      recaudo: 5100000,
+      dispersion: ''
+    },
+    {
+      id: 5,
+      fecha: '2026-09-05',
+      recaudo: 3900000,
+      dispersion: 'Surtialimentos'
+    },
+    {
+      id: 6,
+      fecha: '2026-09-10',
+      recaudo: 4600000,
+      dispersion: ''
+    }
+
+  ]
+
+  todosLosDatos.value = registros.map(d => ({
+    id: d.id,
+    fecha: d.fecha,
+    recaudo: Number(d.recaudo || 0),
+    dispersion: (d.dispersion || '').trim()
+  }))
+
+  datosOriginales.value = JSON.parse(
+    JSON.stringify(todosLosDatos.value)
+  )
+
+  filtrarPorMesAno()
 }
+
 
 const filtrarPorMesAno = () => {
   if (!mesAnoSeleccionado.value) {

@@ -113,18 +113,49 @@ const totalRecaudo = computed(() => {
   )
 })
 
-onMounted(async () => {
-  try {
-    const response = await axios.get('api/listar/enlace/movimientos')
-    movimientosEnlace.value = response.data
-    console.log("Movimientos cargados:", movimientosEnlace.value)
-  } catch (error) {
-    console.error("Error al cargar movimientos:", error)
-
-    if (error.response?.status === 401) {
-      activarSesionExpirada()
+onMounted(() => {
+  movimientosEnlace.value = [
+    {
+      FechaHoraMovimiento: '2026-09-30T08:15:00',
+      NombreRuta: 'Ruta Norte',
+      TelefonoTransportista: '3001234567',
+      NroFacturaAlpina: 'FAC-1001',
+      Placa: 'ABC123',
+      Planilla: 'PL-001',
+      Monto: 150000,
+      Cedula_Usuario: '1001001001'
+    },
+    {
+      FechaHoraMovimiento: '2026-09-30T09:20:00',
+      NombreRuta: 'Ruta Norte',
+      TelefonoTransportista: '3001234567',
+      NroFacturaAlpina: 'FAC-1002',
+      Placa: 'ABC123',
+      Planilla: 'PL-001',
+      Monto: 85000,
+      Cedula_Usuario: '1001001002'
+    },
+    {
+      FechaHoraMovimiento: '2026-09-30T10:30:00',
+      NombreRuta: 'Ruta Sur',
+      TelefonoTransportista: '3109876543',
+      NroFacturaAlpina: 'FAC-1003',
+      Placa: 'XYZ789',
+      Planilla: 'PL-002',
+      Monto: 220000,
+      Cedula_Usuario: '1001001003'
+    },
+    {
+      FechaHoraMovimiento: '2026-09-29T11:00:00',
+      NombreRuta: 'Ruta Centro',
+      TelefonoTransportista: '3155555555',
+      NroFacturaAlpina: 'FAC-1004',
+      Placa: 'DEF456',
+      Planilla: 'PL-003',
+      Monto: 120000,
+      Cedula_Usuario: '1001001004'
     }
-  }
+  ]
 })
 
 const logout = () => {
