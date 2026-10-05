@@ -1,6 +1,5 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import axios from 'axios'
 import headerDis from "../components/UI/headerDis.vue"
 import { useRouter } from "vue-router"
 
@@ -10,12 +9,13 @@ const cargando = ref(false)
 const busquedaFiltro = ref('')
 const fechaRecaudo = ref('')
 const totalRecaudo = ref(0)
+const idRecaudo = ref(null)
 const movimientos = ref([])
 
 const datosDetalle = ref({
+  id: null,
   fecha: '',
-  recaudo: 0,
-  dispersion: ''
+  recaudo: 0
 })
 
 const formatoMiles = numero => {
@@ -51,6 +51,85 @@ const movimientosFiltrados = computed(() => {
   })
 })
 
+const datosQuemadosPorId = {
+  1: [
+    {
+      id: 101,
+      factura: 'FAC-1001',
+      cliente: 'Carlos Gómez Pérez',
+      codigo: '8100162133',
+      tienda: 'Tienda La Esperanza',
+      ubicacion: 'Cali - Cra 10 # 20-30',
+      telefono: '3001111111',
+      Monto: 1500000
+    },
+    {
+      id: 102,
+      factura: 'FAC-1002',
+      cliente: 'María Rodríguez López',
+      codigo: '8100009993',
+      tienda: 'Supermercado El Sol',
+      ubicacion: 'Cali - Calle 15 # 30-40',
+      telefono: '3012222222',
+      Monto: 2000000
+    }
+  ],
+  2: [
+    {
+      id: 201,
+      factura: 'FAC-2001',
+      cliente: 'Juan Martínez',
+      codigo: '8100002134',
+      tienda: 'Tienda San José',
+      ubicacion: 'Palmira - Carrera 5 # 10-20',
+      telefono: '3023333333',
+      Monto: 1200000
+    },
+    {
+      id: 202,
+      factura: 'FAC-2002',
+      cliente: 'Ana Torres Ramírez',
+      codigo: '8100001930',
+      tienda: 'Mini Mercado Centro',
+      ubicacion: 'Cali - Calle 8 # 12-15',
+      telefono: '3034444444',
+      Monto: 1800000
+    },
+    {
+      id: 203,
+      factura: 'FAC-2003',
+      cliente: 'Pedro Sánchez',
+      codigo: '8100162988',
+      tienda: 'Tienda El Progreso',
+      ubicacion: 'Cali - Cra 25 # 18-45',
+      telefono: '3045555555',
+      Monto: 1200000
+    }
+  ],
+  3: [
+    {
+      id: 301,
+      factura: 'FAC-3001',
+      cliente: 'Laura Ramírez',
+      codigo: '8100009996',
+      tienda: 'Supermercado La 14',
+      ubicacion: 'Cali - Calle 25 # 5-60',
+      telefono: '3056666666',
+      Monto: 1100000
+    },
+    {
+      id: 302,
+      factura: 'FAC-3002',
+      cliente: 'Diego Fernando Orozco',
+      codigo: '8100002051',
+      tienda: 'Variedades Los Alpes',
+      ubicacion: 'Yumbo - Calle 10 # 4-12',
+      telefono: '3167778899',
+      Monto: 1700000
+    }
+  ]
+}
+
 const cargarDetalle = () => {
   if (!fechaRecaudo.value) return
 
@@ -58,82 +137,13 @@ const cargarDetalle = () => {
   movimientos.value = []
 
   setTimeout(() => {
-
-    const datosQuemados = [
-      {
-        id: 1,
-        factura: 'FAC-1001',
-        cliente: 'Carlos Gómez Pérez',
-        codigo: 'CLI-001',
-        tienda: 'Tienda La Esperanza',
-        ubicacion: 'Cali - Valle del Cauca - Cra 10 # 20-30',
-        telefono: '3001111111',
-        Monto: 850000
-      },
-
-      {
-        id: 2,
-        factura: 'FAC-1002',
-        cliente: 'María Rodríguez López',
-        codigo: 'CLI-002',
-        tienda: 'Supermercado El Sol',
-        ubicacion: 'Cali - Valle del Cauca - Calle 15 # 30-40',
-        telefono: '3012222222',
-        Monto: 620000
-      },
-
-      {
-        id: 3,
-        factura: 'FAC-1003',
-        cliente: 'Juan Martínez',
-        codigo: 'CLI-003',
-        tienda: 'Tienda San José',
-        ubicacion: 'Palmira - Valle del Cauca - Carrera 5 # 10-20',
-        telefono: '3023333333',
-        Monto: 475000
-      },
-
-      {
-        id: 4,
-        factura: 'FAC-1004',
-        cliente: 'Ana Torres Ramírez',
-        codigo: 'CLI-004',
-        tienda: 'Mini Mercado Centro',
-        ubicacion: 'Cali - Valle del Cauca - Calle 8 # 12-15',
-        telefono: '3034444444',
-        Monto: 920000
-      },
-
-      {
-        id: 5,
-        factura: 'FAC-1005',
-        cliente: 'Pedro Sánchez',
-        codigo: 'CLI-005',
-        tienda: 'Tienda El Progreso',
-        ubicacion: 'Cali - Valle del Cauca - Cra 25 # 18-45',
-        telefono: '3045555555',
-        Monto: 735000
-      },
-
-      {
-        id: 6,
-        factura: 'FAC-1006',
-        cliente: 'Laura Ramírez',
-        codigo: 'CLI-006',
-        tienda: 'Supermercado La 14',
-        ubicacion: 'Cali - Valle del Cauca - Calle 25 # 5-60',
-        telefono: '3056666666',
-        Monto: 1100000
-      }
-    ]
-
-    movimientos.value = datosQuemados
-
+    // Si no encuentra el ID especifico, cae por defecto en el primer listado
+    const resultado = datosQuemadosPorId[idRecaudo.value] || datosQuemadosPorId[1]
+    
+    movimientos.value = resultado
     cargando.value = false
-
-  }, 500)
+  }, 400)
 }
-
 
 const regresar = () => {
   router.back()
@@ -150,11 +160,9 @@ onMounted(() => {
   try {
     datosDetalle.value = JSON.parse(guardado)
 
+    idRecaudo.value = datosDetalle.value.id || null
     fechaRecaudo.value = datosDetalle.value.fecha || ''
-
-    totalRecaudo.value = Number(
-      datosDetalle.value.recaudo || 0
-    )
+    totalRecaudo.value = Number(datosDetalle.value.recaudo || 0)
 
     cargarDetalle()
   } catch (error) {
@@ -263,82 +271,40 @@ onMounted(() => {
 
                 <tr
                   v-for="(mov, index) in movimientosFiltrados"
-                  :key="mov.id || mov.Id || index"
+                  :key="mov.id || index"
                 >
 
                   <td class="factura">
-                    {{
-                      mov.factura ??
-                      mov.Factura ??
-                      mov.NroFactura ??
-                      mov.NroFacturaAlpina ??
-                      'N/A'
-                    }}
+                    {{ mov.factura ?? 'N/A' }}
                   </td>
 
                   <td class="col-cliente">
-                    {{
-                      mov.cliente ??
-                      mov.Cliente ??
-                      mov.NombreCliente ??
-                      'N/A'
-                    }}
+                    {{ mov.cliente ?? 'N/A' }}
                   </td>
 
                   <td class="cod-cliente">
-                    {{
-                      mov.codigo ??
-                      mov.Codigo ??
-                      mov.CodigoCliente ??
-                      mov.Cedula ??
-                      'N/A'
-                    }}
+                    {{ mov.codigo ?? 'N/A' }}
                   </td>
 
                   <td class="col-comercio">
-                    {{
-                      mov.tienda ??
-                      mov.Tienda ??
-                      mov.NombreTienda ??
-                      mov.Comercio ??
-                      'N/A'
-                    }}
+                    {{ mov.tienda ?? 'N/A' }}
                   </td>
 
                   <td class="col-ubicacion">
-                    {{
-                      mov.ubicacion ??
-                      mov.Ubicacion ??
-                      mov.Direccion ??
-                      'N/A'
-                    }}
+                    {{ mov.ubicacion ?? 'N/A' }}
                   </td>
 
                   <td class="col-telefono">
-                    {{
-                      mov.telefono ??
-                      mov.Telefono ??
-                      mov.TelefonoCliente ??
-                      'N/A'
-                    }}
+                    {{ mov.telefono ?? 'N/A' }}
                   </td>
 
-                 <td class="col-monto">
-                  ${{ formatoMiles(
-                    mov.MontoRecaudado ??
-                    mov.monto ??
-                    mov.Monto ??
-                    mov.valor ??
-                    mov.Valor ??
-                    0
-                  ) }}
-                </td>
+                  <td class="col-monto">
+                    ${{ formatoMiles(mov.Monto ?? 0) }}
+                  </td>
 
                 </tr>
 
-                <tr
-                  v-if="movimientosFiltrados.length === 0"
-                >
+                <tr v-if="movimientosFiltrados.length === 0">
                   <td
                     colspan="7"
                     class="empty-state"

@@ -9,6 +9,7 @@ import headerDis from "../components/UI/headerDis.vue"
 const movimientosEnlace = ref([])
 const fechaSeleccionada = ref(new Date().toISOString().substr(0, 10))
 const busquedaFiltro = ref("")
+const rutaSeleccionada = ref("")
 const dateInputRef = ref(null)
 
 const router = useRouter()
@@ -47,67 +48,88 @@ const movimientosDelDia = computed(() => {
   })
 })
 
+const rutasDisponibles = computed(() => {
+  const rutas = movimientosDelDia.value
+    .map(mov => mov.NombreRuta)
+    .filter(Boolean)
+
+  return [...new Set(rutas)].sort()
+})
+
 const listaAgrupada = computed(() => {
   const mapa = new Map()
 
-movimientosDelDia.value.forEach(mov => {
-  const key = `${mov.NombreRuta}_${mov.TelefonoTransportista}`
+  movimientosDelDia.value.forEach(mov => {
+    const key = `${mov.NombreRuta}_${mov.TelefonoTransportista}`
 
-if (!mapa.has(key)) {
-  mapa.set(key, {
-    ruta: mov.NombreRuta || 'N/A',
-    telefono: mov.TelefonoTransportista || 'N/A',
-    facturas: new Set(),
-    placas: new Set(),
-    planillas: new Set(),
-    movimientos: [],
-    totalRecaudado: 0
+    if (!mapa.has(key)) {
+      mapa.set(key, {
+        ruta: mov.NombreRuta || 'N/A',
+        telefono: mov.TelefonoTransportista || 'N/A',
+        facturas: new Set(),
+        placas: new Set(),
+        planillas: new Set(),
+        movimientos: [],
+        totalRecaudado: 0
+      })
+    }
+
+    const item = mapa.get(key)
+
+    item.movimientos.push(mov)
+
+    if (mov.NroFacturaAlpina) {
+      item.facturas.add(mov.NroFacturaAlpina)
+    }
+
+    if (mov.Placa) {
+      item.placas.add(mov.Placa)
+    }
+
+    if (mov.Planilla) {
+      item.planillas.add(mov.Planilla)
+    }
+
+    item.totalRecaudado += Number(mov.Monto || 0)
   })
-}
 
-const item = mapa.get(key)
+  const arrayAgrupado = Array.from(mapa.values()).map(item => ({
+    ...item,
+    facturaTexto: Array.from(item.facturas).join(', ') || 'N/A',
+    placaTexto: Array.from(item.placas).join(', ') || 'N/A',
+    planillaTexto: Array.from(item.planillas).join(', ') || 'N/A'
+  }))
 
-item.movimientos.push(mov)
+  let resultado = arrayAgrupado
 
-if (mov.NroFacturaAlpina) {
-  item.facturas.add(mov.NroFacturaAlpina)
-}
+  if (rutaSeleccionada.value) {
+    resultado = resultado.filter(
+      item => item.ruta === rutaSeleccionada.value
+    )
+  }
 
-if (mov.Placa) {
-  item.placas.add(mov.Placa)
-}
+  if (busquedaFiltro.value.trim()) {
+    const q = busquedaFiltro.value.toLowerCase()
 
-if (mov.Planilla) {
-  item.planillas.add(mov.Planilla)
-}
+    resultado = resultado.filter(item =>
+      item.ruta.toLowerCase().includes(q) ||
+      item.telefono.toString().includes(q) ||
+      item.placaTexto.toLowerCase().includes(q) ||
+      item.planillaTexto.toLowerCase().includes(q)
+    )
+  }
 
-item.totalRecaudado += Number(mov.Monto || 0)
-})
-
-const arrayAgrupado = Array.from(mapa.values()).map(item => ({
-  ...item,
-  facturaTexto: Array.from(item.facturas).join(', ') || 'N/A',
-  placaTexto: Array.from(item.placas).join(', ') || 'N/A',
-  planillaTexto: Array.from(item.planillas).join(', ') || 'N/A'
-}))
-
-if (!busquedaFiltro.value.trim()) {
-  return arrayAgrupado
-}
-
-const q = busquedaFiltro.value.toLowerCase()
-
-return arrayAgrupado.filter(item =>
-  item.ruta.toLowerCase().includes(q) ||
-  item.telefono.toString().includes(q) ||
-  item.facturaTexto.toLowerCase().includes(q) ||
-  item.placaTexto.toLowerCase().includes(q) ||
-  item.planillaTexto.toLowerCase().includes(q)
-)
+  return resultado
 })
 
 const totalRecaudo = computed(() => {
-  return movimientosDelDia.value.reduce(
+  const movimientos = rutaSeleccionada.value
+    ? movimientosDelDia.value.filter(
+        mov => mov.NombreRuta === rutaSeleccionada.value
+      )
+    : movimientosDelDia.value
+
+  return movimientos.reduce(
     (acc, mov) => acc + Number(mov.Monto || 0),
     0
   )
@@ -158,19 +180,9 @@ onMounted(() => {
   ]
 })
 
-const logout = () => {
-  localStorage.removeItem("admin_token")
-  localStorage.removeItem("company")
-  localStorage.removeItem("admin_tipo")
-  localStorage.removeItem("admin_userData")
-  localStorage.removeItem("admin_isAuthenticated")
-
-  router.push("/LoginView")
-}
-
 const verDetalle = (item) => {
-
-  localStorage.setItem("detalle_recaudo",
+  localStorage.setItem(
+    "detalle_recaudo",
     JSON.stringify({
       fecha: fechaSeleccionada.value,
       ruta: item.ruta,
@@ -187,7 +199,6 @@ const verDetalle = (item) => {
     name: "DetalleRecaudo"
   })
 }
-
 </script>
 
 <template>
@@ -204,59 +215,47 @@ const verDetalle = (item) => {
         </h1>
 
         <div class="top-row">
+          <div class="filters-column">
 
-          <div class="date-picker-box">
-
-            <span class="label-date">
-              Fecha
-            </span>
-
-            <div
-              class="input-date-wrapper"
-              @click="abrirCalendario"
-            >
-
-              <input
-                ref="dateInputRef"
-                type="date"
-                v-model="fechaSeleccionada"
-                class="hidden-date-input"
-              />
-
-              <div class="custom-date-display">
-
-                <span class="fecha-texto">
-                  {{ fechaFormateada }}
-                </span>
-
-                <span class="calendar-icon"></span>
-
+            <div class="date-picker-box">
+              <span class="label-date">Fecha</span>
+              <div class="input-date-wrapper" @click="abrirCalendario">
+                <input
+                  ref="dateInputRef"
+                  type="date"
+                  v-model="fechaSeleccionada"
+                  class="hidden-date-input"
+                />
+                <div class="custom-date-display">
+                  <span class="fecha-texto">{{ fechaFormateada }}</span>
+                  <span class="calendar-icon"></span>
+                </div>
               </div>
-
             </div>
 
-          </div>
-
-          <div class="kpi-box">
-
-            <div class="kpi-amount">
-              $ {{ formatoMiles(totalRecaudo) }}
+            <div class="route-picker-box">
+              <span class="label-route">Ruta</span>
+              <select v-model="rutaSeleccionada" class="select-ruta">
+                <option value="">Todas las rutas</option>
+                <option v-for="ruta in rutasDisponibles" :key="ruta" :value="ruta">
+                  {{ ruta }}
+                </option>
+              </select>
             </div>
-
-            <div class="kpi-label">
-              Total Recaudado Día
-            </div>
-
-          </div>
 
         </div>
+        <div class="kpi-box">
+          <div class="kpi-amount">$ {{ formatoMiles(totalRecaudo) }}</div>
+          <div class="kpi-label">Total Recaudado Día</div>
+        </div>
+      </div>
 
-        <div class="search-wrapper">
+      <div class="search-wrapper">
 
-          <input
-            type="text"
+        <input
+          type="text"
             v-model="busquedaFiltro"
-            placeholder="Buscar por ruta, transportista, teléfono, factura, placa o planilla"
+            placeholder="Buscar por ruta, transportista, teléfono, placa o planilla"
             class="search-input"
           />
 
@@ -269,17 +268,14 @@ const verDetalle = (item) => {
           <table class="data-table">
 
             <thead>
-
               <tr>
-                <th>Factura</th>
                 <th>Ruta</th>
                 <th>Teléfono</th>
                 <th>Placa</th>
                 <th>Planilla</th>
                 <th>Total Recaudado</th>
-                <th>Acciones</th>
+                <th class="th-acciones">Acciones</th>
               </tr>
-
             </thead>
 
             <tbody>
@@ -288,10 +284,6 @@ const verDetalle = (item) => {
                 v-for="(item, index) in listaAgrupada"
                 :key="index"
               >
-
-                <td class="col-secundaria">
-                  {{ item.facturaTexto }}
-                </td>
 
                 <td class="col-ruta">
                   {{ item.ruta }}
@@ -314,14 +306,12 @@ const verDetalle = (item) => {
                 </td>
 
                 <td class="col-acciones">
-
                   <button
                     class="btn-detalle"
                     @click="verDetalle(item)"
                   >
                     Ver Detalle
                   </button>
-
                 </td>
 
               </tr>
@@ -329,22 +319,16 @@ const verDetalle = (item) => {
               <tr v-if="listaAgrupada.length === 0">
 
                 <td
-                  colspan="7"
+                  colspan="6"
                   class="empty-state"
                 >
                   No hay registros de recaudo para los filtros seleccionados.
                 </td>
-
               </tr>
-
             </tbody>
-
           </table>
-
         </div>
-
       </motion.div>
-
     </main>
 
   </div>
@@ -388,7 +372,13 @@ const verDetalle = (item) => {
   margin-bottom: 24px;
 }
 
-.label-date {
+.date-picker-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.label-date,
+.label-route {
   font-size: 12px;
   color: #6b7280;
   display: block;
@@ -465,6 +455,38 @@ const verDetalle = (item) => {
   left: 3px;
   border-radius: 1px;
   box-shadow: 6px 0 #6b7280;
+}
+
+.route-picker-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.select-ruta {
+  height: 38px;
+  min-width: 220px;
+  padding: 8px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background-color: #ffffff;
+  color: #374151;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.select-ruta:hover {
+  border-color: #cbd5e1;
+}
+
+.select-ruta:focus {
+  border-color: #cbd5e1;
+  box-shadow: 0 0 0 2px rgba(51, 56, 160, 0.08);
 }
 
 .kpi-box {
@@ -563,7 +585,7 @@ const verDetalle = (item) => {
 
 .data-table th,
 .data-table td {
-  width: 14.2857%;
+  width: 16.6667%;
 }
 
 .col-ruta {
@@ -584,15 +606,18 @@ const verDetalle = (item) => {
   color: #111827;
 }
 
+.th-acciones,
 .col-acciones {
-  text-align: center;
+  text-align: center !important;
+  vertical-align: middle;
 }
 
 .btn-detalle {
   background: none;
   border: none;
   padding: 0;
-  margin: 0;
+  margin: 0 auto;
+  display: inline-block;
   color: deepskyblue;
   font-family: inherit;
   font-size: 13.5px;
@@ -600,6 +625,7 @@ const verDetalle = (item) => {
   cursor: pointer;
   border-bottom: 2px solid transparent;
   transition: color 0.2s ease, border-color 0.2s ease;
+  text-align: center;
 }
 
 .btn-detalle:hover {
@@ -607,12 +633,9 @@ const verDetalle = (item) => {
   border-bottom-color: #0099cc;
 }
 
-.btn-detalle:focus {
-  outline: none;
-  font-weight: 400;
-}
-
+.btn-detalle:focus,
 .btn-detalle:active {
+  outline: none;
   font-weight: 400;
 }
 
@@ -621,5 +644,26 @@ const verDetalle = (item) => {
   color: #9ca3af;
   padding: 30px;
   font-size: 13.5px;
+}
+.filters-column {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.select-ruta {
+  height: 38px;
+  width: 100%;
+  min-width: 220px;
+  padding: 8px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background-color: #ffffff;
+  color: #374151;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 </style>

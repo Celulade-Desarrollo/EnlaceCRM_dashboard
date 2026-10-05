@@ -1,19 +1,17 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import axios from 'axios'
 import headerDis from "../components/UI/headerDis.vue"
 
 const router = useRouter()
 
-const mesAnoSeleccionado = ref('');
+const mesAnoSeleccionado = ref('')
 
 const formatearMiles = v =>
   v ? v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') : ''
 
 const filas = ref([])
 const todosLosDatos = ref([])
-const datosOriginales = ref([])
 
 const listarDatos = () => {
   if (!mesAnoSeleccionado.value) {
@@ -22,171 +20,61 @@ const listarDatos = () => {
   }
 
   const registros = [
-    {
-      id: 1,
-      fecha: '2026-09-01',
-      recaudo: 3500000,
-      dispersion: ''
-    },
-    {
-      id: 2,
-      fecha: '2026-09-02',
-      recaudo: 4200000,
-      dispersion: ''
-    },
-    {
-      id: 3,
-      fecha: '2026-09-03',
-      recaudo: 2800000,
-      dispersion: 'Alpina'
-    },
-    {
-      id: 4,
-      fecha: '2026-09-04',
-      recaudo: 5100000,
-      dispersion: ''
-    },
-    {
-      id: 5,
-      fecha: '2026-09-05',
-      recaudo: 3900000,
-      dispersion: 'Surtialimentos'
-    },
-    {
-      id: 6,
-      fecha: '2026-09-10',
-      recaudo: 4600000,
-      dispersion: ''
-    }
-
+    { id: 1, fecha: '2026-09-01', recaudo: 3500000 },
+    { id: 2, fecha: '2026-09-02', recaudo: 4200000 },
+    { id: 3, fecha: '2026-09-03', recaudo: 2800000 }
   ]
 
   todosLosDatos.value = registros.map(d => ({
     id: d.id,
     fecha: d.fecha,
-    recaudo: Number(d.recaudo || 0),
-    dispersion: (d.dispersion || '').trim()
+    recaudo: Number(d.recaudo || 0)
   }))
-
-  datosOriginales.value = JSON.parse(
-    JSON.stringify(todosLosDatos.value)
-  )
 
   filtrarPorMesAno()
 }
-
 
 const filtrarPorMesAno = () => {
   if (!mesAnoSeleccionado.value) {
     filas.value = []
     return
   }
-  filas.value = todosLosDatos.value.filter(f =>
-    f.fecha?.substring(0, 7) === mesAnoSeleccionado.value
+
+  filas.value = todosLosDatos.value.filter(
+    f => f.fecha?.substring(0, 7) === mesAnoSeleccionado.value
   )
 }
 
-const esEditable = (fecha) => {
-  const original = datosOriginales.value.find(d => d.fecha === fecha)
-  return original && original.dispersion === ''
+const verDetalle = (fila) => {
+  const recaudo = Number(fila.recaudo || 0)
+
+  localStorage.setItem(
+    'detalle_recaudo',
+    JSON.stringify({
+      id: fila.id,
+      fecha: fila.fecha,
+      recaudo: recaudo,
+      total: recaudo
+    })
+  )
+
+  router.push('/detalle-recaudo-tesoreria')
 }
 
-const tieneCambios = () => {
-  return filas.value.some(fila => {
-    const original = datosOriginales.value.find(d => d.fecha === fila.fecha)
-    return original && original.dispersion === '' && fila.dispersion !== ''
-  })
-}
-
-const guardar = async () => {
-  try {
-    const nuevos = filas.value.filter(fila => {
-      const original = datosOriginales.value.find(d => d.fecha === fila.fecha)
-      return original && original.dispersion === '' && fila.dispersion !== ''
-    })
-
-    if (!nuevos.length) {
-      alert('No hay cambios para guardar')
-      return
-    }
-
-    // Localiza esta parte en tu función guardar()
-const payload = nuevos.map(fila => ({
-  fecha: fila.fecha,
-  recaudo: fila.recaudo, // Este valor ahora será el real (Tipo 1)
-  dispersion: fila.dispersion,
-  tesoreria_status: false,
-  banco_status: false
-}))
-
-    await axios.post('/tesoreria/crear-registro-con-dispersion', payload)
-
-    nuevos.forEach(fila => {
-      const index = datosOriginales.value.findIndex(d => d.fecha === fila.fecha)
-      if (index !== -1) {
-        datosOriginales.value[index].dispersion = fila.dispersion
-      }
-    })
-
-    // Actualizar datosOriginales para bloquear los guardados
-    nuevos.forEach(fila => {
-      const index = datosOriginales.value.findIndex(d => d.fecha === fila.fecha)
-      if (index !== -1) {
-        datosOriginales.value[index].dispersion = fila.dispersion
-      }
-    })
-
-    alert('Dispersión guardada correctamente en Tesorería')
-    // NO recargar para evitar duplicados (el backend debe actualizar status en Recaudo)
-  } catch (e) {
-    console.error('❌ Error al guardar:', e)
-    alert('Error al guardar: ' + (e.response?.data?.message || 'Error desconocido'))
-  }
-}
-const verDetalle = async (fila) => {
-  try {
-    const res = await axios.get(
-      `/tesoreria/recaudo-detalle/${fila.fecha}`
-    )
-
-    const movimientos = res.data?.data || res.data || []
-
-    const recaudo = Number(fila.recaudo || 0)
-
-    localStorage.setItem(
-      'detalle_recaudo',
-      JSON.stringify({
-        fecha: fila.fecha,
-        recaudo: recaudo,
-        total: recaudo,
-        dispersion: fila.dispersion || '',
-        movimientos
-      })
-    )
-
-    router.push({
-      name: "DetalleRecaudoTesoreria"
-    })
-  } catch (error) {
-    console.error('Error al cargar detalle:', error)
-  }
-}
 watch(mesAnoSeleccionado, listarDatos)
-
 </script>
 
 <template>
   <div class="pantalla-full">
     <headerDis />
+
     <main class="main-content">
       <div class="full-width-container">
-
-        <h1 class="main-title">Dispersión Mensual</h1>
+        <h1 class="main-title">Recaudo</h1>
 
         <div class="top-row">
           <div class="month-picker-box">
             <span class="label-month">Mes y Año</span>
-
             <div class="input-month-wrapper">
               <input
                 type="month"
@@ -197,118 +85,51 @@ watch(mesAnoSeleccionado, listarDatos)
           </div>
         </div>
 
-        <div
-          v-if="!mesAnoSeleccionado"
-          class="mensaje-seleccionar"
-        >
+        <div v-if="!mesAnoSeleccionado" class="mensaje-seleccionar">
           <span class="mensaje-icon">📅</span>
           <span>Seleccione un mes y un año</span>
         </div>
 
         <div
-          v-if="
-            mesAnoSeleccionado &&
-            filas.length === 0 &&
-            todosLosDatos.length > 0
-          "
+          v-if="mesAnoSeleccionado && filas.length === 0 && todosLosDatos.length > 0"
           class="mensaje-sin-datos"
         >
           No hay datos para el mes seleccionado
         </div>
 
-        <!-- TABLA -->
-        <div
-          class="table-wrapper"
-          v-if="filas.length"
-        >
+        <div class="table-wrapper" v-if="filas.length">
           <table class="data-table">
-
             <thead>
               <tr>
                 <th>Fecha</th>
                 <th>Recaudo</th>
-                <th>Dispersión</th>
                 <th>Acciones</th>
               </tr>
             </thead>
 
             <tbody>
-              <tr
-                v-for="fila in filas"
-                :key="fila.fecha"
-              >
+              <tr v-for="fila in filas" :key="fila.id">
                 <td>
-                  <input
-                    type="date"
-                    :value="fila.fecha"
-                    disabled
-                  />
-                </td>
-
-                <td>
-                  <input
-                    type="text"
-                    :value="formatearMiles(fila.recaudo)"
-                    disabled
-                  />
-                </td>
-
-                <td>
-                  <select
-                    v-model="fila.dispersion"
-                    :disabled="!esEditable(fila.fecha)"
-                  >
-                    <option value="">
-                      {{
-                        esEditable(fila.fecha)
-                          ? 'Seleccione'
-                          : '(No editable)'
-                      }}
-                    </option>
-
-                    <option value="Alpina">
-                      Alpina
-                    </option>
-
-                    <option value="Surtialimentos">
-                      Surtialimentos
-                    </option>
-                  </select>
+                  <input type="date" :value="fila.fecha" disabled />
                 </td>
                 <td>
-                <button
-                  class="btn-detalle"
-                  @click="verDetalle(fila)"
-                >
-                  Ver detalle
-                </button>
-              </td>
+                  <input type="text" :value="formatearMiles(fila.recaudo)" disabled />
+                </td>
+                <td>
+                  <button class="btn-detalle" @click="verDetalle(fila)">
+                    Ver detalle
+                  </button>
+                </td>
               </tr>
             </tbody>
-
           </table>
         </div>
-
-        <!-- GUARDAR -->
-        <div
-          class="acciones"
-          v-if="tieneCambios()"
-        >
-          <button
-            class="btn primary"
-            @click="guardar"
-          >
-            Guardar
-          </button>
-        </div>
-
       </div>
     </main>
   </div>
 </template>
 
 <style scoped>
-
 .pantalla-full {
   background-color: #ffffff;
   min-height: 100vh;
@@ -316,13 +137,7 @@ watch(mesAnoSeleccionado, listarDatos)
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
-  font-family:
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .main-content {
@@ -345,18 +160,12 @@ watch(mesAnoSeleccionado, listarDatos)
   margin: 0 0 24px 0;
 }
 
-
-/* FILA SUPERIOR */
-
 .top-row {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 24px;
 }
-
-
-/* SELECTOR DE MES */
 
 .month-picker-box {
   display: flex;
@@ -380,24 +189,16 @@ watch(mesAnoSeleccionado, listarDatos)
   height: 38px;
   min-width: 180px;
   padding: 8px 12px;
-
   border: 1px solid #e5e7eb;
   border-radius: 6px;
-
   background-color: #ffffff;
   color: #374151;
-
   font-size: 14px;
   font-family: inherit;
-
   outline: none;
   cursor: pointer;
-
   box-sizing: border-box;
-
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .select-mes:hover {
@@ -406,36 +207,23 @@ watch(mesAnoSeleccionado, listarDatos)
 
 .select-mes:focus {
   border-color: #cbd5e1;
-
-  box-shadow:
-    0 0 0 2px rgba(51, 56, 160, 0.08);
+  box-shadow: 0 0 0 2px rgba(51, 56, 160, 0.08);
 }
-
-
-/* MENSAJES */
 
 .mensaje-seleccionar,
 .mensaje-sin-datos {
   width: 100%;
   min-height: 110px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   gap: 8px;
-
   box-sizing: border-box;
-
   background-color: #ffffff;
-
   border: 1px solid #e5e7eb;
   border-radius: 6px;
-
   color: #6b7280;
-
   font-size: 14px;
-
   margin-bottom: 24px;
 }
 
@@ -447,56 +235,40 @@ watch(mesAnoSeleccionado, listarDatos)
   color: #6b7280;
 }
 
-
-/* TABLA */
-
 .table-wrapper {
   width: 100%;
   overflow-x: auto;
-
   border: 1px solid #e5e7eb;
   border-radius: 6px;
-
   background-color: #ffffff;
 }
 
 .data-table {
   width: 100%;
-
   border-collapse: collapse;
-
   table-layout: fixed;
 }
 
 .data-table th {
   background-color: #f8fafc;
-
   color: #374151;
-
   font-size: 13px;
   font-weight: 700;
-
   text-align: left;
-
   padding: 12px 16px;
-
   border-bottom: 2px solid #e2e8f0;
-
   white-space: nowrap;
 }
 
 .data-table th,
 .data-table td {
-  width: 25%;
+  width: 33.3333%;
 }
 
 .data-table td {
   padding: 14px 16px;
-
   border-bottom: 1px solid #f1f5f9;
-
   font-size: 13.5px;
-
   color: #374151;
 }
 
@@ -504,151 +276,18 @@ watch(mesAnoSeleccionado, listarDatos)
   border-bottom: none;
 }
 
-
-/* CAMPOS */
-
-.data-table input,
-.data-table select {
+.data-table input {
   width: 100%;
   height: 36px;
-
   padding: 8px 12px;
-
   box-sizing: border-box;
-
   border: 1px solid #e5e7eb;
   border-radius: 6px;
-
-  background-color: #ffffff;
-  color: #374151;
-
+  background-color: #f8fafc;
+  color: #6b7280;
   font-family: inherit;
   font-size: 13px;
-
   outline: none;
-
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.data-table input:focus,
-.data-table select:focus {
-  border-color: #cbd5e1;
-
-  box-shadow:
-    0 0 0 2px rgba(51, 56, 160, 0.06);
-}
-
-
-/* CAMPOS DESHABILITADOS */
-
-.data-table input:disabled,
-.data-table select:disabled {
-  background-color: #f8fafc;
-
-  color: #6b7280;
-
-  cursor: default;
-
-  opacity: 1;
-}
-
-
-/* SELECT EDITABLE */
-
-.data-table select:not(:disabled) {
-  cursor: pointer;
-}
-
-.data-table select:not(:disabled):hover {
-  border-color: #cbd5e1;
-}
-
-
-/* ACCIONES */
-
-.acciones {
-  display: flex;
-
-  justify-content: flex-end;
-
-  margin-top: 20px;
-}
-
-.btn {
-  padding: 10px 22px;
-
-  border-radius: 6px;
-
-  font-size: 13px;
-  font-weight: 600;
-
-  border: none;
-
-  cursor: pointer;
-
-  transition:
-    background-color 0.2s ease,
-    transform 0.2s ease;
-
-  outline: none;
-}
-
-.primary {
-  background-color: #3338a0;
-
-  color: #ffffff;
-}
-
-.primary:hover {
-  background-color: #292d82;
-
-  transform: translateY(-1px);
-}
-
-.primary:active {
-  transform: translateY(0);
-}
-
-.primary:focus,
-.primary:focus-visible {
-  outline: none;
-}
-
-
-/* RESPONSIVE */
-
-@media (max-width: 768px) {
-
-  .main-content {
-    padding: 28px 20px;
-  }
-
-  .main-title {
-    font-size: 22px;
-  }
-
-  .data-table th,
-  .data-table td {
-    padding: 10px 12px;
-  }
-
-  .data-table {
-    min-width: 650px;
-  }
-
-  .table-wrapper {
-    overflow-x: auto;
-  }
-
-  .acciones {
-    justify-content: stretch;
-  }
-
-  .btn {
-    width: 100%;
-  }
 }
 
 .btn-detalle {
@@ -670,13 +309,32 @@ watch(mesAnoSeleccionado, listarDatos)
   border-bottom-color: #0099cc;
 }
 
-.btn-detalle:focus {
+.btn-detalle:focus,
+.btn-detalle:active {
   outline: none;
   font-weight: 400;
 }
 
-.btn-detalle:active {
-  font-weight: 400;
-}
+@media (max-width: 768px) {
+  .main-content {
+    padding: 28px 20px;
+  }
 
-</style>
+  .main-title {
+    font-size: 22px;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 10px 12px;
+  }
+
+  .data-table {
+    min-width: 650px;
+  }
+
+  .table-wrapper {
+    overflow-x: auto;
+  }
+}
+</style>  

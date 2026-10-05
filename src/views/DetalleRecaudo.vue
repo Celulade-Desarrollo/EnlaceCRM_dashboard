@@ -162,7 +162,7 @@ onMounted(() => {
         Ubicacion_del_Negocio_Departamento: "Valle del Cauca",
         Direccion: "Cra 10 # 20-30",
         Numero_Celular: "3001111111",
-        nbCliente: "CLI-001"
+        nbCliente: "8100007756"
       },
 
       "1001001002": {
@@ -174,7 +174,7 @@ onMounted(() => {
         Ubicacion_del_Negocio_Departamento: "Valle del Cauca",
         Direccion: "Calle 15 # 30-40",
         Numero_Celular: "3012222222",
-        nbCliente: "CLI-002"
+        nbCliente: "8100163222"
       },
 
       "1001001003": {
@@ -186,7 +186,7 @@ onMounted(() => {
         Ubicacion_del_Negocio_Departamento: "Valle del Cauca",
         Direccion: "Carrera 5 # 10-20",
         Numero_Celular: "3023333333",
-        nbCliente: "CLI-003"
+        nbCliente: "8100004211"
       },
 
       "1001001004": {
@@ -198,7 +198,7 @@ onMounted(() => {
         Ubicacion_del_Negocio_Departamento: "Valle del Cauca",
         Direccion: "Calle 8 # 12-15",
         Numero_Celular: "3034444444",
-        nbCliente: "CLI-004"
+        nbCliente: "8100009825"
       }
     }
 
